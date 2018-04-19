@@ -14,4 +14,5 @@ token = None
 with open("creds.txt") as creds:
     token = creds.read().strip()
 
+bot.load_extension("roles")
 bot.run(token)
