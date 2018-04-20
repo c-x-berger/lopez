@@ -8,6 +8,8 @@ quotes = []
 with open("footers.json") as f:
     quotes = json.load(f)
 
+announcment_channels = ["286175809130201088"]
+
 @bot.event
 async def on_ready():
     print('Logged in as')
@@ -19,6 +21,8 @@ async def on_ready():
 async def on_message(message):
     if (bot.user.mention in message.content):
         await bot.add_reaction(message, discord.utils.get(bot.get_all_emojis(), name="pingsock"))
+    elif ("LOPEZ" in message.content.upper() and not (message.channel.id in announcment_channels)):
+        await bot.send_message(message.channel, "Hi!")
     await bot.process_commands(message)
 
 token = None
