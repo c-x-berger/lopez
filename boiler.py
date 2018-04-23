@@ -7,7 +7,7 @@ import json
 import random
 
 quotes = []
-with open("footers.json") as f:
+with open("footers.json", encoding='utf-8') as f:
     quotes = json.load(f)
 
 
