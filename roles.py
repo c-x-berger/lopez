@@ -1,3 +1,4 @@
+import boiler
 import json
 import random
 import discord
@@ -67,10 +68,8 @@ class roles():
 
     @commands.command(description="Lists all roles available with [] giveme", pass_context=True)
     async def listme(self, ctx):
-        em = discord.Embed()
+        em = boiler.embed_template()
         em.title = "Available roles"
-        em.color = discord.Colour.gold()
-        em.set_footer(text=random.choice(footers))
         send = ""
         for role in ["Programming", "CAD/Design", "Marketing", "Fabrication", "Scouts", "Electrical", "Drive Team", "Outreach", "Awards", "Strategy", "NSWC Crane bot team"]:
             send += "* {}\n".format(role)
