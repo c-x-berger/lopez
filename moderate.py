@@ -12,7 +12,6 @@ class moderate():
             i = 0
             j = -1
             while (i < amount + 1):
-                print("(i, j): ({}, {})".format(i, j))
                 if (list(self.bot.messages)[j].channel.id == ctx.message.channel.id):
                     await self.bot.delete_message(self.bot.messages[j])
                     self.bot.messages.remove(self.bot.messages[j])
@@ -22,7 +21,7 @@ class moderate():
                     j -= 1
             em = boiler.embed_template()
             em.title = "Purged {} messages".format(amount)
-            em.set_footer(text="Requested by {}".format(ctx.message.author.nick))
+            em.set_footer(text="Requested by {}".format(ctx.message.author.nick), icon_url="https://i.imgur.com/2VepakW.png")
             await self.bot.say(None, embed=em)
         else:
             await self.bot.say("Purge not performed because you ain't got the power.")
