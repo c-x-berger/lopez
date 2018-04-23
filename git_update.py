@@ -19,7 +19,7 @@ class git_updater():
             start_time = time.time()
             subprocess.run(["git", "pull"])
             finish_time = time.time()
-            await self.bot.say("I finished pulling code in {} seconds.\nRestarting now.\n`Goodbye`.".format(finish_time - start_time))
+            await self.bot.say("I finished pulling code in {:.2} seconds.\nRestarting now.\n`Goodbye`.".format(finish_time - start_time))
             os.execl(sys.executable, sys.executable, *sys.argv)
 
 
