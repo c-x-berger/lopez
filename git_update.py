@@ -22,5 +22,6 @@ class git_updater():
             await self.bot.say("I finished pulling code in {} seconds.\nRestarting now.\n`Goodbye`.".format(finish_time - start_time))
             os.execl(sys.executable, sys.executable, *sys.argv)
 
+
 def setup(bot):
     bot.add_cog(git_updater(bot))
