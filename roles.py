@@ -4,10 +4,9 @@ import random
 import discord
 from discord.ext import commands
 
-special_roles = ["General 3494", "Admin", "Mentors", "Alumni", "Leads", "Bot, but admin", "Bots", "Parents", "Lopez"]
-footers = []
-with open("footers.json") as feet:
-    footers = json.load(feet)
+special_roles = ["General 3494", "Admin", "Mentors", "Alumni",
+                 "Leads", "Bot, but admin", "Bots", "Parents", "Lopez"]
+
 
 class roles():
     def __init__(self, bot):
@@ -67,8 +66,10 @@ class roles():
         for role in ["Programming", "CAD/Design", "Marketing", "Fabrication", "Scouts", "Electrical", "Drive Team", "Outreach", "Awards", "Strategy", "NSWC Crane bot team"]:
             send += "* {}\n".format(role)
         em.add_field(name="Subteam roles", value=send)
-        em.add_field(name="Other roles", value="* Memer\n* Field Build\n* Website")
+        em.add_field(name="Other roles",
+                     value="* Memer\n* Field Build\n* Website")
         await self.bot.send_message(ctx.message.channel, None, embed=em)
+
 
 def setup(bot):
     bot.add_cog(roles(bot))

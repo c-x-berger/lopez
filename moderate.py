@@ -2,6 +2,7 @@ import discord
 import boiler
 from discord.ext import commands
 
+
 class moderate():
     def __init__(self, bot):
         self.bot = bot
@@ -24,10 +25,12 @@ class moderate():
                     j -= 1
             em = boiler.embed_template()
             em.title = "Purged {} messages".format(amount)
-            em.set_footer(text="Requested by {}".format(ctx.message.author.nick), icon_url="https://i.imgur.com/2VepakW.png")
+            em.set_footer(text="Requested by {}".format(
+                ctx.message.author.nick), icon_url="https://i.imgur.com/2VepakW.png")
             await self.bot.say(None, embed=em)
         else:
             await self.bot.say("Purge not performed because you ain't got the power.")
+
 
 def setup(bot):
     bot.add_cog(moderate(bot))

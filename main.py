@@ -8,12 +8,14 @@ bot = commands.Bot('[] ', None, "A bot created for team 3494.", True)
 
 announcment_channels = ["286175809130201088"]
 
+
 @bot.event
 async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+
 
 @bot.event
 async def on_message(message):
@@ -22,6 +24,7 @@ async def on_message(message):
     elif ("LOPEZ" in message.content.upper() and not (message.channel.id in announcment_channels)):
         await bot.send_message(message.channel, "Hi!")
     await bot.process_commands(message)
+
 
 @bot.event
 async def on_message_delete(message):
@@ -32,6 +35,7 @@ async def on_message_delete(message):
 token = None
 with open("creds.txt") as creds:
     token = creds.read().strip()
+
 
 @bot.command(description="Quotes are fun!")
 async def quote():

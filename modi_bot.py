@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 class modi():
     def __init__(self, bot: commands.Bot, special_cogs):
         self.bot = bot
@@ -39,6 +40,7 @@ class modi():
         '''
         await ctx.invoke(self.unload, module)
         await ctx.invoke(self.load, module)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(modi(bot, ["main", "modi_bot"]))
