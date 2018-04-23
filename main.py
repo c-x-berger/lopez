@@ -41,7 +41,7 @@ with open("creds.txt") as creds:
 async def quote():
     await bot.say(random.choice(boiler.quotes))
 
-bot.load_extension("roles")
-bot.load_extension("moderate")
-bot.load_extension("modi_bot")
+cogs = ["git_update", "roles", "moderate", "modi_bot"]
+for cog in cogs:
+    bot.load_extension(cog)
 bot.run(token)
