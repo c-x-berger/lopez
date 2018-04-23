@@ -37,30 +37,7 @@ with open("creds.txt") as creds:
 async def quote():
     await bot.say(random.choice(boiler.quotes))
 
-@bot.group(description="Change bot module status.", pass_context=True)
-async def mod(ctx):
-    if (ctx.invoked_subcommand is None):
-        await bot.say("This command must be invoked with a subcommand (`unload`, `load`, or `reload`)!")
-
-@mod.command(description="Unload a bot module", pass_context=True)
-async def unload(ctx, module: str):
-    if (ctx.message.author.id == "164342765394591744"):
-        bot.unload_extension(module)
-        await bot.say("Unloaded module `{}`".format(module))
-
-@mod.command(description="Load a bot module", pass_context=True)
-async def load(ctx, module: str):
-    if (ctx.message.author.id == "164342765394591744"):
-        bot.load_extension(module)
-        await bot.say("Loaded module `{}`".format(module))
-
-@mod.command(description="Reload a bot module", pass_context=True)
-async def reload(ctx, module: str):
-    if (ctx.message.author.id == "164342765394591744"):
-        bot.unload_extension(module)
-        bot.load_extension(module)
-        await bot.say("Reloaded module `{}`".format(module))
-
 bot.load_extension("roles")
 bot.load_extension("moderate")
+bot.load_extension("modi_bot")
 bot.run(token)
