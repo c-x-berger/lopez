@@ -6,8 +6,11 @@ class moderate():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @commands.command(description="Enables a user with Manage Messages to bulk delete the last `amount` messages.", pass_context=True)
     async def purge(self, ctx, amount: int):
+        '''
+        Bulk remove messages.
+        '''
         if (ctx.message.channel.permissions_for(ctx.message.author).manage_messages):
             i = 0
             j = -1

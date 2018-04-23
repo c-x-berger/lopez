@@ -13,31 +13,18 @@ class roles():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(description="Gives the competition role", pass_context=True)
+    @commands.command(pass_context=True)
     async def competition(self, ctx, member: discord.Member = None):
-        member = ctx.message.author
-        await self.bot.add_roles(member, discord.utils.get(ctx.message.server.roles, name="Competition"))
-        await self.bot.say("Gave {} the competition role".format(member.mention))
+        '''
+        Gives the competition role
+        '''
+        await ctx.invoke(self.giveme, request="Competition")
 
-    @commands.command(description="Gives the requested subteam role", pass_context=True)
+    @commands.command(description="Gives you a subteam role. Available roles:\n* Programming\n* CAD/Design\n* Marketing\n* Fabrication\n* Scouts\n* Electrical\n* Drive Team\n* Outreach\n* Awards\n* Strategy\n* Field Build\n* Website\n* Memer\n* NSWC Crane bot team", pass_context=True)
     async def giveme(self, ctx, *, request: str):
-        """
-        Gives you a subteam role. Available roles:
-        * Programming
-        * CAD/Design
-        * Marketing
-        * Fabrication
-        * Scouts
-        * Electrical
-        * Drive Team
-        * Outreach
-        * Awards
-        * Strategy
-        * Field Build
-        * Website
-        * Memer
-        * NSWC Crane bot team
-        """
+        '''
+        Gives the requested subteam role
+        '''
         member = ctx.message.author
         role = None
         if (request not in special_roles):
@@ -51,8 +38,11 @@ class roles():
         elif (request is not None):
             await self.bot.say("Could not find the role {}! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request))
 
-    @commands.command(description="The opposite of [] giveme", pass_context=True)
+    @commands.command(description="The opposite of [] giveme.", pass_context=True)
     async def removeme(self, ctx, *, request: str):
+        '''
+        Removes the requested subteam role
+        '''
         member = ctx.message.author
         role = None
         if (request not in special_roles):
@@ -66,8 +56,11 @@ class roles():
         elif (request is not None):
             await self.bot.say("Could not find the role {}! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request))
 
-    @commands.command(description="Lists all roles available with [] giveme", pass_context=True)
+    @commands.command(pass_context=True)
     async def listme(self, ctx):
+        '''
+        Lists all roles available with [] giveme
+        '''
         em = boiler.embed_template()
         em.title = "Available roles"
         send = ""
