@@ -43,5 +43,5 @@ async def quote():
 
 cogs = ["git_update", "roles", "moderate", "modi_bot"]
 for cog in cogs:
-    bot.load_extension(cog)
+    bot.load_extension("cogs." + cog)
 bot.run(token)
