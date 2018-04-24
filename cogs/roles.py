@@ -1,4 +1,4 @@
-from .. import boiler
+import boiler
 import json
 import random
 import discord

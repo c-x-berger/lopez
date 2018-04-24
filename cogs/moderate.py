@@ -1,5 +1,5 @@
 import discord
-from .. import boiler
+import boiler
 from discord.ext import commands
 
 
