@@ -1,12 +1,15 @@
 import boiler
 import json
+import math
 import random
+import time
 import discord
 from discord.ext import commands
 
 bot = commands.Bot('[] ', None, "A bot created for team 3494.", True)
 
 announcment_channels = ["286175809130201088"]
+botstart = time.time()
 
 
 @bot.event
@@ -40,6 +43,12 @@ with open("creds.txt") as creds:
 @bot.command(description="Quotes are fun!")
 async def quote():
     await bot.say(random.choice(boiler.quotes))
+
+@bot.command()
+async def uptime():
+    '''Tells how long the bot has been online.'''
+    print(botstart)
+    await bot.say("**Uptime:** {} seconds".format(math.floor(time.time() - botstart)))
 
 cogs = ["git_update", "roles", "moderate", "modi_bot"]
 for cog in cogs:
