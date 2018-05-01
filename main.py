@@ -1,15 +1,24 @@
+import asyncio
 import boiler
 import json
 import math
+import os
 import random
+import subprocess
 import time
 import discord
 from discord.ext import commands
 
 bot = commands.Bot('[] ', None, "A bot created for team 3494.", True)
-
 announcment_channels = ["286175809130201088"]
 botstart = time.time()
+
+
+async def watchdog():
+    await client.wait_until_ready()
+    while True:
+        subprocess.call(['/bin/systemd-notify', '--pid=' += str(os.getpid()), 'WATCHDOG=1'], shell=True)
+        await asyncio.sleep(15)
 
 
 @bot.event
@@ -50,6 +59,7 @@ async def uptime():
     print(botstart)
     await bot.say("**Uptime:** {} seconds".format(math.floor(time.time() - botstart)))
 
+bot.loop.create_task(watchdog())
 cogs = ["git_update", "roles", "moderate", "modi_bot"]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
