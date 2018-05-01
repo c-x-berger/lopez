@@ -17,7 +17,7 @@ botstart = time.time()
 async def watchdog():
     await bot.wait_until_ready()
     while True:
-        subprocess.call(['/bin/systemd-notify', '--pid=' + str(os.getpid()), 'WATCHDOG=1'], shell=True)
+        subprocess.call(['/bin/systemd-notify', '--pid=' + str(os.getpid()), 'WATCHDOG=1'])
         await asyncio.sleep(15)
 
 
@@ -27,6 +27,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    subprocess.call(['/bin/systemd-notify', '--pid=' + str(os.getpid()), '--ready'])
 
 
 @bot.event
