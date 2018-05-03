@@ -1,5 +1,6 @@
 import asyncio
 import boiler
+import datetime
 import json
 import math
 import os
@@ -57,8 +58,8 @@ async def quote():
 @bot.command()
 async def uptime():
     '''Tells how long the bot has been online.'''
-    print(botstart)
-    await bot.say("**Uptime:** {} seconds".format(math.floor(time.time() - botstart)))
+    delta = datetime.timedelta(seconds=time.time() - botstart)
+    await bot.say("**Uptime:** {}".format(str(delta)))
 
 bot.loop.create_task(watchdog())
 cogs = ["git_update", "roles", "moderate", "modi_bot"]
