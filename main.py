@@ -58,7 +58,7 @@ async def quote():
 @bot.command()
 async def uptime():
     '''Tells how long the bot has been online.'''
-    delta = datetime.timedelta(seconds=time.time() - botstart)
+    delta = datetime.timedelta(seconds=int(time.time() - botstart))
     await bot.say("**Uptime:** {}".format(str(delta)))
 
 bot.loop.create_task(watchdog())
