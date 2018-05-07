@@ -17,7 +17,7 @@ class roles():
         try:
             serverdict = self.roledict[i]
         except KeyError as e:
-            self.roledict[ctx.message.server.id] = {"available": [], "special": []}
+            self.roledict[i] = {"available": [], "special": []}
             serverdict = self.roledict[i]
         finally:
             return serverdict
