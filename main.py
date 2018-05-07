@@ -62,6 +62,11 @@ async def uptime():
     delta = datetime.timedelta(seconds=int(time.time() - botstart))
     await bot.say("**Uptime:** {}".format(str(delta)))
 
+@bot.command()
+async def invite():
+    '''Gets a link to invite Lopez.'''
+    await bot.say("Use this link to invite Lopez into your Discord server!\n" + discord.utils.oauth_url("436251140376494080"))
+
 bot.loop.create_task(watchdog())
 cogs = ["git_update", "roles", "moderate", "modi_bot"]
 for cog in cogs:
