@@ -12,6 +12,54 @@ class roles():
         with open("role.json") as r:
             self.roledict = json.load(r)
 
+    def get_server_dict(self, i: str) -> dict:
+        serverdict = None
+        try:
+            serverdict = self.roledict[i]
+        except KeyError as e:
+            self.roledict[ctx.message.server.id] = {"available": [], "special": []}
+            serverdict = self.roledict[i]
+        finally:
+            return serverdict
+
+
+    @commands.command(pass_context=True)
+    async def add_giveme(self, ctx, role: str):
+        if (ctx.message.channel.type == discord.ChannelType.text):
+            if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
+                serverdict = self.get_server_dict(ctx.message.server.id)
+                # add to available list
+                if (role not in serverdict["available"]):
+                    serverdict["available"].append(role)
+                    if role in serverdict["special"]:
+                        serverdict[ctx.message.server.id]["special"].remove(role)
+                    with open("role.json", 'w') as r:
+                        json.dump(self.roledict, r, indent=4)
+                if not (ctx.message.server.name.endswith("s") or ctx.message.server.name.endswith("S")):
+                    await self.bot.say("Added {} to {}'s giveme roles.".format(role, ctx.message.server.name))
+                else:
+                    await self.bot.say("Added {} to {}' giveme roles.".format(role, ctx.message.server.name))
+            else:
+                await self.bot.say("You're not allowed to do that!")
+
+    @commands.command(pass_context=True)
+    async def add_special(self, ctx, role: str):
+        if (ctx.message.channel.type == discord.ChannelType.text):
+            if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
+                serverdict = self.get_server_dict(ctx.message.server.id)
+                if (role not in serverdict["special"]):
+                    serverdict["special"].append(role)
+                    if role in serverdict["available"]:
+                        serverdict["available"].remove(role)
+                    with open("role.json", 'w') as r:
+                        json.dump(self.roledict, r, indent=4)
+                if not (ctx.message.server.name.endswith("s") or ctx.message.server.name.endswith("S")):
+                    await self.bot.say("Blocked {} from {}'s giveme roles.".format(role, ctx.message.server.name))
+                else:
+                    await self.bot.say("Blocked {} from {}' giveme roles.".format(role, ctx.message.server.name))
+            else:
+                await self.bot.say("You're not allowed to do that!") 
+
     @commands.command(pass_context=True)
     async def competition(self, ctx, member: discord.Member = None):
         '''
