@@ -144,7 +144,7 @@ class roles():
             elif (request in special_roles):
                 await self.bot.say("You're not allowed to remove yourself from the {} role.".format(request))
             elif (request is not None):
-                await self.bot.say("Could not find the role {}! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request))
+                await self.bot.say("Could not find the role {} in any list for this server! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request))
         else:
             await self.bot.say("Cannot run role commands in a direct message!")
 
@@ -153,13 +153,19 @@ class roles():
         '''
         Lists all roles available with [] giveme
         '''
-        em = boiler.embed_template()
-        em.title = "Available roles"
-        send = ""
-        for role in self.roledict[ctx.message.server.id]["available"]:
-            send += "* {}\n".format(role)
-        em.add_field(name="Available roles", value=send)
-        await self.bot.send_message(ctx.message.channel, None, embed=em)
+        if (ctx.message.channel.type == discord.ChannelType.text):
+            serverdict = self.get_server_dict(ctx.message.server.id)
+            em = boiler.embed_template()
+            em.title = "Available roles"
+            send = ""
+            for role in serverdict["available"]:
+                send += "* {}\n".format(role)
+            em.add_field(name="Available roles", value=send, inline=True)
+            send = ""
+            for role in serverdict["special"]:
+                send += "* {}\n".format(role)
+            em.add_field(name="Roles blocked from giveme", value=send, inline=True)
+            await self.bot.send_message(ctx.message.channel, None, embed=em)
 
 
 def setup(bot):
