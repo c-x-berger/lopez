@@ -33,10 +33,11 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if (bot.user.mention in message.content):
-        await bot.add_reaction(message, discord.utils.get(bot.get_all_emojis(), name="pingsock"))
-    elif ("LOPEZ" in message.content.upper() and not (message.channel.id in announcment_channels)):
-        await bot.send_message(message.channel, "Hi!")
+    if not (message.author == bot.user):
+        if (bot.user.mention in message.content):
+            await bot.add_reaction(message, discord.utils.get(bot.get_all_emojis(), name="pingsock"))
+        elif ("LOPEZ" in message.content.upper() and not (message.channel.id in announcment_channels)):
+            await bot.send_message(message.channel, "Hi!")
     await bot.process_commands(message)
 
 
