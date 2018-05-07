@@ -18,7 +18,8 @@ botstart = time.time()
 async def watchdog():
     await bot.wait_until_ready()
     while True:
-        subprocess.call(['/bin/systemd-notify', '--pid=' + str(os.getpid()), 'WATCHDOG=1'])
+        subprocess.call(['/bin/systemd-notify', '--pid=' +
+                         str(os.getpid()), 'WATCHDOG=1'])
         await asyncio.sleep(15)
 
 
@@ -28,7 +29,8 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    subprocess.call(['/bin/systemd-notify', '--pid=' + str(os.getpid()), '--ready'])
+    subprocess.call(['/bin/systemd-notify', '--pid=' +
+                     str(os.getpid()), '--ready'])
 
 
 @bot.event
@@ -56,11 +58,13 @@ with open("creds.txt") as creds:
 async def quote():
     await bot.say(random.choice(boiler.quotes))
 
+
 @bot.command()
 async def uptime():
     '''Tells how long the bot has been online.'''
     delta = datetime.timedelta(seconds=int(time.time() - botstart))
     await bot.say("**Uptime:** {}".format(str(delta)))
+
 
 @bot.command()
 async def invite():

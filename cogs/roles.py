@@ -16,12 +16,11 @@ class roles():
         serverdict = None
         try:
             serverdict = self.roledict[i]
-        except KeyError as e:
+        except KeyError:
             self.roledict[i] = {"available": [], "special": []}
             serverdict = self.roledict[i]
         finally:
             return serverdict
-
 
     @commands.command(pass_context=True)
     async def add_giveme(self, ctx, role: str):
@@ -33,7 +32,8 @@ class roles():
                 if (role not in serverdict["available"]):
                     serverdict["available"].append(role)
                     if role in serverdict["special"]:
-                        serverdict[ctx.message.server.id]["special"].remove(role)
+                        serverdict[ctx.message.server.id]["special"].remove(
+                            role)
                     with open("role.json", 'w') as r:
                         json.dump(self.roledict, r, indent=4)
                 if not (ctx.message.server.name.endswith("s") or ctx.message.server.name.endswith("S")):
@@ -76,7 +76,7 @@ class roles():
                 else:
                     await self.bot.say("Blocked {} from {}' giveme roles.".format(role, ctx.message.server.name))
             else:
-                await self.bot.say("You're not allowed to do that!") 
+                await self.bot.say("You're not allowed to do that!")
 
     @commands.command(pass_context=True)
     async def remove_special(self, ctx, role: str):
@@ -92,7 +92,7 @@ class roles():
                 except ValueError:
                     await self.bot.say("That role wasn't blocked to begin with!")
             else:
-                await self.bot.say("You're not allowed to do that!") 
+                await self.bot.say("You're not allowed to do that!")
 
     @commands.command(pass_context=True)
     async def competition(self, ctx, member: discord.Member = None):
@@ -117,9 +117,10 @@ class roles():
             member = ctx.message.author
             role = None
             if (request in available):
-                role = discord.utils.get(ctx.message.server.roles, name=request)
+                role = discord.utils.get(
+                    ctx.message.server.roles, name=request)
                 await self.bot.add_roles(member, role)
-                await self.bot.say("Gave {} the {} role".format(member.mention, request)) 
+                await self.bot.say("Gave {} the {} role".format(member.mention, request))
             elif (request in special_roles):
                 await self.bot.say("You're not allowed to give yourself the {} role.".format(request))
             elif (request is not None):
@@ -138,13 +139,14 @@ class roles():
                 special_roles = self.roledict[ctx.message.server.id]["special"]
             except KeyError:
                 await self.bot.say("No roles found for this server!")
-                return  
+                return
             member = ctx.message.author
             role = None
             if (request in available):
-                role = discord.utils.get(ctx.message.server.roles, name=request)
+                role = discord.utils.get(
+                    ctx.message.server.roles, name=request)
                 await self.bot.remove_roles(member, role)
-                await self.bot.say("Took the {1} role from {0}".format(member.mention, request)) 
+                await self.bot.say("Took the {1} role from {0}".format(member.mention, request))
             elif (request in special_roles):
                 await self.bot.say("You're not allowed to remove yourself from the {} role.".format(request))
             elif (request is not None):
@@ -169,7 +171,8 @@ class roles():
             send = ""
             for role in serverdict["special"]:
                 send += "* {}\n".format(role)
-            em.add_field(name="Roles blocked from giveme", value=send, inline=True)
+            em.add_field(name="Roles blocked from giveme",
+                         value=send, inline=True)
             await self.bot.send_message(ctx.message.channel, None, embed=em)
 
 
