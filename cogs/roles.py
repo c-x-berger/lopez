@@ -43,6 +43,21 @@ class roles():
                 await self.bot.say("You're not allowed to do that!")
 
     @commands.command(pass_context=True)
+    async def remove_giveme(self, ctx, role: str):
+        if (ctx.message.channel.type == discord.ChannelType.text):
+            if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
+                serverdict = self.get_server_dict(ctx.message.server.id)
+                try:
+                    serverdict["available"].remove(role)
+                    with open("role.json", 'w') as r:
+                        json.dump(self.roledict, r, indent=4)
+                    await self.bot.say("Removed {} from giveme roles.".format(role))
+                except ValueError:
+                    await self.bot.say("That role wasn't in giveme to begin with!")
+            else:
+                await self.bot.say("You're not allowed to do that!")
+
+    @commands.command(pass_context=True)
     async def add_special(self, ctx, role: str):
         if (ctx.message.channel.type == discord.ChannelType.text):
             if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
@@ -57,6 +72,21 @@ class roles():
                     await self.bot.say("Blocked {} from {}'s giveme roles.".format(role, ctx.message.server.name))
                 else:
                     await self.bot.say("Blocked {} from {}' giveme roles.".format(role, ctx.message.server.name))
+            else:
+                await self.bot.say("You're not allowed to do that!") 
+
+    @commands.command(pass_context=True)
+    async def remove_special(self, ctx, role: str):
+        if (ctx.message.channel.type == discord.ChannelType.text):
+            if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
+                serverdict = self.get_server_dict(ctx.message.server.id)
+                try:
+                    serverdict["special"].remove(role)
+                    with open("role.json", 'w') as r:
+                        json.dump(self.roledict, r, indent=4)
+                    await self.bot.say("Unblocked {} from giveme roles.".format(role))
+                except ValueError:
+                    await self.bot.say("That role wasn't blocked to begin with!")
             else:
                 await self.bot.say("You're not allowed to do that!") 
 
