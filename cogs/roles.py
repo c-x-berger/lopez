@@ -25,6 +25,7 @@ class roles():
 
     @commands.command(pass_context=True)
     async def add_giveme(self, ctx, role: str):
+        '''Adds a role to [] giveme'''
         if (ctx.message.channel.type == discord.ChannelType.text):
             if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
                 serverdict = self.get_server_dict(ctx.message.server.id)
@@ -44,6 +45,7 @@ class roles():
 
     @commands.command(pass_context=True)
     async def remove_giveme(self, ctx, role: str):
+        '''Removes a role from [] giveme without marking it as blocked.'''
         if (ctx.message.channel.type == discord.ChannelType.text):
             if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
                 serverdict = self.get_server_dict(ctx.message.server.id)
@@ -59,6 +61,7 @@ class roles():
 
     @commands.command(pass_context=True)
     async def add_special(self, ctx, role: str):
+        '''Blocks a role from [] giveme and [] removeme'''
         if (ctx.message.channel.type == discord.ChannelType.text):
             if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
                 serverdict = self.get_server_dict(ctx.message.server.id)
@@ -77,6 +80,7 @@ class roles():
 
     @commands.command(pass_context=True)
     async def remove_special(self, ctx, role: str):
+        '''Unblocks a ole from [] giveme and [] removeme without making it giveable.'''
         if (ctx.message.channel.type == discord.ChannelType.text):
             if (ctx.message.channel.permissions_for(ctx.message.author).manage_roles):
                 serverdict = self.get_server_dict(ctx.message.server.id)
@@ -156,7 +160,8 @@ class roles():
         if (ctx.message.channel.type == discord.ChannelType.text):
             serverdict = self.get_server_dict(ctx.message.server.id)
             em = boiler.embed_template()
-            em.title = "Available roles"
+            em.title = "List of Roles"
+            em.description = "May not be all-encompassing. Only includes roles a server moderator has set the status of."
             send = ""
             for role in serverdict["available"]:
                 send += "* {}\n".format(role)
