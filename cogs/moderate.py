@@ -17,6 +17,7 @@ class moderate():
             while (i < amount + 1):
                 if (messages[j].channel.id == ctx.message.channel.id):
                     await self.bot.delete_message(messages[j])
+                    messages.remove(messages[j])
                     j = -1
                     i += 1
                 else:
