@@ -14,6 +14,7 @@ class moderate():
             i = 0
             j = -1
             messages = list(self.bot.messages)
+            finish_message = None
             while (i < amount + 1):
                 try:
                     if (messages[j].channel.id == ctx.message.channel.id):
@@ -24,8 +25,8 @@ class moderate():
                     else:
                         j -= 1
                 except IndexError:
-                    await self.bot.say("Purge aborted due to IndexError - {} tried too hard!".format(ctx.message.author.mention))
-                    return
+                    finish_message = "Purge aborted due to IndexError - {} tried too hard!".format(ctx.message.author.mention)
+                    break
             em = boiler.embed_template()
             em.title = "Purged {} messages".format(i)
             if (ctx.message.author.nick is not None):
@@ -34,7 +35,7 @@ class moderate():
             else:
                 em.set_footer(text="Requested by {}".format(
                     ctx.message.author.name), icon_url="https://i.imgur.com/2VepakW.png")
-            await self.bot.say(None, embed=em)
+            await self.bot.say(finish_message, embed=em)
         else:
             await self.bot.say("Purge not performed because you ain't got the power.")
 
