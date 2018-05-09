@@ -32,7 +32,7 @@ class modi():
     async def reload(self, ctx, module: str):
         '''Reload a module.'''
         await ctx.invoke(self.unload, module)
-        await ctx.invoke(self.load, "cogs." + module)
+        await ctx.invoke(self.load, module)
 
 
 def setup(bot: commands.Bot):
