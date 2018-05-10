@@ -49,10 +49,6 @@ async def on_message_delete(message):
         print("removing message with content \"{}\" from deque".format(message.content))
         bot.messages.remove(message)
 
-token = None
-with open("creds.txt") as creds:
-    token = creds.read().strip()
-
 
 @bot.command(description="Quotes are fun!")
 async def quote():
@@ -72,7 +68,12 @@ async def invite():
     await bot.say("Use this link to invite Lopez into your Discord server!\n" + discord.utils.oauth_url("436251140376494080"))
 
 bot.loop.create_task(watchdog())
+
 cogs = ["git_update", "roles", "moderate", "modi_bot"]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
+
+token = None
+with open("creds.txt") as creds:
+    token = creds.read().strip()
 bot.run(token)
