@@ -159,7 +159,7 @@ class roles():
             if (send is not ""):
                 em.add_field(name="Roles blocked from giveme",
                              value=send, inline=True)
-            if (len(em.fields) < 0):
+            if (len(em.fields) > 0):
                 await self.bot.send_message(ctx.message.channel, None, embed=em)
             else:
                 await self.bot.say("No roles configured!")
