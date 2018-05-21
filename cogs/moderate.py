@@ -13,11 +13,13 @@ class moderate():
         channel = ctx.message.channel
         author = ctx.message.author 
         if (channel.permissions_for(author).manage_messages):
+            i = 0
             await self.bot.delete_message(ctx.message)
-            async for m in self.bot.logs_from(channel, limit=amount + 1):
+            async for m in self.bot.logs_from(channel, limit=amount):
                 await self.bot.delete_message(m)
+                i += 1
             em = boiler.embed_template()
-            em.title = "Purged {} messages".format(amount)
+            em.title = "Purged {} messages".format(i)
             if (author.nick is not None):
                 em.set_footer(text="Requested by {}".format(
                     author.nick), icon_url="https://i.imgur.com/2VepakW.png")
