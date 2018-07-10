@@ -42,7 +42,7 @@ async def on_message(message):
         elif ("LOPEZ" in message.content.upper() and not (message.channel.id in announcment_channels)):
             m = await bot.send_message(message.channel, "Hi!")
             await asyncio.sleep(2)
-            bot.delete_message(m)
+            await bot.delete_message(m)
 
 
 @bot.event
