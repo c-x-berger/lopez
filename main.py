@@ -11,7 +11,7 @@ import time
 import discord
 from discord.ext import commands
 
-bot = commands.Bot('{} ', None, "A bot created for team 3494.", True)
+bot = commands.Bot('[] ', None, "A bot created for team 3494.", True, owner_id=164342765394591744)
 announcment_channels = [286175809130201088]
 botstart = time.time()
 

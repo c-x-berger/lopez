@@ -10,7 +10,7 @@ class moderate():
     @commands.command(description="Enables a user with Manage Messages to bulk delete the last `amount` messages.")
     async def purge(self, ctx: commands.Context, amount: int):
         '''Bulk remove messages.'''
-        if (!ctx.channel.permissions_for(self.bot).manage_messages):
+        if (not ctx.channel.permissions_for(self.bot).manage_messages):
             await ctx.send("I am not allowed to do that!")
             return
         elif (ctx.channel.permissions_for(ctx.author).manage_messages):
