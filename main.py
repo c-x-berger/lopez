@@ -11,7 +11,7 @@ import time
 import discord
 from discord.ext import commands
 
-bot = commands.Bot('{} ', None, "A bot created for team 3494.", True)
+bot = commands.Bot('[] ', None, "A bot created for team 3494.", True, owner_id=164342765394591744)
 announcment_channels = [286175809130201088]
 botstart = time.time()
 
@@ -42,7 +42,7 @@ async def on_message(message: discord.Message):
     await bot.process_commands(message)
     if not (message.author == bot.user):
         if (bot.user.mentioned_in(message) and not message.mention_everyone):
-            await message.add_reaction(discord.utils.get(bot.get_all_emojis(), name='pingsock', server__id=286174293006745601))
+            await message.add_reaction(discord.utils.get(bot.get_all_emojis(), name='pingsock', guild__id=286174293006745601))
         elif ("LOPEZ" in message.content.upper() and not (message.channel.id in announcment_channels)):
             await message.channel.send('Hi!', delete_after=2.0)
 
