@@ -16,14 +16,14 @@ class modi():
     @mod.command(description="Load a module.")
     async def load(self, ctx, module: str):
         '''Load a module.'''
-        if (ctx.message.author.id == 164342765394591744 and module not in self.special_cogs):
+        if (ctx.author.id == self.bot.owner_id and module not in self.special_cogs):
             self.bot.load_extension(module)
             await ctx.send("Loaded `{}`".format(module))
 
     @mod.command(description="Unloads a module.")
     async def unload(self, ctx, module: str):
         '''Unload a module.'''
-        if (ctx.message.author.id == 164342765394591744 and module not in self.special_cogs):
+        if (ctx.author.id == self.bot.owner_id and module not in self.special_cogs):
             self.bot.unload_extension(module)
             await ctx.send("Unloaded `{}`".format(module))
 

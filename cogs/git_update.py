@@ -16,7 +16,7 @@ class git_updater():
         '''
         Update the bot. Can only be done by the almighty one, the Maker.
         '''
-        if (ctx.message.author.id == "164342765394591744"):
+        if (ctx.author.id == self.bot.owner_id):
             start_time = time.time()
             subprocess.run(["git", "pull"])
             finish_time = time.time()

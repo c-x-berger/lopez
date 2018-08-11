@@ -27,20 +27,20 @@ class roles():
     async def add_giveme(self, ctx, role: str):
         '''Adds a role to [] giveme'''
         if (isinstance(ctx.channel, discord.TextChannel)):
-            if (ctx.channel.permissions_for(ctx.message.author).manage_roles):
-                guilddict = self.get_guild_dict(ctx.message.guild.id)
+            if (ctx.channel.permissions_for(ctx.author).manage_roles):
+                guilddict = self.get_guild_dict(ctx.guild.id)
                 # add to available list
                 if (role not in guilddict["available"]):
                     guilddict["available"].append(role)
                     if role in guilddict["special"]:
-                        guilddict[ctx.message.guild.id]["special"].remove(
+                        guilddict[ctx.guild.id]["special"].remove(
                             role)
                     with open("role.json", 'w') as r:
                         json.dump(self.roledict, r, indent=4)
-                if not (ctx.message.guild.name.endswith("s") or ctx.message.guild.name.endswith("S")):
-                    await ctx.send("Added {} to {}'s giveme roles.".format(role, ctx.message.guild.name))
+                if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
+                    await ctx.send("Added {} to {}'s giveme roles.".format(role, ctx.guild.name))
                 else:
-                    await ctx.send("Added {} to {}' giveme roles.".format(role, ctx.message.guild.name))
+                    await ctx.send("Added {} to {}' giveme roles.".format(role, ctx.guild.name))
             else:
                 await ctx.send("You're not allowed to do that!")
 
@@ -48,8 +48,8 @@ class roles():
     async def remove_giveme(self, ctx, role: str):
         '''Removes a role from [] giveme without marking it as blocked.'''
         if (isinstance(ctx.channel, discord.TextChannel)):
-            if (ctx.channel.permissions_for(ctx.message.author).manage_roles):
-                guilddict = self.get_guild_dict(ctx.message.guild.id)
+            if (ctx.channel.permissions_for(ctx.author).manage_roles):
+                guilddict = self.get_guild_dict(ctx.guild.id)
                 try:
                     guilddict["available"].remove(role)
                     with open("role.json", 'w') as r:
@@ -64,18 +64,18 @@ class roles():
     async def add_special(self, ctx, role: str):
         '''Blocks a role from [] giveme and [] removeme.'''
         if (isinstance(ctx.channel, discord.TextChannel)):
-            if (ctx.channel.permissions_for(ctx.message.author).manage_roles):
-                guilddict = self.get_guild_dict(ctx.message.guild.id)
+            if (ctx.channel.permissions_for(ctx.author).manage_roles):
+                guilddict = self.get_guild_dict(ctx.guild.id)
                 if (role not in guilddict["special"]):
                     guilddict["special"].append(role)
                     if role in guilddict["available"]:
                         guilddict["available"].remove(role)
                     with open("role.json", 'w') as r:
                         json.dump(self.roledict, r, indent=4)
-                if not (ctx.message.guild.name.endswith("s") or ctx.message.guild.name.endswith("S")):
-                    await ctx.send("Blocked {} from {}'s giveme roles.".format(role, ctx.message.guild.name))
+                if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
+                    await ctx.send("Blocked {} from {}'s giveme roles.".format(role, ctx.guild.name))
                 else:
-                    await ctx.send("Blocked {} from {}' giveme roles.".format(role, ctx.message.guild.name))
+                    await ctx.send("Blocked {} from {}' giveme roles.".format(role, ctx.guild.name))
             else:
                 await ctx.send("You're not allowed to do that!")
 
@@ -83,8 +83,8 @@ class roles():
     async def remove_special(self, ctx, role: str):
         '''Unblocks a role from [] giveme and [] removeme.'''
         if (isinstance(ctx.channel, discord.TextChannel)):
-            if (ctx.channel.permissions_for(ctx.message.author).manage_roles):
-                guilddict = self.get_guild_dict(ctx.message.guild.id)
+            if (ctx.channel.permissions_for(ctx.author).manage_roles):
+                guilddict = self.get_guild_dict(ctx.guild.id)
                 try:
                     guilddict["special"].remove(role)
                     with open("role.json", 'w') as r:
@@ -98,20 +98,20 @@ class roles():
     @commands.command()
     async def competition(self, ctx, member: discord.Member = None):
         '''Gives the competition role. (3494 guild only.)'''
-        if (ctx.message.guild.id == 286174293006745601):
+        if (ctx.guild.id == 286174293006745601):
             await ctx.invoke(self.giveme, request="Competition")
 
     @commands.command()
     async def giveme(self, ctx, *, request: str):
         '''Gives the requested role.'''
         if (isinstance(ctx.channel, discord.TextChannel)):
-            available = self.get_guild_dict(ctx.message.guild.id)["available"]
-            special_roles = self.get_guild_dict(ctx.message.guild.id)["special"]
-            member = ctx.message.author
+            available = self.get_guild_dict(ctx.guild.id)["available"]
+            special_roles = self.get_guild_dict(ctx.guild.id)["special"]
+            member = ctx.author
             role = None
             if (request in available):
                 role = discord.utils.get(
-                    ctx.message.guild.roles, name=request)
+                    ctx.guild.roles, name=request)
                 await self.bot.add_roles(member, role)
                 await ctx.send("Gave {} the {} role".format(member.mention, request))
             elif (request in special_roles):
@@ -125,13 +125,13 @@ class roles():
     async def removeme(self, ctx, *, request: str):
         '''Removes the requested role.'''
         if (isinstance(ctx.channel, discord.TextChannel)):
-            available = self.get_guild_dict(ctx.message.guild.id)["available"]
-            special_roles = self.get_guild_dict(ctx.message.guild.id)["special"]
-            member = ctx.message.author
+            available = self.get_guild_dict(ctx.guild.id)["available"]
+            special_roles = self.get_guild_dict(ctx.guild.id)["special"]
+            member = ctx.author
             role = None
             if (request in available):
                 role = discord.utils.get(
-                    ctx.message.guild.roles, name=request)
+                    ctx.guild.roles, name=request)
                 await self.bot.remove_roles(member, role)
                 await ctx.send("Took the {1} role from {0}".format(member.mention, request))
             elif (request in special_roles):
@@ -145,7 +145,7 @@ class roles():
     async def listme(self, ctx):
         '''Lists all roles available with [] giveme.'''
         if (isinstance(ctx.channel, discord.TextChannel)):
-            guilddict = self.get_guild_dict(ctx.message.guild.id)
+            guilddict = self.get_guild_dict(ctx.guild.id)
             em = boiler.embed_template()
             em.title = "List of Roles"
             em.description = "May not be all-encompassing. Only includes roles a guild moderator has set the status of."
