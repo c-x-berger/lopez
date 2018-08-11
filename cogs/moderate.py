@@ -12,7 +12,10 @@ class moderate():
         '''Bulk remove messages.'''
         channel = ctx.message.channel
         author = ctx.message.author 
-        if (channel.permissions_for(author).manage_messages):
+        if (!channel.permissions_for(self.bot).manage_messages):
+            await ctx.send("I am not allowed to do that!")
+            return
+        elif (channel.permissions_for(author).manage_messages):
             i = 0
             await ctx.message.delete()
             async with ctx.typing():
