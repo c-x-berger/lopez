@@ -47,13 +47,6 @@ async def on_message(message: discord.Message):
             await message.channel.send('Hi!', delete_after=2.0)
 
 
-@bot.event
-async def on_message_delete(message):
-    if (message in bot.messages):
-        logging.debug('removing message with content \"{}\" from deque'.format(message.content))
-        bot.messages.remove(message)
-
-
 @bot.command(description="Quotes are fun!")
 async def quote(ctx: commands.Context):
     await ctx.send(random.choice(boiler.quotes))
