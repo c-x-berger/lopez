@@ -112,7 +112,7 @@ class roles():
             if (request in available):
                 role = discord.utils.get(
                     ctx.guild.roles, name=request)
-                await self.bot.add_roles(member, role)
+                await member.add_roles(role)
                 await ctx.send("Gave {} the {} role".format(member.mention, request))
             elif (request in special_roles):
                 await ctx.send("You're not allowed to give yourself the {} role.".format(request))
@@ -132,7 +132,7 @@ class roles():
             if (request in available):
                 role = discord.utils.get(
                     ctx.guild.roles, name=request)
-                await self.bot.remove_roles(member, role)
+                await member.remove_roles(role)
                 await ctx.send("Took the {1} role from {0}".format(member.mention, request))
             elif (request in special_roles):
                 await ctx.send("You're not allowed to remove yourself from the {} role.".format(request))
@@ -161,7 +161,7 @@ class roles():
                 em.add_field(name="Roles blocked from giveme",
                              value=send, inline=True)
             if (len(em.fields) > 0):
-                await self.bot.send_message(ctx.channel, None, embed=em)
+                await ctx.send(None, embed=em)
             else:
                 await ctx.send("No roles configured!")
 
