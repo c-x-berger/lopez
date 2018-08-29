@@ -37,13 +37,13 @@ class developer():
             }
             env.update(globals())
             source = self.cleanup_code(source)
-            to_run = f'async def func():\n{textwrap.indent(source, "  ")}' # wrap source in async def
+            to_run = 'async def func():\n{}'.format(textwrap.indent(source, '  ')) # wrap source in async def
             ret = None
             output = io.StringIO()
             try:
                 exec(to_run, env) # executes to_run, defining func()
             except Exception as e:
-                return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```') # sends traceback
+                return await ctx.send('```py\n{0}: {1}\n```'.format(e.__class__.__name__, e)) # sends traceback
             func = env['func']
             try:
                 with contextlib.redirect_stdout(output):
@@ -51,7 +51,7 @@ class developer():
             except Exception as e:
                 # failed to run due to exception in func()
                 value = output.getvalue()
-                await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+                await ctx.send('```py\n{0}{1}\n```'.format(value, traceback.format_exc()))
             else:
                 # all went well, send result
                 self._last_result = ret
