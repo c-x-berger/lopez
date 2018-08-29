@@ -66,7 +66,7 @@ async def invite(ctx: commands.Context):
 
 bot.loop.create_task(watchdog())
 
-cogs = ["git_update", "roles", "moderate", "modi_bot"]
+cogs = ["git_update", "roles", "moderate", "modi_bot", "developer"]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
 
