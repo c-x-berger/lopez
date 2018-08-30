@@ -147,7 +147,8 @@ class roles():
         for role in guilddict["special"]:
             send += "* {}\n".format(role)
         if (send is not ""):
-            em.add_field(name="Roles blocked from giveme", value=send, inline=True)
+            em.add_field(name="Roles blocked from giveme",
+                         value=send, inline=True)
         if (len(em.fields) > 0):
             await ctx.send(None, embed=em)
         else:

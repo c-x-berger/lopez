@@ -11,14 +11,17 @@ import time
 import discord
 from discord.ext import commands
 
-bot = commands.Bot('[] ', None, "A bot created for team 3494.", True, owner_id=164342765394591744)
+bot = commands.Bot('[] ', None, "A bot created for team 3494.",
+                   True, owner_id=164342765394591744)
 announcment_channels = [286175809130201088]
 botstart = time.time()
 
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler(filename='logs/lopez_{}.log'.format(datetime.datetime.today()), encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+handler = logging.FileHandler(
+    filename='logs/lopez_{}.log'.format(datetime.datetime.today()), encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
 
@@ -32,7 +35,8 @@ async def watchdog():
 
 @bot.event
 async def on_ready():
-    logging.info('\n'.join(['Logged in as', bot.user.name, str(bot.user.id), '------']))
+    logging.info(
+        '\n'.join(['Logged in as', bot.user.name, str(bot.user.id), '------']))
     subprocess.call(['/bin/systemd-notify', '--pid=' +
                      str(os.getpid()), '--ready'])
 

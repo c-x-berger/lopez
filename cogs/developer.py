@@ -37,13 +37,15 @@ class developer():
         }
         env.update(globals())
         source = self.cleanup_code(source)
-        to_run = 'async def func():\n{}'.format(textwrap.indent(source, "  ")) # wrap source in async def
+        to_run = 'async def func():\n{}'.format(
+            textwrap.indent(source, "  "))  # wrap source in async def
         ret = None
         output = io.StringIO()
         try:
-            exec(to_run, env) # executes to_run, defining func()
+            exec(to_run, env)  # executes to_run, defining func()
         except Exception as e:
-            return await ctx.send('```py\n{0}: {1}\n```'.format(e.__class__.__name__, e)) # sends traceback
+            # sends traceback
+            return await ctx.send('```py\n{0}: {1}\n```'.format(e.__class__.__name__, e))
         func = env['func']
         try:
             with contextlib.redirect_stdout(output):
@@ -58,11 +60,12 @@ class developer():
             em = boiler.embed_template()
             em.title = "Result"
             em.description = "Python 3 code evaluation"
-            em.add_field(name="Output", value='```\n{}\n```'.format(output.getvalue()), inline=False)
-            em.add_field(name="Return value", value='```\n{}\n```'.format(ret), inline=False)
+            em.add_field(name="Output", value='```\n{}\n```'.format(
+                output.getvalue()), inline=False)
+            em.add_field(name="Return value",
+                         value='```\n{}\n```'.format(ret), inline=False)
             await ctx.send(None, embed=em)
 
 
 def setup(bot):
     bot.add_cog(developer(bot))
-

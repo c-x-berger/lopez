@@ -20,7 +20,8 @@ class git_updater():
             start_time = time.time()
             subprocess.run(["git", "pull"])
             finish_time = time.time()
-            logging.warning("Bot is preparing for restart. Pulling bad code may cause a fail to restart!")
+            logging.warning(
+                "Bot is preparing for restart. Pulling bad code may cause a fail to restart!")
             await ctx.send("I finished pulling code in {:.2} seconds.\nRestarting now.\n`Goodbye`.".format(finish_time - start_time))
             os.execl(sys.executable, sys.executable, *sys.argv)
 
