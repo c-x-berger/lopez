@@ -23,6 +23,9 @@ class roles():
         finally:
             return guilddict
 
+    async def __local_check(self, ctx):
+        return isinstance(ctx.channel, discord.TextChannel)
+
     @commands.command(description="Adds a role to [] giveme. Any user will be able to give themselves the role with [] giveme role. Caller must have \"Manage Roles\".")
     async def add_giveme(self, ctx, role: str):
         '''Adds a role to [] giveme'''
