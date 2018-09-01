@@ -14,7 +14,7 @@ class developer():
         self.bot = bot
         self._last_result = None
 
-    def cleanup_code(self, content):
+    def cleanup_code(self, content: str) -> str:
         """Automatically removes code blocks from the code."""
         # remove ```py\n```
         if content.startswith('```') and content.endswith('```'):
@@ -25,8 +25,8 @@ class developer():
 
     @commands.command(description='Evaluates arbitrary Python 3 code blocks.', hidden=True)
     @commands.is_owner()
-    async def devalue(self, ctx: commands.Context, *, source):
-        env = {
+    async def devalue(self, ctx: commands.Context, *, source: str):
+        env = { # set some shortcuts up
             'bot': self.bot,
             'ctx': ctx,
             'channel': ctx.channel,
