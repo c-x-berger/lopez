@@ -12,17 +12,16 @@ class git_updater():
         self.bot = bot
 
     @commands.command()
+    @commands.is_owner()
     async def update(self, ctx: commands.Context):
         '''
         Update the bot. Can only be done by the almighty one, the Maker.
         '''
-        if (ctx.author.id == self.bot.owner_id):
-            start_time = time.time()
-            subprocess.run(["git", "pull"])
-            finish_time = time.time()
-            logging.warning("Bot is preparing for restart. Pulling bad code may cause a fail to restart!")
-            await ctx.send("I finished pulling code in {:.2} seconds.\nRestarting now.\n`Goodbye`.".format(finish_time - start_time))
-            os.execl(sys.executable, sys.executable, *sys.argv)
+        start_time = time.time()
+        subprocess.run(["git", "pull"])
+        logging.warning("Bot is preparing for restart. Pulling bad code may cause a fail to restart!")
+        await ctx.send("I finished pulling code in {:.2} seconds.\nRestarting now.\n`Goodbye`.".format(time.time() - start_time))
+        os.execl(sys.executable, sys.executable, *sys.argv)
 
 
 def setup(bot: commands.Bot):

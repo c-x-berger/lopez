@@ -11,14 +11,16 @@ import time
 import discord
 from discord.ext import commands
 
-bot = commands.Bot('[] ', None, "A bot created for team 3494.", True, owner_id=164342765394591744)
-announcment_channels = [286175809130201088]
+bot = commands.Bot('[] ', None, "A bot created for team 3494.",
+                   True, owner_id=164342765394591744)
 botstart = time.time()
 
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler(filename='logs/lopez_{}.log'.format(datetime.datetime.today()), encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+handler = logging.FileHandler(
+    filename='logs/lopez_{}.log'.format(datetime.datetime.today()), encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
 
@@ -32,7 +34,8 @@ async def watchdog():
 
 @bot.event
 async def on_ready():
-    logging.info('\n'.join(['Logged in as', bot.user.name, str(bot.user.id), '------']))
+    logging.info(
+        '\n'.join(['Logged in as', bot.user.name, str(bot.user.id), '------']))
     subprocess.call(['/bin/systemd-notify', '--pid=' +
                      str(os.getpid()), '--ready'])
 
@@ -43,7 +46,7 @@ async def on_message(message: discord.Message):
     if not (message.author == bot.user):
         if (bot.user.mentioned_in(message) and not message.mention_everyone):
             await message.add_reaction(bot.get_emoji(406171759365062656))
-        elif ("LOPEZ" in message.content.upper() and not (message.channel.id in announcment_channels)):
+        elif ("LOPEZ" in message.content.upper()):
             await message.channel.send('Hi!', delete_after=2.0)
 
 

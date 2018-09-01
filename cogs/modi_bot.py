@@ -8,6 +8,7 @@ class modi():
         self.special_cogs = special_cogs
 
     @commands.group(description="Base command for module tinkering.\nMust be invoked with a subcommand. Can only be invoked by the bot's creator.")
+    @commands.is_owner()
     async def mod(self, ctx):
         '''Base command for all module tinkering.'''
         if (ctx.invoked_subcommand is None):
@@ -16,14 +17,14 @@ class modi():
     @mod.command(description="Load a module.")
     async def load(self, ctx, module: str):
         '''Load a module.'''
-        if (ctx.author.id == self.bot.owner_id and module not in self.special_cogs):
+        if (module not in self.special_cogs):
             self.bot.load_extension(module)
             await ctx.send("Loaded `{}`".format(module))
 
     @mod.command(description="Unloads a module.")
     async def unload(self, ctx, module: str):
         '''Unload a module.'''
-        if (ctx.author.id == self.bot.owner_id and module not in self.special_cogs):
+        if (module not in self.special_cogs):
             self.bot.unload_extension(module)
             await ctx.send("Unloaded `{}`".format(module))
 
