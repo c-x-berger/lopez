@@ -13,7 +13,7 @@ class roles():
             self.roledict = json.load(r)
 
     def get_guild_dict(self, guild_id: int) -> dict:
-        guild_key = str(guild_id)
+        guild_key = str(guild_id) # for some reason JSON only allows string keys
         guilddict = None
         try:
             guilddict = self.roledict[guild_key]
@@ -23,7 +23,11 @@ class roles():
         finally:
             return guilddict
 
-    async def __local_check(self, ctx):
+    def save_dict(self):
+        with open('role.json', 'w') as r:
+            json.dump(self.roledict, r)
+
+    async def __local_check(self, ctx: commands.Context) -> bool:
         return isinstance(ctx.channel, discord.TextChannel)
 
     @commands.command(description="Adds a role to [] giveme. Any user will be able to give themselves the role with [] giveme role. Caller must have \"Manage Roles\".")
@@ -36,8 +40,7 @@ class roles():
                 guilddict["available"].append(role)
                 if role in guilddict["special"]:
                     guilddict[ctx.guild.id]["special"].remove(role)
-                with open("role.json", 'w') as r:
-                    json.dump(self.roledict, r, indent=4)
+                self.save_dict()
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
                 await ctx.send("Added {} to {}'s giveme roles.".format(role, ctx.guild.name))
             else:
@@ -52,11 +55,11 @@ class roles():
             guilddict = self.get_guild_dict(ctx.guild.id)
             try:
                 guilddict["available"].remove(role)
-                with open("role.json", 'w') as r:
-                    json.dump(self.roledict, r, indent=4)
-                await ctx.send("Removed {} from giveme roles.".format(role))
             except ValueError:
                 await ctx.send("That role wasn't in giveme to begin with!")
+            else:
+                self.save_dict()
+                await ctx.send("Removed {} from giveme roles.".format(role))
         else:
             await ctx.send("You're not allowed to do that!")
 
@@ -69,8 +72,7 @@ class roles():
                 guilddict["special"].append(role)
                 if role in guilddict["available"]:
                     guilddict["available"].remove(role)
-                with open("role.json", 'w') as r:
-                    json.dump(self.roledict, r, indent=4)
+                self.save_dict()
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
                 await ctx.send("Blocked {} from {}'s giveme roles.".format(role, ctx.guild.name))
             else:
@@ -85,11 +87,11 @@ class roles():
             guilddict = self.get_guild_dict(ctx.guild.id)
             try:
                 guilddict["special"].remove(role)
-                with open("role.json", 'w') as r:
-                    json.dump(self.roledict, r, indent=4)
-                await ctx.send("Unblocked {} from giveme roles.".format(role))
             except ValueError:
                 await ctx.send("That role wasn't blocked to begin with!")
+            else:
+                self.save_dict()
+                await ctx.send("Unblocked {} from giveme roles.".format(role))
         else:
             await ctx.send("You're not allowed to do that!")
 
