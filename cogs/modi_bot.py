@@ -9,31 +9,31 @@ class modi():
 
     @commands.group(description="Base command for module tinkering.\nMust be invoked with a subcommand. Can only be invoked by the bot's creator.")
     @commands.is_owner()
-    async def mod(self, ctx):
+    async def mod(self, ctx: commands.Context):
         '''Base command for all module tinkering.'''
         if (ctx.invoked_subcommand is None):
             await ctx.send("This command must be invoked with a subcommand (`unload`, `load`, or `reload`)!")
 
-    @mod.command(description="Load a module.")
-    async def load(self, ctx, module: str):
+    @mod.command()
+    async def load(self, ctx: commands.Context, module: str):
         '''Load a module.'''
         if (module not in self.special_cogs):
             self.bot.load_extension(module)
             await ctx.send("Loaded `{}`".format(module))
 
-    @mod.command(description="Unloads a module.")
-    async def unload(self, ctx, module: str):
+    @mod.command()
+    async def unload(self, ctx: commands.Context, module: str):
         '''Unload a module.'''
         if (module not in self.special_cogs):
             self.bot.unload_extension(module)
             await ctx.send("Unloaded `{}`".format(module))
 
     @mod.command(description='Reload a module. Technically, just calls the unload and load commands.')
-    async def reload(self, ctx, module: str):
+    async def reload(self, ctx: commands.Context, module: str):
         '''Reload a module.'''
         await ctx.invoke(self.unload, module)
         await ctx.invoke(self.load, module)
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(modi(bot, ["main", "modi_bot"]))
+    bot.add_cog(modi(bot, ["main", "cogs.modi_bot"]))
