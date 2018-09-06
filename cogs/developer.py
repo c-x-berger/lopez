@@ -61,8 +61,9 @@ class developer():
             em = boiler.embed_template()
             em.title = "Result"
             em.description = "Python 3 code evaluation"
-            em.add_field(name="Output", value='```\n{}\n```'.format(
-                output.getvalue()), inline=False)
+            if (output.getvalue() != ''):
+                em.add_field(name="Output", value='```\n{}\n```'.format(
+                    output.getvalue()), inline=False)
             em.add_field(name="Return value",
                          value='```\n{}\n```'.format(ret), inline=False)
             await ctx.send(None, embed=em)
