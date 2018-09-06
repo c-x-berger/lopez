@@ -7,6 +7,13 @@ import random
 scores = ["STR", "DEX", "CON", "INT", "WIS", "CHR"]
 
 
+def ndn(amount: str) -> list:
+    d = amount.split('d')
+    num_roll = roller.to_int(d[0])
+    die_size = roller.to_int(d[1])
+    return [num_roll, die_size]
+
+
 class roller():
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -22,13 +29,6 @@ class roller():
     @staticmethod
     def mod_from_score(score: int) -> int:
         return math.floor((score - 10) / 2)
-
-    @staticmethod
-    def ndn(amount: str) -> list:
-        d = amount.split('d')
-        num_roll = roller.to_int(d[0])
-        die_size = roller.to_int(d[1])
-        return [num_roll, die_size]
 
     @staticmethod
     def roll_ndn(dice: list) -> list:
@@ -85,8 +85,10 @@ class roller():
         em.title = name
         statblock = ""
         for stat, score in s.items():
-            modstring = "+ {}".format(roller.mod_from_score(score)) if score > 9 else "- {}".format(abs(roller.mod_from_score(score)))
-            statblock += "**{0}:** {1!s} ({2})\n".format(stat, score, modstring)
+            modstring = "+ {}".format(roller.mod_from_score(
+                score)) if score > 9 else "- {}".format(abs(roller.mod_from_score(score)))
+            statblock += "**{0}:** {1!s} ({2})\n".format(stat,
+                                                         score, modstring)
         em.add_field(name="Stats", value=statblock)
         await ctx.send(None, embed=em)
 
