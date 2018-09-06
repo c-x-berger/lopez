@@ -23,9 +23,10 @@ class developer():
         # remove `foo`
         return content.strip('` \n')
 
-    @commands.command(description='Evaluates arbitrary Python 3 code blocks.', hidden=True)
+    @commands.command(description='Evaluates arbitrary Python 3 code blocks. Indent with two spaces.', hidden=True)
     @commands.is_owner()
     async def devalue(self, ctx: commands.Context, *, source: str):
+        '''Evaluates arbitrary Python 3 code blocks.'''
         env = { # set some shortcuts up
             'bot': self.bot,
             'ctx': ctx,
@@ -60,8 +61,9 @@ class developer():
             em = boiler.embed_template()
             em.title = "Result"
             em.description = "Python 3 code evaluation"
-            em.add_field(name="Output", value='```\n{}\n```'.format(
-                output.getvalue()), inline=False)
+            if (output.getvalue() != ''):
+                em.add_field(name="Output", value='```\n{}\n```'.format(
+                    output.getvalue()), inline=False)
             em.add_field(name="Return value",
                          value='```\n{}\n```'.format(ret), inline=False)
             await ctx.send(None, embed=em)

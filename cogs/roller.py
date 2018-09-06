@@ -8,6 +8,7 @@ scores = ["STR", "DEX", "CON", "INT", "WIS", "CHR"]
 
 
 def ndn(amount: str) -> list:
+    '''Converts a string in ndn format into a two item list of the form [number to roll, size of dice].'''
     d = amount.split('d')
     num_roll = roller.to_int(d[0])
     die_size = roller.to_int(d[1])
@@ -28,10 +29,12 @@ class roller():
 
     @staticmethod
     def mod_from_score(score: int) -> int:
+        '''Returns a skill modifier given a DnD ability score.'''
         return math.floor((score - 10) / 2)
 
     @staticmethod
     def roll_ndn(dice: list) -> list:
+        '''Rolls x many n sided dice, where x is dice[0] and n is dice[1].'''
         rolls = []
         for _ in range(dice[0]):
             rolls.append(random.randint(1, dice[1]))
@@ -39,7 +42,7 @@ class roller():
 
     @commands.command()
     async def roll(self, ctx: commands.Context, dice: ndn):
-        '''Straight rolls a die (no ability scores applied.)'''
+        '''\"Straight\" rolls a die (no ability scores applied.)'''
         rolls = roller.roll_ndn(dice)
         message = "**Your rolls:**\n"
         for i in range(len(rolls)):
@@ -50,31 +53,25 @@ class roller():
         await ctx.send(message)
 
     @commands.command()
-    async def skill_check(self, ctx: commands.Context, *args):
-        if len(args) == 0:
-            await ctx.send("Come back when you have things to work with!")
-            return
-        bonus = roller.to_int(args[0])
+    async def skill_check(self, ctx: commands.Context, bonus: int, dc: int = None):
+        '''Rolls an ability check.'''
         message = "**You rolled:**\n"
         roll = roller.roll_ndn([1, 20])
         total = sum(roll) + bonus
         message += "{0} {3} {1} = **{2}**\n".format(
             sum(roll), abs(bonus), total, "+" if bonus >= 0 else "-")
-        try:
-            dc = roller.to_int(args[1])
-        except IndexError:
-            pass
-        else:
+        if dc is not None:
             message += "{} {} {}: {}".format(total, "passes DC" if total >=
                                              dc else "fails DC", dc, "Success!" if total >= dc else "You fail!")
         await ctx.send(message)
 
-    @commands.group()
+    @commands.group(description='Base character creation/modification command.\nCurrently, NO DATA is stored and these commands are for testing only.')
     async def character(self, ctx: commands.Context):
+        '''Base character creation/modification command.'''
         if (ctx.invoked_subcommand is None):
             await ctx.send("You need to invoke this command with a subcommand. To see available subcommands, try `[] help character`.")
 
-    @character.command(description="Creates a character with all six stats defined in a single command.\nStats MUST be in the following order: strength, dexterity, constitution, intelligence, wisdom, charisma.\nAs this is a very long command, other options are available.")
+    @character.command(description="Creates a character with all six stats defined in a single command.\nStats MUST be in the following order: strength, dexterity, constitution, intelligence, wisdom, charisma.\nAs this is a very long command, other options will be available.")
     async def create_onecall(self, ctx: commands.Context, name: str, *stats):
         '''Creates a character (long form.)'''
         s = {}
