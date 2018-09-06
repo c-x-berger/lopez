@@ -11,12 +11,10 @@ class git_updater():
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(description="Update the bot. Can only be done by the bot's owner.")
     @commands.is_owner()
     async def update(self, ctx: commands.Context):
-        '''
-        Update the bot. Can only be done by the almighty one, the Maker.
-        '''
+        '''Update the bot.'''
         start_time = time.time()
         subprocess.run(["git", "pull"])
         logging.warning("Bot is preparing for restart. Pulling bad code may cause a fail to restart!")

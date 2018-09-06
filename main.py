@@ -65,11 +65,11 @@ async def uptime(ctx: commands.Context):
 @bot.command()
 async def invite(ctx: commands.Context):
     '''Gets a link to invite Lopez.'''
-    await ctx.send("Use this link to invite Lopez into your Discord server!\n" + discord.utils.oauth_url("436251140376494080"))
+    await ctx.send("Use this link to invite Lopez into your Discord server!\n" + discord.utils.oauth_url("436251140376494080", discord.Permissions(335899840)))
 
 bot.loop.create_task(watchdog())
 
-cogs = ["git_update", "roles", "moderate", "modi_bot", "developer"]
+cogs = ["git_update", "roles", "moderate", "modi_bot", "developer", "roller"]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
 
