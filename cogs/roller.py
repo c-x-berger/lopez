@@ -8,6 +8,7 @@ scores = ["STR", "DEX", "CON", "INT", "WIS", "CHR"]
 
 
 def ndn(amount: str) -> list:
+    '''Converts a string in ndn format into a two item list of the form [number to roll, size of dice].'''
     d = amount.split('d')
     num_roll = roller.to_int(d[0])
     die_size = roller.to_int(d[1])
@@ -28,10 +29,12 @@ class roller():
 
     @staticmethod
     def mod_from_score(score: int) -> int:
+        '''Returns a skill modifier given a DnD ability score.'''
         return math.floor((score - 10) / 2)
 
     @staticmethod
     def roll_ndn(dice: list) -> list:
+        '''Rolls x many n sided dice, where x is dice[0] and n is dice[1].'''
         rolls = []
         for _ in range(dice[0]):
             rolls.append(random.randint(1, dice[1]))
@@ -39,7 +42,7 @@ class roller():
 
     @commands.command()
     async def roll(self, ctx: commands.Context, dice: ndn):
-        '''Straight rolls a die (no ability scores applied.)'''
+        '''\"Straight\" rolls a die (no ability scores applied.)'''
         rolls = roller.roll_ndn(dice)
         message = "**Your rolls:**\n"
         for i in range(len(rolls)):
