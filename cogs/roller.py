@@ -103,6 +103,15 @@ class roller():
         em.add_field(name="Stats", value=statblock)
         await ctx.send(None, embed=em)
 
+    @character.command()
+    async def create_nameonly(self, ctx: commands.Context, name: str):
+        '''Creates a character with all stats set to 0.'''
+        await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', "1", 0, 0, 0, 0, 0, 0)
+
+    @character.command(description="Modify an existing character. Coming soon to a Lopez near you.")
+    async def edit(self, ctx: commands.Context):
+        '''Modify an existing character.'''
+        await ctx.send("Coming soon to a Lopez near you!")
 
 def setup(bot: commands.Bot):
     bot.add_cog(roller(bot))
