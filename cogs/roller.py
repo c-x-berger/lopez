@@ -1,4 +1,6 @@
+import asyncpg
 import boiler
+import config
 import discord
 from discord.ext import commands
 import math
@@ -18,6 +20,11 @@ def ndn(amount: str) -> list:
 class roller():
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.pool = None
+        self.bot.loop.create_task(self.open_connection())
+
+    async def open_connection(self):
+        self.pool = asyncpg.create_pool(config.postgresql)
 
     @staticmethod
     def to_int(number: str) -> int:
