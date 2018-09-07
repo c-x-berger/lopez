@@ -103,7 +103,8 @@ class roller():
         em.add_field(name="Stats", value=statblock)
         await ctx.send(None, embed=em)
 
-    @character.command()
+    @character.command(description="Creates a character with all stats set to zero.\
+    \nUnder the hood, this just calls create_onecall with defaults supplied.")
     async def create_nameonly(self, ctx: commands.Context, name: str):
         '''Creates a character with all stats set to 0.'''
         await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', "1", 0, 0, 0, 0, 0, 0)
