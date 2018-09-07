@@ -117,9 +117,19 @@ class roller():
         await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', "1", 0, 0, 0, 0, 0, 0)
 
     @character.command(description="Modify an existing character. Coming soon to a Lopez near you.")
-    async def edit(self, ctx: commands.Context):
+    async def edit(self, ctx: commands.Context, prop: str, value: str):
         '''Modify an existing character.'''
         await ctx.send("Coming soon to a Lopez near you!")
+        if prop.upper() in scores or prop.lower() in ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]:
+            # modify stat
+            pass
+        elif prop.lower() in ["race", "name"]:
+            async with self.pool.acquire() as conn:
+                # find record
+                char = await conn.fetchrow('''SELECT * FROM dnd_chars WHERE discord_id = $1''', str(ctx.author.id))
+                if char is not None:
+                    await conn.execute('''UPDATE dnd_chars SET $1 = $2 WHERE discord_id = $3''', prop.lower(), value, str(ctx.author.id))
+                    await ctx.send("Updated property `{}` to value `{}` for character `{}`".format(prop, value, char))
 
 def setup(bot: commands.Bot):
     bot.add_cog(roller(bot))
