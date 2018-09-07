@@ -128,7 +128,7 @@ class roller():
                 # find record
                 char = await conn.fetchrow('''SELECT * FROM dnd_chars WHERE discord_id = $1''', str(ctx.author.id))
                 if char is not None:
-                    await conn.execute('''UPDATE dnd_chars SET $1 = $2 WHERE discord_id = $3''', prop.lower(), value, str(ctx.author.id))
+                    await conn.execute('''UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2'''.format(prop.lower()), value, str(ctx.author.id))
                     await ctx.send("Updated property `{}` to value `{}` for character `{}`".format(prop, value, char))
 
 def setup(bot: commands.Bot):
