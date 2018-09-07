@@ -24,7 +24,7 @@ class roller():
         self.bot.loop.create_task(self.open_connection())
 
     async def open_connection(self):
-        self.pool = asyncpg.create_pool(config.postgresql)
+        self.pool = await asyncpg.create_pool(config.postgresql)
 
     @staticmethod
     def to_int(number: str) -> int:
