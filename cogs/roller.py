@@ -87,7 +87,8 @@ class roller():
         '''Creates a character (long form.)'''
         em = boiler.embed_template(name)
         if (len(class_levels) != len(character_classes)):
-            em.description = "Error creating class / level list!"
+            await ctx.send("Error in class / level list!")
+            return
         else:
             for i in range(len(character_classes)):
                 em.description += "Level {} {}\n".format(
