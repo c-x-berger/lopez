@@ -93,13 +93,13 @@ class roller():
             await ctx.send("Error in class / level list!")
             return
         else:
+            em.description = ''
             for i in range(len(character_classes)):
                 em.description += "Level {} {}\n".format(
                     class_levels[i], character_classes[i])
         s = {}
         for i in range(len(scores)):
-            stat = scores[i]
-            s[stat] = roller.to_int(stats[i])
+            s[scores[i]] = roller.to_int(stats[i])
         statblock = ""
         for stat, score in s.items():
             modstring = "+ {}".format(roller.mod_from_score(
@@ -107,6 +107,19 @@ class roller():
             statblock += "**{0}:** {1!s} ({2})\n".format(stat,
                                                          score, modstring)
         em.add_field(name="Stats", value=statblock)
+        # prepare levels list
+        int_levels = []
+        for level in class_levels:
+            int_levels.append(roller.to_int(level))
+        async with ctx.typing():
+            async with self.pool.acquire() as conn:
+                try:
+                    # TODO: optimize with prepared statements somehow?
+                    await conn.execute('''INSERT INTO dnd_chars(name, strength, dexterity, constitution, intelligence, wisdom, charisma, race, discord_id, levels, classes) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)''',
+                                       name, s["STR"], s["DEX"], s["CON"], s["INT"], s["WIS"], s["CHR"], race, str(ctx.author.id), int_levels, character_classes)
+                except asyncpg.UniqueViolationError:
+                    await ctx.send("You already have a character saved, and this command won't overwrite it!\n(All that construction work for nothing...)")
+                    return
         await ctx.send(None, embed=em)
 
     @character.command(description="Creates a character with all stats set to zero.\
