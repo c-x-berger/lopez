@@ -85,18 +85,12 @@ class roller():
     \nAs this is a very long command, other options will be available.")
     async def create_onecall(self, ctx: commands.Context, name: str, race: str, character_classes: boiler.comma_sep, class_levels: boiler.comma_sep, *stats):
         '''Creates a character (long form.)'''
-        em = boiler.embed_template()
-        em.title = name
-        c_level_dict = {}
-        c_string = ''
+        em = boiler.embed_template(name)
         if (len(class_levels) != len(character_classes)):
-            c_string = "Error creating class / level list!"
+            em.description = "Error creating class / level list!"
         else:
             for i in range(len(character_classes)):
-                c_level_dict[character_classes[i]] = class_levels[i]
-            for cl, level in c_level_dict.items():
-                c_string += "Level {} {}\n".format(level, cl)
-        em.description = c_string
+                em.description += "Level {} {}\n".format(class_levels[i], character_classes[i])
         s = {}
         for i in range(len(scores)):
             stat = scores[i]
