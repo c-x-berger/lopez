@@ -90,7 +90,8 @@ class roller():
             em.description = "Error creating class / level list!"
         else:
             for i in range(len(character_classes)):
-                em.description += "Level {} {}\n".format(class_levels[i], character_classes[i])
+                em.description += "Level {} {}\n".format(
+                    class_levels[i], character_classes[i])
         s = {}
         for i in range(len(scores)):
             stat = scores[i]
@@ -124,6 +125,7 @@ class roller():
                 if char is not None:
                     await conn.execute('''UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2'''.format(prop.lower()), value, str(ctx.author.id))
                     await ctx.send("Updated property `{}` to value `{}` for character `{}`".format(prop, value, char))
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(roller(bot))
