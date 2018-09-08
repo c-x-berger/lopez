@@ -81,6 +81,7 @@ class roller():
     async def retrieve_character(self, conn: asyncpg.Connection, player: discord.Member) -> asyncpg.Record:
         return await conn.fetchrow('''SELECT * FROM dnd_chars WHERE discord_id = $1''', str(player.id))
 
+    @character.command()
     async def get(self, ctx: commands.Context, player: discord.Member = None):
         if player is None:
             player = ctx.author
