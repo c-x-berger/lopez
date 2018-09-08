@@ -103,7 +103,7 @@ class roller():
                 em.add_field(name='Stats', value=char_scores)
                 await ctx.send(None, embed=em)
             else:
-                await ctx.send("Could not locate a character for {}!".format(player.display_name()))
+                await ctx.send("Could not locate a character for {}!".format(player.display_name))
 
     @character.command(description="Creates a character with all properties defined in a single command.\
     \nClasses should be comma separated and wrapped in quotes.\
