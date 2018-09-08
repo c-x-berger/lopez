@@ -101,7 +101,7 @@ class roller():
                     char_scores += "**{0}:** {1!s} ({2})\n".format(stat,
                                                                    score, modstring)
                 em.add_field(name='Stats', value=char_scores)
-                await ctx.send(None)
+                await ctx.send(None, embed=em)
             else:
                 await ctx.send("Could not locate a character for {}!".format(player.display_name()))
 
