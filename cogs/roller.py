@@ -74,6 +74,17 @@ class roller():
     @character.command(description="Creates a character with all six stats defined in a single command.\nStats MUST be in the following order: strength, dexterity, constitution, intelligence, wisdom, charisma.\nAs this is a very long command, other options will be available.")
     async def create_onecall(self, ctx: commands.Context, name: str, *stats):
         '''Creates a character (long form.)'''
+        em = boiler.embed_template(name)
+        c_level_dict = {}
+        c_string = ''
+        if (len(class_levels) != len(character_classes)):
+            c_string = "Error creating class / level list!"
+        else:
+            for i in range(len(character_classes)):
+                c_level_dict[character_classes[i]] = class_levels[i]
+            for cl, level in c_level_dict.items():
+                c_string += "Level {} {}\n".format(level, cl)
+        em.description = c_string
         s = {}
         for i in range(len(scores)):
             stat = scores[i]

@@ -133,8 +133,7 @@ class roles():
     async def listme(self, ctx: commands.Context):
         '''Lists all roles available with [] giveme.'''
         guilddict = self.get_guild_dict(ctx.guild.id)
-        em = boiler.embed_template()
-        em.title = "List of Roles"
+        em = boiler.embed_template("List of Roles")
         em.description = "May not be all-encompassing. Only includes roles a guild moderator has set the status of."
         send = ""
         for role_id in guilddict["available"]:
