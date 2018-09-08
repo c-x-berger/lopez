@@ -78,6 +78,9 @@ class roller():
         if (ctx.invoked_subcommand is None):
             await ctx.send("You need to invoke this command with a subcommand. To see available subcommands, try `[] help character`.")
 
+    async def retrieve_character(self, conn: asyncpg.Connection, player: discord.Member) -> asyncpg.Record:
+        return await conn.fetchrow('''SELECT * FROM dnd_chars WHERE discord_id = $1''', str(player.id))
+
     @character.command(description="Creates a character with all properties defined in a single command.\
     \nClasses should be comma separated and wrapped in quotes.\
     \nLevels must be separated in the same way and in the same order as classes.\
@@ -121,8 +124,7 @@ class roller():
             pass
         elif prop.lower() in ["race", "name"]:
             async with self.pool.acquire() as conn:
-                # find record
-                char = await conn.fetchrow('''SELECT * FROM dnd_chars WHERE discord_id = $1''', str(ctx.author.id))
+                char = await self.retrieve_character(conn, ctx.author)
                 if char is not None:
                     await conn.execute('''UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2'''.format(prop.lower()), value, str(ctx.author.id))
                     await ctx.send("Updated property `{}` to value `{}` for character `{}`".format(prop, value, char))
