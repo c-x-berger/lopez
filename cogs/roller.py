@@ -88,9 +88,12 @@ class roller():
     \nAs this is a very long command, other options will be available.")
     async def create_onecall(self, ctx: commands.Context, name: str, race: str, character_classes: boiler.comma_sep, class_levels: boiler.comma_sep, *stats):
         '''Creates a character (long form.)'''
+        # HACK: For some reason character_classes occasionally becomes a string. If it's a string we make it a list instead.
+        if (type(character_classes) is str):
+            character_classes = [character_classes]
         em = boiler.embed_template(name)
         if (len(class_levels) != len(character_classes)):
-            await ctx.send("Error in class / level list!")
+            await ctx.send("Error in class / level list! {} classes and {} levels given".format(len(character_classes), len(class_levels)))
             return
         else:
             em.description = ''
@@ -126,7 +129,7 @@ class roller():
     \nUnder the hood, this just calls create_onecall with defaults supplied.")
     async def create_nameonly(self, ctx: commands.Context, name: str):
         '''Creates a character with all stats set to 0.'''
-        await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', "1", 0, 0, 0, 0, 0, 0)
+        await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', '1', 0, 0, 0, 0, 0, 0)
 
     @character.command(description="Modify an existing character. Coming soon to a Lopez near you.")
     async def edit(self, ctx: commands.Context, prop: str, value: str):

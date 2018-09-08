@@ -19,8 +19,7 @@ def embed_template(title: str = "Someone messed up!") -> discord.Embed:
 
 
 def comma_sep(values: str) -> list:
-    l = values.split(',')
     r = []
-    for value in l:
+    for value in values.split(','):
         r.append(value.strip())
     return r
