@@ -1,4 +1,6 @@
+import asyncpg
 import boiler
+import config
 import discord
 from discord.ext import commands
 import math
@@ -18,6 +20,11 @@ def ndn(amount: str) -> list:
 class roller():
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.pool = None
+        self.bot.loop.create_task(self.open_connection())
+
+    async def open_connection(self):
+        self.pool = await asyncpg.create_pool(config.postgresql)
 
     @staticmethod
     def to_int(number: str) -> int:
@@ -71,26 +78,63 @@ class roller():
         if (ctx.invoked_subcommand is None):
             await ctx.send("You need to invoke this command with a subcommand. To see available subcommands, try `[] help character`.")
 
-    @character.command(description="Creates a character with all six stats defined in a single command.\nStats MUST be in the following order: strength, dexterity, constitution, intelligence, wisdom, charisma.\nAs this is a very long command, other options will be available.")
-    async def create_onecall(self, ctx: commands.Context, name: str, *stats):
-        '''Creates a character (long form.)'''
-        em = boiler.embed_template(name)
-        c_level_dict = {}
-        c_string = ''
-        if (len(class_levels) != len(character_classes)):
-            c_string = "Error creating class / level list!"
+    @staticmethod
+    async def retrieve_character(conn: asyncpg.Connection, player: discord.Member) -> asyncpg.Record:
+        return await conn.fetchrow('''SELECT * FROM dnd_chars WHERE discord_id = $1''', str(player.id))
+
+    @staticmethod
+    async def no_character(ctx: commands.Context, player: discord.Member = None):
+        if player is None:
+            player = ctx.author
+        await ctx.send("Could not locate a character for {}!".format(player.display_name))
+
+    @character.command()
+    async def get(self, ctx: commands.Context, player: discord.Member = None):
+        if player is None:
+            player = ctx.author
+        char = None
+        async with self.pool.acquire() as conn:
+            char = await roller.retrieve_character(conn, player)
+        if char is not None:
+            em = boiler.embed_template(char["name"])
+            em.description = ''
+            for i in range(len(char['classes'])):
+                em.description += "Level {} {}\n".format(
+                    char['levels'][i], char['classes'][i])
+            char_scores = ''
+            for stat, fullname in {"STR": "strength", "DEX": "dexterity", "CON": "constitution", "INT": "intelligence", "WIS": "wisdom", "CHR": "charisma"}.items():
+                score = char[fullname]
+                modstring = "+ {}".format(roller.mod_from_score(
+                    score)) if score > 9 else "- {}".format(abs(roller.mod_from_score(score)))
+                char_scores += "**{0}:** {1!s} ({2})\n".format(stat,
+                                                               score, modstring)
+            em.add_field(name='Stats', value=char_scores)
+            await ctx.send(None, embed=em)
         else:
+            await roller.no_character(ctx, player)
+
+    @character.command(description="Creates a character with all properties defined in a single command.\
+    \nClasses should be comma separated and wrapped in quotes.\
+    \nLevels must be separated in the same way and in the same order as classes.\
+    \nStats MUST be in the following order: strength, dexterity, constitution, intelligence, wisdom, charisma.\
+    \nAs this is a very long command, other options will be available.")
+    async def create_onecall(self, ctx: commands.Context, name: str, race: str, character_classes: boiler.comma_sep, class_levels: boiler.comma_sep, *stats):
+        '''Creates a character (long form.)'''
+        # HACK: For some reason character_classes occasionally becomes a string. If it's a string we make it a list instead.
+        if (type(character_classes) is str):
+            character_classes = [character_classes]
+        em = boiler.embed_template(name)
+        if (len(class_levels) != len(character_classes)):
+            await ctx.send("Error in class / level list! {} classes and {} levels given".format(len(character_classes), len(class_levels)))
+            return
+        else:
+            em.description = ''
             for i in range(len(character_classes)):
-                c_level_dict[character_classes[i]] = class_levels[i]
-            for cl, level in c_level_dict.items():
-                c_string += "Level {} {}\n".format(level, cl)
-        em.description = c_string
+                em.description += "Level {} {}\n".format(
+                    class_levels[i], character_classes[i])
         s = {}
         for i in range(len(scores)):
-            stat = scores[i]
-            s[stat] = roller.to_int(stats[i])
-        em = boiler.embed_template()
-        em.title = name
+            s[scores[i]] = roller.to_int(stats[i])
         statblock = ""
         for stat, score in s.items():
             modstring = "+ {}".format(roller.mod_from_score(
@@ -98,7 +142,70 @@ class roller():
             statblock += "**{0}:** {1!s} ({2})\n".format(stat,
                                                          score, modstring)
         em.add_field(name="Stats", value=statblock)
+        # prepare levels list
+        int_levels = []
+        for level in class_levels:
+            int_levels.append(roller.to_int(level))
+        async with ctx.typing():
+            async with self.pool.acquire() as conn:
+                try:
+                    # TODO: optimize with prepared statements somehow?
+                    await conn.execute('''INSERT INTO dnd_chars(name, strength, dexterity, constitution, intelligence, wisdom, charisma, race, discord_id, levels, classes) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)''',
+                                       name, s["STR"], s["DEX"], s["CON"], s["INT"], s["WIS"], s["CHR"], race, str(ctx.author.id), int_levels, character_classes)
+                except asyncpg.UniqueViolationError:
+                    await ctx.send("You already have a character saved, and this command won't overwrite it!\n(All that construction work for nothing...)")
+                    return
         await ctx.send(None, embed=em)
+
+    @character.command(description="Creates a character with all stats set to zero.\
+    \nYou can use the edit command to fix the default values supplied.\
+    \nUnder the hood, this just calls create_onecall with defaults supplied.")
+    async def create_nameonly(self, ctx: commands.Context, name: str):
+        '''Creates a character with all stats set to 0.'''
+        await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', '1', 0, 0, 0, 0, 0, 0)
+
+    @character.command(description="Modify an existing character. Please note that for the time being, the full name (e.g. 'intelligence') must be used to modify stat scores.")
+    async def edit(self, ctx: commands.Context, prop: str, value: str):
+        '''Modify an existing character.'''
+        to_send = ""
+        async with self.pool.acquire() as conn:
+            char = await roller.retrieve_character(conn, ctx.author)
+            if char is not None:
+                if prop.lower() in ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]:
+                    # modify stat
+                    await conn.execute('''UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2'''.format(prop.lower()), roller.to_int(value), str(ctx.author.id))
+                    to_send = "Set stat {} to {} for character {}".format(
+                        prop.lower(), value, char['name'])
+                elif prop.lower() in ["race", "name"]:
+                    await conn.execute('''UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2'''.format(prop.lower()), value, str(ctx.author.id))
+                    to_send = "Set {} to {} for character {}".format(
+                        prop, value, char['name'])
+                await ctx.send(to_send)
+            else:
+                await roller.no_character(ctx)
+
+    @character.command()
+    async def edit_levels(self, ctx: commands.Context, character_class: str, level: int):
+        '''Sets a character as having a number of levels in a given class.'''
+        char = None
+        async with self.pool.acquire() as conn:
+            char = await roller.retrieve_character(conn, ctx.author)
+            if char is not None:
+                classlevel_index = None
+                try:
+                    # Python has correct (0-based) indexing, Postgres does not
+                    # this line is also a "sign of database misdesign" according to the Postgres people, but multiclassing in the first place is dumb
+                    classlevel_index = char['classes'].index(
+                        character_class) + 1
+                except ValueError:
+                    classlevel_index = len(char['classes']) + 1
+                    # since we didn't already have this class, we need to add it to the list
+                    await conn.execute('''UPDATE dnd_chars SET classes[{}] = $1 WHERE discord_id = $2'''.format(classlevel_index), character_class, str(ctx.author.id))
+                finally:
+                    await conn.execute('''UPDATE dnd_chars SET levels[{}] = $1 WHERE discord_id = $2'''.format(classlevel_index), roller.to_int(level), str(ctx.author.id))
+                    await ctx.send("Set character {} to a level {} {} (in addition to thier other classes and levels.)".format(char['name'], level, character_class))
+            else:
+                roller.no_character(ctx)
 
 
 def setup(bot: commands.Bot):

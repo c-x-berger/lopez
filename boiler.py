@@ -16,3 +16,10 @@ def embed_template(title: str = "Someone messed up!") -> discord.Embed:
         text=random.choice(quotes), icon_url="https://i.imgur.com/2VepakW.png")
     em.colour = discord.Colour.gold()
     return em
+
+
+def comma_sep(values: str) -> list:
+    r = []
+    for value in values.split(','):
+        r.append(value.strip())
+    return r
