@@ -78,7 +78,8 @@ class roller():
         if (ctx.invoked_subcommand is None):
             await ctx.send("You need to invoke this command with a subcommand. To see available subcommands, try `[] help character`.")
 
-    async def retrieve_character(self, conn: asyncpg.Connection, player: discord.Member) -> asyncpg.Record:
+    @staticmethod
+    async def retrieve_character(conn: asyncpg.Connection, player: discord.Member) -> asyncpg.Record:
         return await conn.fetchrow('''SELECT * FROM dnd_chars WHERE discord_id = $1''', str(player.id))
 
     @character.command()
@@ -87,7 +88,7 @@ class roller():
             player = ctx.author
         char = None
         async with self.pool.acquire() as conn:
-            char = await self.retrieve_character(conn, player)
+            char = await roller.retrieve_character(conn, player)
         if char is not None:
             em = boiler.embed_template(char["name"])
             em.description = ''
@@ -162,7 +163,7 @@ class roller():
         '''Modify an existing character.'''
         to_send = "You don't have a character configured!"
         async with self.pool.acquire() as conn:
-            char = await self.retrieve_character(conn, ctx.author)
+            char = await roller.retrieve_character(conn, ctx.author)
             if char is not None:
                 if prop.lower() in ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]:
                     # modify stat
@@ -180,7 +181,7 @@ class roller():
         '''Sets a character as having a number of levels in a given class.'''
         char = None
         async with self.pool.acquire() as conn:
-            char = self.retrieve_character(conn, ctx.author)
+            char = await roller.retrieve_character(conn, ctx.author)
             if char is not None:
                 classlevel_index = None
                 try:
