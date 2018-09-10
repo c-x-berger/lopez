@@ -156,19 +156,23 @@ class roller():
         '''Creates a character with all stats set to 0.'''
         await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', '1', 0, 0, 0, 0, 0, 0)
 
-    @character.command(description="Modify an existing character. Coming soon to a Lopez near you.")
+    @character.command(description="Modify an existing character. Please note that for the time being, the full name (e.g. 'intelligence') must be used to modify stat scores.")
     async def edit(self, ctx: commands.Context, prop: str, value: str):
         '''Modify an existing character.'''
-        await ctx.send("Coming soon to a Lopez near you!")
-        if prop.upper() in scores or prop.lower() in ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]:
-            # modify stat
-            pass
-        elif prop.lower() in ["race", "name"]:
-            async with self.pool.acquire() as conn:
-                char = await self.retrieve_character(conn, ctx.author)
-                if char is not None:
+        to_send = "You don't have a character configured!"
+        async with self.pool.acquire() as conn:
+            char = await self.retrieve_character(conn, ctx.author)
+            if char is not None:
+                if prop.lower() in ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]:
+                    # modify stat
+                    await conn.execute('''UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2'''.format(prop.lower()), roller.to_int(value), str(ctx.author.id))
+                    to_send = "Set stat {} to {} for character {}".format(
+                        prop.lower(), value, char['name'])
+                elif prop.lower() in ["race", "name"]:
                     await conn.execute('''UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2'''.format(prop.lower()), value, str(ctx.author.id))
-                    await ctx.send("Updated property `{}` to value `{}` for character `{}`".format(prop, value, char))
+                    to_send = "Set {} to {} for character {}".format(
+                        prop, value, char['name'])
+        await ctx.send(to_send)
 
 
 def setup(bot: commands.Bot):
