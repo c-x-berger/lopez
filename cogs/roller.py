@@ -207,6 +207,24 @@ class roller():
             else:
                 roller.no_character(ctx)
 
+    @character.command()
+    async def remove_class(self, ctx: commands.Context, character_class: str):
+        '''Removes a class from a character.'''
+        async with self.pool.acquire() as conn:
+            char = await roller.retrieve_character(conn, ctx.author)
+            if char is not None and character_class in char['classes']:
+                classes = char['classes']
+                levels = char['levels']
+                classlevel_index = classes.index(character_class)
+                del classes[classlevel_index]
+                del levels[classlevel_index]
+                await conn.execute('''UPDATE dnd_chars SET classes = $1 WHERE discord_id = $2''', classes, str(ctx.author.id))
+                await conn.execute('''UPDATE dnd_chars SET levels = $1 WHERE discord_id = $2''', levels, str(ctx.author.id))
+            elif char is not None:
+                await ctx.send("Your character does not have that class!")
+            else:
+                await roller.no_character(ctx)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(roller(bot))
