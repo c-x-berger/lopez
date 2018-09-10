@@ -151,6 +151,7 @@ class roller():
         await ctx.send(None, embed=em)
 
     @character.command(description="Creates a character with all stats set to zero.\
+    \nYou can use the edit command to fix the default values supplied.\
     \nUnder the hood, this just calls create_onecall with defaults supplied.")
     async def create_nameonly(self, ctx: commands.Context, name: str):
         '''Creates a character with all stats set to 0.'''
@@ -173,6 +174,26 @@ class roller():
                     to_send = "Set {} to {} for character {}".format(
                         prop, value, char['name'])
         await ctx.send(to_send)
+
+    @character.command()
+    async def edit_levels(self, ctx: commands.Context, character_class: str, level: int):
+        '''Sets a character as having a number of levels in a given class.'''
+        char = None
+        async with self.pool.acquire() as conn:
+            char = self.retrieve_character(conn, ctx.author)
+            if char is not None:
+                classlevel_index = None
+                try:
+                    # Python has correct (0-based) indexing, Postgres does not
+                    # this line is also a "sign of database misdesign" according to the Postgres people, but multiclassing in the first place is dumb
+                    classlevel_index = char['classes'].index(
+                        character_class) + 1
+                except ValueError:
+                    classlevel_index = len(char['classes']) + 1
+                    # since we didn't already have this class, we need to add it to the list
+                    await conn.execute('''UPDATE dnd_chars SET classes[{}] = $1 WHERE discord_id = $2'''.format(classlevel_index), character_class, str(ctx.author.id))
+                finally:
+                    await conn.execute('''UPDATE dnd_chars SET levels[{}] = $1 WHERE discord_id = $2'''.format(classlevel_index), roller.to_int(level), str(ctx.author.id))
 
 
 def setup(bot: commands.Bot):
