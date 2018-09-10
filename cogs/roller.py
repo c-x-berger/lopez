@@ -85,25 +85,26 @@ class roller():
     async def get(self, ctx: commands.Context, player: discord.Member = None):
         if player is None:
             player = ctx.author
+        char = None
         async with self.pool.acquire() as conn:
             char = await self.retrieve_character(conn, player)
-            if char is not None:
-                em = boiler.embed_template(char["name"])
-                em.description = ''
-                for i in range(len(char['classes'])):
-                    em.description += "Level {} {}\n".format(
-                        char['levels'][i], char['classes'][i])
-                char_scores = ''
-                for stat, fullname in {"STR": "strength", "DEX": "dexterity", "CON": "constitution", "INT": "intelligence", "WIS": "wisdom", "CHR": "charisma"}.items():
-                    score = char[fullname]
-                    modstring = "+ {}".format(roller.mod_from_score(
-                        score)) if score > 9 else "- {}".format(abs(roller.mod_from_score(score)))
-                    char_scores += "**{0}:** {1!s} ({2})\n".format(stat,
-                                                                   score, modstring)
-                em.add_field(name='Stats', value=char_scores)
-                await ctx.send(None, embed=em)
-            else:
-                await ctx.send("Could not locate a character for {}!".format(player.display_name))
+        if char is not None:
+            em = boiler.embed_template(char["name"])
+            em.description = ''
+            for i in range(len(char['classes'])):
+                em.description += "Level {} {}\n".format(
+                    char['levels'][i], char['classes'][i])
+            char_scores = ''
+            for stat, fullname in {"STR": "strength", "DEX": "dexterity", "CON": "constitution", "INT": "intelligence", "WIS": "wisdom", "CHR": "charisma"}.items():
+                score = char[fullname]
+                modstring = "+ {}".format(roller.mod_from_score(
+                    score)) if score > 9 else "- {}".format(abs(roller.mod_from_score(score)))
+                char_scores += "**{0}:** {1!s} ({2})\n".format(stat,
+                                                               score, modstring)
+            em.add_field(name='Stats', value=char_scores)
+            await ctx.send(None, embed=em)
+        else:
+            await ctx.send("Could not locate a character for {}!".format(player.display_name))
 
     @character.command(description="Creates a character with all properties defined in a single command.\
     \nClasses should be comma separated and wrapped in quotes.\
