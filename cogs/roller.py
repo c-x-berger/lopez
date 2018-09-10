@@ -82,6 +82,12 @@ class roller():
     async def retrieve_character(conn: asyncpg.Connection, player: discord.Member) -> asyncpg.Record:
         return await conn.fetchrow('''SELECT * FROM dnd_chars WHERE discord_id = $1''', str(player.id))
 
+    @staticmethod
+    async def no_character(ctx: commands.Context, player: discord.Member = None):
+        if player is None:
+            player = ctx.author
+        await ctx.send("Could not locate a character for {}!".format(player.display_name))
+
     @character.command()
     async def get(self, ctx: commands.Context, player: discord.Member = None):
         if player is None:
@@ -105,7 +111,7 @@ class roller():
             em.add_field(name='Stats', value=char_scores)
             await ctx.send(None, embed=em)
         else:
-            await ctx.send("Could not locate a character for {}!".format(player.display_name))
+            await roller.no_character(ctx, player)
 
     @character.command(description="Creates a character with all properties defined in a single command.\
     \nClasses should be comma separated and wrapped in quotes.\
@@ -161,7 +167,7 @@ class roller():
     @character.command(description="Modify an existing character. Please note that for the time being, the full name (e.g. 'intelligence') must be used to modify stat scores.")
     async def edit(self, ctx: commands.Context, prop: str, value: str):
         '''Modify an existing character.'''
-        to_send = "You don't have a character configured!"
+        to_send = ""
         async with self.pool.acquire() as conn:
             char = await roller.retrieve_character(conn, ctx.author)
             if char is not None:
@@ -174,7 +180,9 @@ class roller():
                     await conn.execute('''UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2'''.format(prop.lower()), value, str(ctx.author.id))
                     to_send = "Set {} to {} for character {}".format(
                         prop, value, char['name'])
-        await ctx.send(to_send)
+                await ctx.send(to_send)
+            else:
+                await roller.no_character(ctx)
 
     @character.command()
     async def edit_levels(self, ctx: commands.Context, character_class: str, level: int):
@@ -195,6 +203,9 @@ class roller():
                     await conn.execute('''UPDATE dnd_chars SET classes[{}] = $1 WHERE discord_id = $2'''.format(classlevel_index), character_class, str(ctx.author.id))
                 finally:
                     await conn.execute('''UPDATE dnd_chars SET levels[{}] = $1 WHERE discord_id = $2'''.format(classlevel_index), roller.to_int(level), str(ctx.author.id))
+                    await ctx.send("Set character {} to a level {} {} (in addition to thier other classes and levels.)".format(char['name'], level, character_class))
+            else:
+                roller.no_character(ctx)
 
 
 def setup(bot: commands.Bot):
