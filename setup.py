@@ -7,7 +7,7 @@ async def main():
     conn = None
     try:
         conn = await asyncpg.connect(config.postgresql)
-    except asyncpg.ConnectionFailureError as e:
+    except asyncpg.ConnectionFailureError:
         print("Could not connect. Are you sure the database {} exists?\nExiting.".format(config.sql_db))
         exit(1)
     else:
