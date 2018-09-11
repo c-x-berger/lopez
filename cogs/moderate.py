@@ -17,8 +17,7 @@ class moderate():
                 async for m in ctx.history(limit=amount):
                     await m.delete()
                     i += 1
-            em = boiler.embed_template()
-            em.title = "Purged {} messages".format(i)
+            em = boiler.embed_template("Purged {} messages".format(i))
             if (ctx.author.nick is not None):
                 em.set_footer(text="Requested by {}".format(
                     ctx.author.nick), icon_url="https://i.imgur.com/2VepakW.png")
