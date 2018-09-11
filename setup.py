@@ -2,13 +2,16 @@ import asyncio
 import asyncpg
 import config
 
+
 async def main():
-    print('I will now attempt to connect to database {} on host {} as user {}'.format(config.sql_db, config.sql_host, config.sql_user))
+    print('I will now attempt to connect to database {} on host {} as user {}'.format(
+        config.sql_db, config.sql_host, config.sql_user))
     conn = None
     try:
         conn = await asyncpg.connect(config.postgresql)
-    except asyncpg.ConnectionFailureError as e:
-        print("Could not connect. Are you sure the database {} exists?\nExiting.".format(config.sql_db))
+    except asyncpg.ConnectionFailureError:
+        print("Could not connect. Are you sure the database {} exists?\nExiting.".format(
+            config.sql_db))
         exit(1)
     else:
         print('Connected!')

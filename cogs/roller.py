@@ -59,7 +59,7 @@ class roller():
         message += "**{0!s}**".format(sum(rolls))
         await ctx.send(message)
 
-    @commands.command()
+    @commands.command(description='Rolls an ability check.\nDoes not currently use stored characters.')
     async def skill_check(self, ctx: commands.Context, bonus: int, dc: int = None):
         '''Rolls an ability check.'''
         message = "**You rolled:**\n"
@@ -72,7 +72,7 @@ class roller():
                                              dc else "fails DC", dc, "Success!" if total >= dc else "You fail!")
         await ctx.send(message)
 
-    @commands.group(description='Base character creation/modification command.\nCurrently, NO DATA is stored and these commands are for testing only.')
+    @commands.group()
     async def character(self, ctx: commands.Context):
         '''Base character creation/modification command.'''
         if (ctx.invoked_subcommand is None):
@@ -90,6 +90,7 @@ class roller():
 
     @character.command()
     async def get(self, ctx: commands.Context, player: discord.Member = None):
+        '''Displays a user\'s character.'''
         if player is None:
             player = ctx.author
         char = None
