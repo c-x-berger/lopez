@@ -160,7 +160,7 @@ class roller():
 
     @character.command(description="Creates a character with all stats set to zero.\
     \nYou can use the edit command to fix the default values supplied.\
-    \nUnder the hood, this just calls create_onecall with defaults supplied.")
+    \nUnder the hood, this just calls create_onecall with defaults supplied.", aliases=['create'])
     async def create_nameonly(self, ctx: commands.Context, name: str):
         '''Creates a character with all stats set to 0.'''
         await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', '1', 0, 0, 0, 0, 0, 0)
