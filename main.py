@@ -11,7 +11,7 @@ import time
 import discord
 from discord.ext import commands
 
-bot = commands.Bot('[] ', None, "A bot created for team 3494.",
+bot = commands.Bot(['[] ', 'Lopez, please ', 'Lopez, '], None, "A bot created for team 3494.",
                    True, owner_id=164342765394591744)
 botstart = time.time()
 
@@ -46,8 +46,6 @@ async def on_message(message: discord.Message):
     if not (message.author == bot.user):
         if (bot.user.mentioned_in(message) and not message.mention_everyone):
             await message.add_reaction(bot.get_emoji(406171759365062656))
-        elif ("LOPEZ" in message.content.upper()):
-            await message.channel.send('Hi!', delete_after=2.0)
 
 
 @bot.command(description="Quotes are fun!")
