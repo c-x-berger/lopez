@@ -91,8 +91,6 @@ class roller():
     @character.command()
     async def get(self, ctx: commands.Context, player: discord.Member = None):
         '''Displays a user\'s character.'''
-        if player is None:
-            player = ctx.author
         char = None
         async with self.pool.acquire() as conn:
             char = await roller.retrieve_character(conn, player)
