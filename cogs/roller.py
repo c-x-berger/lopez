@@ -186,7 +186,6 @@ class roller():
     @character.command()
     async def edit_levels(self, ctx: commands.Context, character_class: str, level: int):
         '''Sets a character as having a number of levels in a given class.'''
-        char = None
         async with self.pool.acquire() as conn:
             char = await roller.retrieve_character(conn, ctx.author)
             if char is not None:
