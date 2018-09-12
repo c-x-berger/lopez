@@ -11,7 +11,7 @@ class git_updater():
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(description="Update the bot. Can only be done by the bot's owner.")
+    @commands.command(description="Update the bot. Can only be done by the bot's owner.", aliases=['upgrade'])
     @commands.is_owner()
     async def update(self, ctx: commands.Context):
         '''Update the bot.'''
