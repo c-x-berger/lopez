@@ -4,7 +4,8 @@ Lopez
 
 :snake::robot:
 
-Lopez is a Discord bot written in Python (3) with the help of [`discord.py`](https://github.com/Rapptz/discord.py) It manages a few irritating admin tasks for Discord administration automatically (such as self-assigned roles.)
+Lopez is a Discord bot written in Python (3) with the help of [`discord.py`](https://github.com/Rapptz/discord.py)  
+It manages a few irritating admin tasks for Discord administration automatically (such as self-assigned roles.)
 
 ## Requirements
 * Python 3.5.3+
