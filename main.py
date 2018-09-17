@@ -8,16 +8,19 @@ import os
 import random
 import subprocess
 import time
+from typing import Union
 import discord
 from discord.ext import commands
 
+prefixes = ['[] ', 'lopez, ', 'lopez pls ', 'lopez, please ']
 
-def get_pre(bot: commands.Bot, message: discord.Message):
+
+def get_pre(bot: commands.Bot, message: discord.Message) -> Union[str, list]:
     lowercased = message.content.lower()
-    for prefix in ['[] ', 'lopez pls ', 'lopez, please ', 'lopez, ']:
+    for prefix in prefixes:
         if lowercased.startswith(prefix):
             return message.content[:len(prefix)]
-    return '[] '
+    return prefixes
 
 
 bot = commands.Bot(get_pre, None, "A bot created for team 3494.",
