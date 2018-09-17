@@ -12,7 +12,7 @@ from typing import Union
 import discord
 from discord.ext import commands
 
-prefixes = ['[] ', 'lopez, ', 'lopez pls ', 'lopez, please ']
+prefixes = ['[] ', 'lopez pls ', 'lopez, please ', 'lopez, ']
 
 
 def get_pre(bot: commands.Bot, message: discord.Message) -> Union[str, list]:
