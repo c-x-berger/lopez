@@ -11,7 +11,7 @@ import time
 import discord
 from discord.ext import commands
 
-bot = commands.Bot(['[] ', 'lopez pls', 'Lopez pls', 'lopez, please', 'Lopez, please ', 'lopez, ', 'Lopez, '], None, "A bot created for team 3494.",
+bot = commands.Bot(['[] ', 'lopez pls ', 'Lopez pls ', 'lopez, please ', 'Lopez, please ', 'lopez, ', 'Lopez, '], None, "A bot created for team 3494.",
                    True, owner_id=164342765394591744)
 botstart = time.time()
 
