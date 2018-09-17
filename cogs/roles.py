@@ -110,10 +110,10 @@ class roles():
         if (request.id in available):
             await member.add_roles(request)
             await ctx.send("Gave {} the {} role".format(member.mention, request.name))
-        elif (request in special_roles):
+        elif (request.id in special_roles):
             await ctx.send("You're not allowed to give yourself the {} role.".format(request.name))
         elif (request is not None):
-            await ctx.send("Could not find the role {}! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request.name))
+            await ctx.send("Could not find the role {} in any list for this guild! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request.name))
 
     @commands.command(description="The opposite of giveme.")
     async def removeme(self, ctx: commands.Context, *, request: discord.Role):
@@ -124,7 +124,7 @@ class roles():
         if (request.id in available):
             await member.remove_roles(request)
             await ctx.send("Took the {1} role from {0}".format(member.mention, request.name))
-        elif (request in special_roles):
+        elif (request.id in special_roles):
             await ctx.send("You're not allowed to remove yourself from the {} role.".format(request.name))
         elif (request is not None):
             await ctx.send("Could not find the role {} in any list for this guild! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request.name))
