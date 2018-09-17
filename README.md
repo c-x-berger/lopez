@@ -10,3 +10,9 @@ It manages a few irritating admin tasks for Discord administration automatically
 ## Requirements
 * Python 3.5.3+
 * `discord.py` v1.0.0 (latest is greatest, unless the latest is breaking)
+* `asyncpg` and dependencies
+
+## Installation
+[Use this link to invite Lopez into your Discord server!](https://discordapp.com/oauth2/authorize?client_id=436251140376494080&scope=bot&permissions=335899840)
+
+(instructions on starting a dev instance coming soon:tm:)
