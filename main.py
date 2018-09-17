@@ -60,8 +60,24 @@ async def on_message(message: discord.Message):
             await message.add_reaction(bot.get_emoji(406171759365062656))
 
 
-@bot.command(description="Quotes are fun!")
+@bot.command()
+async def prefix(ctx: commands.Context):
+    send = "My prefixes are "
+    for i in range(len(prefixes)):
+        if i is not len(prefixes) - 1 and i is not len(prefixes) - 2:
+            send += "__`{}`__, ".format(prefixes[i])
+        elif i is len(prefixes) - 2:
+            send += "__`{}`__, and ".format(prefixes[i])
+        else:
+            send += "__`{}`__".format(prefixes[i])
+    send += "\nThese are case insensitive, so `LOPEZ, PLEASE ` is a valid command prefix (please don't shout at me!)"
+    send += "\nAlso, a prefix must be followed by a space to work (e.g. `lopez, roll 1d20` is valid while `lopez,roll 1d20` is not.)"
+    await ctx.send(send)
+
+
+@bot.command()
 async def quote(ctx: commands.Context):
+    '''Quotes are fun!'''
     await ctx.send(random.choice(boiler.quotes))
 
 
