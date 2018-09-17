@@ -13,7 +13,8 @@ class roles():
             self.roledict = json.load(r)
 
     def get_guild_dict(self, guild_id: int) -> dict:
-        guild_key = str(guild_id) # for some reason JSON only allows string keys
+        # for some reason JSON only allows string keys
+        guild_key = str(guild_id)
         guilddict = None
         try:
             guilddict = self.roledict[guild_key]
@@ -30,9 +31,9 @@ class roles():
     async def __local_check(self, ctx: commands.Context) -> bool:
         return isinstance(ctx.channel, discord.TextChannel)
 
-    @commands.command(description="Adds a role to [] giveme. Any user will be able to give themselves the role with [] giveme role. Caller must have \"Manage Roles\".")
-    async def add_giveme(self, ctx, role: discord.Role):
-        '''Adds a role to [] giveme'''
+    @commands.command(description="Adds a role to giveme. Any user will be able to give themselves the role with giveme <role>. Caller must have \"Manage Roles\".")
+    async def add_giveme(self, ctx: commands.Context, *, role: discord.Role):
+        '''Adds a role to giveme'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
             guilddict = self.get_guild_dict(ctx.guild.id)
             # add to available list
@@ -48,9 +49,9 @@ class roles():
         else:
             await ctx.send("You're not allowed to do that!")
 
-    @commands.command(description="Removes a role from [] giveme. The role will show as not configured to users. Caller must have \"Manage Roles\".")
-    async def remove_giveme(self, ctx, role: discord.Role):
-        '''Removes a role from [] giveme without marking it as blocked.'''
+    @commands.command(description="Removes a role from giveme. The role will show as not configured to users. Caller must have \"Manage Roles\".")
+    async def remove_giveme(self, ctx: commands.Context, *, role: discord.Role):
+        '''Removes a role from giveme without marking it as blocked.'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
             guilddict = self.get_guild_dict(ctx.guild.id)
             try:
@@ -63,9 +64,9 @@ class roles():
         else:
             await ctx.send("You're not allowed to do that!")
 
-    @commands.command(description='Blocks a role from [] giveme. The role will show as "special", and users will not be able to give them to or remove them from themselves. Caller must have "Manage Roles".')
-    async def add_special(self, ctx, role: discord.Role):
-        '''Blocks a role from [] giveme and [] removeme.'''
+    @commands.command(description='Blocks a role from giveme. The role will show as "special", and users will not be able to give them to or remove them from themselves. Caller must have "Manage Roles".')
+    async def add_special(self, ctx: commands.Context, *, role: discord.Role):
+        '''Blocks a role from giveme.'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
             guilddict = self.get_guild_dict(ctx.guild.id)
             if (role.id not in guilddict["special"]):
@@ -80,9 +81,9 @@ class roles():
         else:
             await ctx.send("You're not allowed to do that!")
 
-    @commands.command(description="Unblocks a role from [] giveme. The role will show as not configured to users. Caller must have \"Manage Roles\".")
-    async def remove_special(self, ctx, role: discord.Role):
-        '''Unblocks a role from [] giveme and [] removeme.'''
+    @commands.command(description="Unblocks a role from giveme. The role will show as not configured to users. Caller must have \"Manage Roles\".")
+    async def remove_special(self, ctx: commands.Context, *, role: discord.Role):
+        '''Unblocks a role from giveme.'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
             guilddict = self.get_guild_dict(ctx.guild.id)
             try:
@@ -96,13 +97,13 @@ class roles():
             await ctx.send("You're not allowed to do that!")
 
     @commands.command()
-    async def competition(self, ctx, member: discord.Member = None):
+    async def competition(self, ctx: commands.Context):
         '''Gives the competition role. (3494 guild only.)'''
         if (ctx.guild.id == 286174293006745601):
             await ctx.invoke(self.giveme, request="Competition")
 
     @commands.command()
-    async def giveme(self, ctx, *, request: discord.Role):
+    async def giveme(self, ctx: commands.Context, *, request: discord.Role):
         '''Gives the requested role.'''
         available = self.get_guild_dict(ctx.guild.id)["available"]
         special_roles = self.get_guild_dict(ctx.guild.id)["special"]
@@ -110,13 +111,13 @@ class roles():
         if (request.id in available):
             await member.add_roles(request)
             await ctx.send("Gave {} the {} role".format(member.mention, request.name))
-        elif (request in special_roles):
+        elif (request.id in special_roles):
             await ctx.send("You're not allowed to give yourself the {} role.".format(request.name))
         elif (request is not None):
-            await ctx.send("Could not find the role {}! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request.name))
+            await ctx.send("Could not find the role {} in any list for this guild! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request.name))
 
-    @commands.command(description="The opposite of [] giveme.")
-    async def removeme(self, ctx, *, request: discord.Role):
+    @commands.command(description="The opposite of giveme.")
+    async def removeme(self, ctx: commands.Context, *, request: discord.Role):
         '''Removes the requested role.'''
         available = self.get_guild_dict(ctx.guild.id)["available"]
         special_roles = self.get_guild_dict(ctx.guild.id)["special"]
@@ -124,14 +125,14 @@ class roles():
         if (request.id in available):
             await member.remove_roles(request)
             await ctx.send("Took the {1} role from {0}".format(member.mention, request.name))
-        elif (request in special_roles):
+        elif (request.id in special_roles):
             await ctx.send("You're not allowed to remove yourself from the {} role.".format(request.name))
         elif (request is not None):
             await ctx.send("Could not find the role {} in any list for this guild! Please check for typos. If you need a list of available roles, do `[] listme`.".format(request.name))
 
-    @commands.command()
+    @commands.command(aliases=['rolelist'])
     async def listme(self, ctx: commands.Context):
-        '''Lists all roles available with [] giveme.'''
+        '''Lists all roles available with giveme.'''
         guilddict = self.get_guild_dict(ctx.guild.id)
         em = boiler.embed_template("List of Roles")
         em.description = "May not be all-encompassing. Only includes roles a guild moderator has set the status of."

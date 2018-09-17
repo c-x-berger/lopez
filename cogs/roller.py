@@ -91,8 +91,6 @@ class roller():
     @character.command()
     async def get(self, ctx: commands.Context, player: discord.Member = None):
         '''Displays a user\'s character.'''
-        if player is None:
-            player = ctx.author
         char = None
         async with self.pool.acquire() as conn:
             char = await roller.retrieve_character(conn, player)
@@ -160,7 +158,7 @@ class roller():
 
     @character.command(description="Creates a character with all stats set to zero.\
     \nYou can use the edit command to fix the default values supplied.\
-    \nUnder the hood, this just calls create_onecall with defaults supplied.")
+    \nUnder the hood, this just calls create_onecall with defaults supplied.", aliases=['create'])
     async def create_nameonly(self, ctx: commands.Context, name: str):
         '''Creates a character with all stats set to 0.'''
         await ctx.invoke(self.create_onecall, name, 'Living Creature', 'Critter', '1', 0, 0, 0, 0, 0, 0)
@@ -188,7 +186,6 @@ class roller():
     @character.command()
     async def edit_levels(self, ctx: commands.Context, character_class: str, level: int):
         '''Sets a character as having a number of levels in a given class.'''
-        char = None
         async with self.pool.acquire() as conn:
             char = await roller.retrieve_character(conn, ctx.author)
             if char is not None:

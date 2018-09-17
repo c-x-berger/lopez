@@ -23,7 +23,7 @@ class developer():
         # remove `foo`
         return content.strip('` \n')
 
-    @commands.command(description='Evaluates arbitrary Python 3 code blocks. Indent with two spaces.', hidden=True)
+    @commands.command(description='Evaluates arbitrary Python 3 code blocks. Indent with two spaces.', aliases=['evaluate', 'run'], hidden=True)
     @commands.is_owner()
     async def devalue(self, ctx: commands.Context, *, source: str):
         '''Evaluates arbitrary Python 3 code blocks.'''
