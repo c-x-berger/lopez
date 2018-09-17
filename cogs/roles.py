@@ -13,7 +13,8 @@ class roles():
             self.roledict = json.load(r)
 
     def get_guild_dict(self, guild_id: int) -> dict:
-        guild_key = str(guild_id) # for some reason JSON only allows string keys
+        # for some reason JSON only allows string keys
+        guild_key = str(guild_id)
         guilddict = None
         try:
             guilddict = self.roledict[guild_key]
