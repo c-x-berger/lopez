@@ -8,10 +8,22 @@ import os
 import random
 import subprocess
 import time
+from typing import Union
 import discord
 from discord.ext import commands
 
-bot = commands.Bot(['[] ', 'lopez pls', 'Lopez pls', 'lopez, please', 'Lopez, please ', 'lopez, ', 'Lopez, '], None, "A bot created for team 3494.",
+prefixes = ['[] ', 'lopez pls ', 'lopez, please ', 'lopez, ']
+
+
+def get_pre(bot: commands.Bot, message: discord.Message) -> Union[str, list]:
+    lowercased = message.content.lower()
+    for prefix in prefixes:
+        if lowercased.startswith(prefix):
+            return message.content[:len(prefix)]
+    return prefixes
+
+
+bot = commands.Bot(get_pre, None, "A bot created for team 3494.",
                    True, owner_id=164342765394591744)
 botstart = time.time()
 
@@ -48,8 +60,24 @@ async def on_message(message: discord.Message):
             await message.add_reaction(bot.get_emoji(406171759365062656))
 
 
-@bot.command(description="Quotes are fun!")
+@bot.command()
+async def prefix(ctx: commands.Context):
+    send = "*My prefixes are* "
+    for i in range(len(prefixes)):
+        if i is not len(prefixes) - 1 and i is not len(prefixes) - 2:
+            send += "**{}**; ".format(prefixes[i])
+        elif i is len(prefixes) - 2:
+            send += "**{}**; *and* ".format(prefixes[i])
+        else:
+            send += "**{}**".format(prefixes[i])
+    send += "\nThese are case insensitive, so `LOPEZ, PLEASE ` is a valid command prefix (please don't shout at me!)"
+    send += "\nAlso, a prefix must be followed by a space to work (e.g. `lopez, roll 1d20` is valid while `lopez,roll 1d20` is not.)"
+    await ctx.send(send)
+
+
+@bot.command()
 async def quote(ctx: commands.Context):
+    '''Quotes are fun!'''
     await ctx.send(random.choice(boiler.quotes))
 
 
