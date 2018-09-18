@@ -20,11 +20,6 @@ def ndn(amount: str) -> list:
 class roller():
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.pool = None
-        self.bot.loop.create_task(self.open_connection())
-
-    async def open_connection(self):
-        self.pool = await asyncpg.create_pool(config.postgresql)
 
     @staticmethod
     def to_int(number: str) -> int:
@@ -92,8 +87,8 @@ class roller():
     async def get(self, ctx: commands.Context, player: discord.Member = None):
         '''Displays a user\'s character.'''
         char = None
-        async with self.pool.acquire() as conn:
-            char = await roller.retrieve_character(conn, player)
+        async with self.bot.connect_pool.acquire() as conn:
+            char = await roller.retrieve_character(conn, player if player is not None else ctx.author)
         if char is not None:
             em = boiler.embed_template(char["name"])
             em.description = ''
@@ -146,7 +141,7 @@ class roller():
         for level in class_levels:
             int_levels.append(roller.to_int(level))
         async with ctx.typing():
-            async with self.pool.acquire() as conn:
+            async with self.bot.connect_pool.acquire() as conn:
                 try:
                     # TODO: optimize with prepared statements somehow?
                     await conn.execute('''INSERT INTO dnd_chars(name, strength, dexterity, constitution, intelligence, wisdom, charisma, race, discord_id, levels, classes) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)''',
@@ -167,7 +162,7 @@ class roller():
     async def edit(self, ctx: commands.Context, prop: str, value: str):
         '''Modify an existing character.'''
         to_send = ""
-        async with self.pool.acquire() as conn:
+        async with self.bot.connect_pool.acquire() as conn:
             char = await roller.retrieve_character(conn, ctx.author)
             if char is not None:
                 if prop.lower() in ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]:
@@ -186,7 +181,7 @@ class roller():
     @character.command()
     async def edit_levels(self, ctx: commands.Context, character_class: str, level: int):
         '''Sets a character as having a number of levels in a given class.'''
-        async with self.pool.acquire() as conn:
+        async with self.bot.connect_pool.acquire() as conn:
             char = await roller.retrieve_character(conn, ctx.author)
             if char is not None:
                 classlevel_index = None
@@ -208,7 +203,7 @@ class roller():
     @character.command()
     async def remove_class(self, ctx: commands.Context, character_class: str):
         '''Removes a class from a character.'''
-        async with self.pool.acquire() as conn:
+        async with self.bot.connect_pool.acquire() as conn:
             char = await roller.retrieve_character(conn, ctx.author)
             if char is not None and character_class in char['classes']:
                 classes = char['classes']
