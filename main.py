@@ -1,6 +1,8 @@
 import asyncio
 import boiler
 import datetime
+import discord
+from discord.ext import commands
 import json
 import logging
 import math
@@ -9,8 +11,6 @@ import random
 import subprocess
 import time
 from typing import Union
-import discord
-from discord.ext import commands
 
 prefixes = ['[] ', 'lopez pls ', 'lopez, please ', 'lopez, ']
 
