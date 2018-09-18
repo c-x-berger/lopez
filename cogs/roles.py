@@ -17,11 +17,10 @@ class roles():
         self.pool = await asyncpg.create_pool(config.postgresql)
 
     async def get_guild_dict(self, guild_id: int) -> asyncpg.Record:
-        guild_key = str(guild_id)
         async with self.pool.acquire() as conn:
             g_row = await conn.fetchrow('''SELECT * FROM role_table WHERE server_id = $1''', guild_id)
             if g_row is None:
-                await conn.execute('''INSERT INTO role_table(server_id, available, special) VALUES($1, $2, $3)''', guild_key, [], [])
+                await conn.execute('''INSERT INTO role_table(server_id, available, special) VALUES($1, $2, $3)''', guild_id, [], [])
                 g_row = await conn.fetchrow('''SELECT * FROM role_table WHERE server_id = $1''', guild_id)
             return g_row
 
@@ -40,7 +39,7 @@ class roles():
                 available.append(role.id)
                 if role in special:
                     special.remove(role.id)
-                async with self.pool.acquire as conn:
+                async with self.pool.acquire() as conn:
                     await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', available, ctx.guild.id)
                     await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', special, ctx.guild.id)
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
@@ -110,8 +109,9 @@ class roles():
     @commands.command()
     async def giveme(self, ctx: commands.Context, *, request: discord.Role):
         '''Gives the requested role.'''
-        available = await self.get_guild_dict(ctx.guild.id)["available"]
-        special_roles = await self.get_guild_dict(ctx.guild.id)["special"]
+        g_dict = await self.get_guild_dict(ctx.guild.id)
+        available = g_dict["available"]
+        special_roles = g_dict["special"]
         member = ctx.author
         if (request.id in available):
             await member.add_roles(request)
@@ -124,8 +124,9 @@ class roles():
     @commands.command(description="The opposite of giveme.")
     async def removeme(self, ctx: commands.Context, *, request: discord.Role):
         '''Removes the requested role.'''
-        available = await self.get_guild_dict(ctx.guild.id)["available"]
-        special_roles = await self.get_guild_dict(ctx.guild.id)["special"]
+        g_dict = await self.get_guild_dict(ctx.guild.id)
+        available = g_dict["available"]
+        special_roles = g_dict["special"]
         member = ctx.author
         if (request.id in available):
             await member.remove_roles(request)
