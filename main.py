@@ -1,5 +1,7 @@
 import asyncio
+import asyncpg
 import boiler
+import config
 import datetime
 import discord
 from discord.ext import commands
@@ -23,10 +25,6 @@ def get_pre(bot: commands.Bot, message: discord.Message) -> Union[str, list]:
     return prefixes
 
 
-bot = commands.Bot(get_pre, None, "A bot created for team 3494.",
-                   True, owner_id=164342765394591744)
-botstart = time.time()
-
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
 handler = logging.FileHandler(
@@ -34,6 +32,14 @@ handler = logging.FileHandler(
 handler.setFormatter(logging.Formatter(
     '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
+
+bot = commands.Bot(get_pre, None, "A bot created for team 3494.",
+                   True, owner_id=164342765394591744)
+botstart = time.time()
+
+
+async def open_conn(b: commands.Bot):
+        b.connect_pool = await asyncpg.create_pool(config.postgresql)
 
 
 async def watchdog():
@@ -94,6 +100,7 @@ async def invite(ctx: commands.Context):
     await ctx.send("Use this link to invite Lopez into your Discord server!\n" + discord.utils.oauth_url("436251140376494080", discord.Permissions(335899840)))
 
 bot.loop.create_task(watchdog())
+bot.loop.run_until_complete(open_conn(bot))
 
 cogs = ["git_update", "roles", "moderate", "modi_bot", "developer", "roller"]
 for cog in cogs:
