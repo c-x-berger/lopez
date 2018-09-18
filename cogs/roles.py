@@ -32,13 +32,17 @@ class roles():
     async def add_giveme(self, ctx: commands.Context, *, role: discord.Role):
         '''Adds a role to giveme'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
-            guilddict = self.get_guild_dict(ctx.guild.id)
+            guilddict = await self.get_guild_dict(ctx.guild.id)
+            available = guilddict['available']
+            special = guilddict['special']
             # add to available list
-            if (role.id not in guilddict["available"]):
-                guilddict["available"].append(role.id)
-                if role in guilddict["special"]:
-                    guilddict[ctx.guild.id]["special"].remove(role.id)
-                self.save_dict()
+            if (role.id not in available):
+                available.append(role.id)
+                if role in special:
+                    special.remove(role.id)
+                async with self.pool.acquire as conn:
+                    await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', available, ctx.guild.id)
+                    await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', special, ctx.guild.id)
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
                 await ctx.send("Added {} to {}'s giveme roles.".format(role, ctx.guild.name))
             else:
@@ -50,13 +54,14 @@ class roles():
     async def remove_giveme(self, ctx: commands.Context, *, role: discord.Role):
         '''Removes a role from giveme without marking it as blocked.'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
-            guilddict = self.get_guild_dict(ctx.guild.id)
-            try:
-                guilddict["available"].remove(role.id)
-            except ValueError:
+            guilddict = await self.get_guild_dict(ctx.guild.id)
+            if not role.id in guilddict["available"]:
                 await ctx.send("That role wasn't in giveme to begin with!")
+                return
             else:
-                self.save_dict()
+                # do stuff
+                async with self.pool.acquire() as conn:
+                    await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', guilddict['available'][:].remove(role.id), ctx.guild.id)
                 await ctx.send("Removed {} from giveme roles.".format(role.name))
         else:
             await ctx.send("You're not allowed to do that!")
@@ -65,12 +70,16 @@ class roles():
     async def add_special(self, ctx: commands.Context, *, role: discord.Role):
         '''Blocks a role from giveme.'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
-            guilddict = self.get_guild_dict(ctx.guild.id)
-            if (role.id not in guilddict["special"]):
-                guilddict["special"].append(role.id)
-                if role in guilddict["available"]:
-                    guilddict["available"].remove(role.id)
-                self.save_dict()
+            guilddict = await self.get_guild_dict(ctx.guild.id)
+            available = guilddict['available']
+            special = guilddict['special']
+            if (role.id not in special):
+                special.append(role.id)
+                if role in available:
+                    available.remove(role.id)
+                async with self.pool.acquire() as conn:
+                    await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', available, ctx.guild.id)
+                    await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', special, ctx.guild.id)
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
                 await ctx.send("Blocked {} from {}'s giveme roles.".format(role.name, ctx.guild.name))
             else:
@@ -82,13 +91,12 @@ class roles():
     async def remove_special(self, ctx: commands.Context, *, role: discord.Role):
         '''Unblocks a role from giveme.'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
-            guilddict = self.get_guild_dict(ctx.guild.id)
-            try:
-                guilddict["special"].remove(role.id)
-            except ValueError:
+            guilddict = await self.get_guild_dict(ctx.guild.id)
+            if not role.id in guilddict['special']:
                 await ctx.send("That role wasn't blocked to begin with!")
             else:
-                self.save_dict()
+                async with self.pool.acquire() as conn:
+                    await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', guilddict['special'][:].remove(role.id), ctx.guild.id)
                 await ctx.send("Unblocked {} from giveme roles.".format(role.name))
         else:
             await ctx.send("You're not allowed to do that!")
@@ -102,8 +110,8 @@ class roles():
     @commands.command()
     async def giveme(self, ctx: commands.Context, *, request: discord.Role):
         '''Gives the requested role.'''
-        available = self.get_guild_dict(ctx.guild.id)["available"]
-        special_roles = self.get_guild_dict(ctx.guild.id)["special"]
+        available = await self.get_guild_dict(ctx.guild.id)["available"]
+        special_roles = await self.get_guild_dict(ctx.guild.id)["special"]
         member = ctx.author
         if (request.id in available):
             await member.add_roles(request)
@@ -116,8 +124,8 @@ class roles():
     @commands.command(description="The opposite of giveme.")
     async def removeme(self, ctx: commands.Context, *, request: discord.Role):
         '''Removes the requested role.'''
-        available = self.get_guild_dict(ctx.guild.id)["available"]
-        special_roles = self.get_guild_dict(ctx.guild.id)["special"]
+        available = await self.get_guild_dict(ctx.guild.id)["available"]
+        special_roles = await self.get_guild_dict(ctx.guild.id)["special"]
         member = ctx.author
         if (request.id in available):
             await member.remove_roles(request)
@@ -130,7 +138,7 @@ class roles():
     @commands.command(aliases=['rolelist'])
     async def listme(self, ctx: commands.Context):
         '''Lists all roles available with giveme.'''
-        guilddict = self.get_guild_dict(ctx.guild.id)
+        guilddict = await self.get_guild_dict(ctx.guild.id)
         em = boiler.embed_template("List of Roles")
         em.description = "May not be all-encompassing. Only includes roles a guild moderator has set the status of."
         send = ""
