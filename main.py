@@ -76,7 +76,7 @@ async def prefix(ctx: commands.Context):
             send += "**{}**; *and* ".format(prefixes[i])
         else:
             send += "**{}**".format(prefixes[i])
-    send += "\nThese are case insensitive, so `{} ` is a valid command prefix (please don't shout at me!)".format(random.choice(prefixes).upper())
+    send += "\nThese are case insensitive, so `{} ` is a valid command prefix (please don't shout at me!)".format(random.choice(prefixes[1:]).upper())
     fix = random.choice(prefixes)
     send += "\nAlso, a prefix must be followed by a space to work (e.g. `{0}1d20` is valid while `{1}roll 1d20` is not.)".format(fix, fix.strip())
     await ctx.send(send)
