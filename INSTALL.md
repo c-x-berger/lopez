@@ -10,4 +10,4 @@ It ~~probably~~ fails in this.
     2. `asyncpg`: `pip install -U asyncpg`
 2. Run `setup.py`
 3. Set up systemd unit (technically optional)
-  1. See [the DO tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units) for now. You will likely need to create a launcher script to `cd` into your copy of Lopez to properly load `footers.json` and other files.
+   1. See [the DO tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units) for now. You will likely need to create a launcher script to `cd` into your copy of Lopez to properly load `footers.json` and other files.
