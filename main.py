@@ -39,7 +39,7 @@ botstart = time.time()
 
 
 async def open_conn(b: commands.Bot):
-        b.connect_pool = await asyncpg.create_pool(config.postgresql)
+    b.connect_pool = await asyncpg.create_pool(config.postgresql)
 
 
 async def watchdog():
