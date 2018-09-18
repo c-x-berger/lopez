@@ -1,7 +1,7 @@
 Installation
 ---
 This document aims to be a step-by-step guide to installing Lopez.  
-It probably fails in this.
+It ~~probably~~ fails in this.
 
 1. Install and configure `postgresql`
   1. You must have at least one database with at least one user who can create and modify tables. Make sure it matches up with the details in `config.py`
