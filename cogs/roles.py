@@ -1,4 +1,6 @@
+import asyncpg
 import boiler
+import config
 import json
 import random
 import discord
@@ -8,25 +10,20 @@ from discord.ext import commands
 class roles():
     def __init__(self, bot):
         self.bot = bot
-        self.roledict = None
-        with open("role.json") as r:
-            self.roledict = json.load(r)
+        self.pool = None
+        self.bot.loop.create_task(self.open_conn())
 
-    def get_guild_dict(self, guild_id: int) -> dict:
-        # for some reason JSON only allows string keys
+    async def open_conn(self):
+        self.pool = await asyncpg.create_pool(config.postgresql)
+
+    async def get_guild_dict(self, guild_id: int) -> asyncpg.Record:
         guild_key = str(guild_id)
-        guilddict = None
-        try:
-            guilddict = self.roledict[guild_key]
-        except KeyError:
-            self.roledict[guild_key] = {"available": [], "special": []}
-            guilddict = self.roledict[guild_key]
-        finally:
-            return guilddict
-
-    def save_dict(self):
-        with open('role.json', 'w') as r:
-            json.dump(self.roledict, r)
+        async with self.pool.acquire() as conn:
+            g_row = await conn.fetchrow('''SELECT * FROM role_table WHERE server_id = $1''', guild_id)
+            if g_row is None:
+                await conn.execute('''INSERT INTO role_table(server_id, available, special) VALUES($1, $2, $3)''', guild_key, [], [])
+                g_row = await conn.fetchrow('''SELECT * FROM role_table WHERE server_id = $1''', guild_id)
+            return g_row
 
     async def __local_check(self, ctx: commands.Context) -> bool:
         return isinstance(ctx.channel, discord.TextChannel)
