@@ -1,6 +1,7 @@
 import asyncio
 import asyncpg
 import config
+import json
 
 
 async def main():
@@ -40,6 +41,17 @@ async def main():
             available bigint[] NOT NULL,
             special bigint[] NOT NULL
         )'''))
+        print("Attempting to import old role.json")
+        try:
+            with open('role.json', 'r') as role:
+                data = json.load(role)
+                for key, value in data.items():
+                    await conn.execute("INSERT INTO role_table(server_id, available, special) VALUES($1, $2, $3)",
+                                       int(key), value['available'], value['special'])
+        except FileNotFoundError:
+            print('No role.json found!')
+        else:
+            print("Imported role.json.")
         print('Setting unique constraints and defaults...')
         # dnd table
         await conn.execute('''ALTER TABLE dnd_chars ADD UNIQUE (discord_id)''')
