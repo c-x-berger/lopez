@@ -35,12 +35,15 @@ async def main():
         except asyncpg.exceptions.DuplicateTableError:
             print("That table already exists! If you're upgrading you can safely ignore this, if not, please drop that table and run this script again.")
         print('Creating table role_table...')
-        print(await conn.execute('''CREATE TABLE role_table(
-            internal serial PRIMARY KEY,
-            server_id bigint NOT NULL,
-            available bigint[] NOT NULL,
-            special bigint[] NOT NULL
-        )'''))
+        try:
+            print(await conn.execute('''CREATE TABLE role_table(
+                internal serial PRIMARY KEY,
+                server_id bigint NOT NULL,
+                available bigint[] NOT NULL,
+                special bigint[] NOT NULL
+            )'''))
+        except asyncpg.exceptions.DuplicateTableError:
+            print("That table already exists! If you're upgrading you can safely ignore this, if not, please drop that table and run this script again.")
         print("Attempting to import old role.json")
         try:
             with open('role.json', 'r') as role:
