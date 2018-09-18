@@ -10,14 +10,9 @@ from discord.ext import commands
 class roles():
     def __init__(self, bot):
         self.bot = bot
-        self.pool = None
-        self.bot.loop.create_task(self.open_conn())
-
-    async def open_conn(self):
-        self.pool = await asyncpg.create_pool(config.postgresql)
 
     async def get_guild_dict(self, guild_id: int) -> asyncpg.Record:
-        async with self.pool.acquire() as conn:
+        async with self.bot.connect_pool.acquire() as conn:
             g_row = await conn.fetchrow('''SELECT * FROM role_table WHERE server_id = $1''', guild_id)
             if g_row is None:
                 await conn.execute('''INSERT INTO role_table(server_id, available, special) VALUES($1, $2, $3)''', guild_id, [], [])
@@ -39,7 +34,7 @@ class roles():
                 available.append(role.id)
                 if role in special:
                     special.remove(role.id)
-                async with self.pool.acquire() as conn:
+                async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', available, ctx.guild.id)
                     await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', special, ctx.guild.id)
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
@@ -59,7 +54,7 @@ class roles():
                 return
             else:
                 # do stuff
-                async with self.pool.acquire() as conn:
+                async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', guilddict['available'][:].remove(role.id), ctx.guild.id)
                 await ctx.send("Removed {} from giveme roles.".format(role.name))
         else:
@@ -76,7 +71,7 @@ class roles():
                 special.append(role.id)
                 if role in available:
                     available.remove(role.id)
-                async with self.pool.acquire() as conn:
+                async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', available, ctx.guild.id)
                     await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', special, ctx.guild.id)
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
@@ -94,7 +89,7 @@ class roles():
             if not role.id in guilddict['special']:
                 await ctx.send("That role wasn't blocked to begin with!")
             else:
-                async with self.pool.acquire() as conn:
+                async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', guilddict['special'][:].remove(role.id), ctx.guild.id)
                 await ctx.send("Unblocked {} from giveme roles.".format(role.name))
         else:
