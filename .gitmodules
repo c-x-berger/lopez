@@ -1,0 +1,3 @@
+[submodule "wild-computing-machine"]
+	path = wild-computing-machine
+	url = https://github.com/c-x-berger/wild-computing-machine.git
