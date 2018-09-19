@@ -103,7 +103,7 @@ async def invite(ctx: commands.Context):
 bot.loop.create_task(watchdog())
 bot.loop.run_until_complete(open_conn(bot))
 
-cogs = ["git_update", "roles", "moderate", "modi_bot", "developer", "roller"]
+cogs = ["git_update", "roles", "moderate", "modi_bot", "developer", "roller", "wild_speller"]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
 
