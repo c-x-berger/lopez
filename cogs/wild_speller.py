@@ -8,7 +8,7 @@ class wild_speller():
         self.bot = bot
 
     @commands.command()
-    async def spell(self, ctx: commands.Context, seed: str = None):
+    async def spell(self, ctx: commands.Context, *, seed: str = None):
         random.seed(seed)
         await ctx.send(wild_comp.get_spell_string())
 
