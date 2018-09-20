@@ -1,6 +1,6 @@
 from discord.ext import commands
 import random
-from wcm import wild_comp
+from wild_computing_machine import wild_comp
 
 
 class wild_speller():
