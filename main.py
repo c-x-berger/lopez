@@ -14,7 +14,7 @@ import subprocess
 import time
 from typing import Union
 
-prefixes = ['[] ', 'lopez pls ', 'lopez, please ', 'lopez, ']
+prefixes = ['[] ', 'lopez pls ', 'lopez, please ', 'lopez, ', 'hey lopez, ', 'hey lopez ', 'hey, lopez ']
 
 
 def get_pre(bot: commands.Bot, message: discord.Message) -> Union[str, list]:
@@ -76,8 +76,9 @@ async def prefix(ctx: commands.Context):
             send += "**{}**; *and* ".format(prefixes[i])
         else:
             send += "**{}**".format(prefixes[i])
-    send += "\nThese are case insensitive, so `LOPEZ, PLEASE ` is a valid command prefix (please don't shout at me!)"
-    send += "\nAlso, a prefix must be followed by a space to work (e.g. `lopez, roll 1d20` is valid while `lopez,roll 1d20` is not.)"
+    send += "\nThese are case insensitive, so `{} ` is a valid command prefix (please don't shout at me!)".format(random.choice(prefixes[1:]).upper())
+    fix = random.choice(prefixes)
+    send += "\nAlso, a prefix must be followed by a space to work (e.g. `{0}1d20` is valid while `{1}roll 1d20` is not.)".format(fix, fix.strip())
     await ctx.send(send)
 
 
@@ -102,7 +103,7 @@ async def invite(ctx: commands.Context):
 bot.loop.create_task(watchdog())
 bot.loop.run_until_complete(open_conn(bot))
 
-cogs = ["git_update", "roles", "moderate", "modi_bot", "developer", "roller"]
+cogs = ["git_update", "roles", "moderate", "modi_bot", "developer", "roller", "wild_speller"]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
 
