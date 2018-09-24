@@ -157,7 +157,7 @@ class roles():
         else:
             await ctx.send("No roles configured!")
 
-    @commands.command(aliases=['lusers'])
+    @commands.command(aliases=['lusers', 'rollcall'])
     async def listusers(self, ctx: commands.Context, *, role: discord.Role):
         '''Get a list of users with the role `role`.'''
         em = boiler.embed_template("Users with role {}".format(role.name))
