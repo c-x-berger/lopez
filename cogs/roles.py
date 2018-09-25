@@ -26,17 +26,9 @@ class roles():
     async def add_giveme(self, ctx: commands.Context, *, role: discord.Role):
         '''Adds a role to giveme'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
-            guilddict = await self.get_guild_dict(ctx.guild.id)
-            available = guilddict['available']
-            special = guilddict['special']
-            # add to available list
-            if (role.id not in available):
-                available.append(role.id)
-                if role in special:
-                    special.remove(role.id)
-                async with self.bot.connect_pool.acquire() as conn:
-                    await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', available, ctx.guild.id)
-                    await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', special, ctx.guild.id)
+            async with self.bot.connect_pool.acquire() as conn:
+                await conn.execute('''UPDATE role_table SET available = available || $1 WHERE server_id = $2''', [role.id], ctx.guild.id)
+                await conn.execute('''UPDATE role_table SET special = array_remove(special, $1) WHERE server_id = $2''', role.id, ctx.guild.id)
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
                 await ctx.send("Added {} to {}'s giveme roles.".format(role, ctx.guild.name))
             else:
@@ -55,7 +47,7 @@ class roles():
             else:
                 # do stuff
                 async with self.bot.connect_pool.acquire() as conn:
-                    await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', guilddict['available'][:].remove(role.id), ctx.guild.id)
+                    await conn.execute('''UPDATE role_table SET available = array_remove(available, $1) WHERE server_id = $2''', role.id, ctx.guild.id)
                 await ctx.send("Removed {} from giveme roles.".format(role.name))
         else:
             await ctx.send("You're not allowed to do that!")
@@ -64,16 +56,9 @@ class roles():
     async def add_special(self, ctx: commands.Context, *, role: discord.Role):
         '''Blocks a role from giveme.'''
         if (ctx.channel.permissions_for(ctx.author).manage_roles):
-            guilddict = await self.get_guild_dict(ctx.guild.id)
-            available = guilddict['available']
-            special = guilddict['special']
-            if (role.id not in special):
-                special.append(role.id)
-                if role in available:
-                    available.remove(role.id)
-                async with self.bot.connect_pool.acquire() as conn:
-                    await conn.execute('''UPDATE role_table SET available = $1 WHERE server_id = $2''', available, ctx.guild.id)
-                    await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', special, ctx.guild.id)
+            async with self.bot.connect_pool.acquire() as conn:
+                await conn.execute('''UPDATE role_table SET available = array_remove(available, $1) WHERE server_id = $2''', role.id, ctx.guild.id)
+                await conn.execute('''UPDATE role_table SET special = special || $1 WHERE server_id = $2''', [role.id], ctx.guild.id)
             if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
                 await ctx.send("Blocked {} from {}'s giveme roles.".format(role.name, ctx.guild.name))
             else:
@@ -90,7 +75,7 @@ class roles():
                 await ctx.send("That role wasn't blocked to begin with!")
             else:
                 async with self.bot.connect_pool.acquire() as conn:
-                    await conn.execute('''UPDATE role_table SET special = $1 WHERE server_id = $2''', guilddict['special'][:].remove(role.id), ctx.guild.id)
+                    await conn.execute('''UPDATE role_table SET special = array_remove(special, $1) WHERE server_id = $2''', role.id, ctx.guild.id)
                 await ctx.send("Unblocked {} from giveme roles.".format(role.name))
         else:
             await ctx.send("You're not allowed to do that!")
