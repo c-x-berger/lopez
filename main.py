@@ -34,7 +34,7 @@ handler.setFormatter(logging.Formatter(
 logger.addHandler(handler)
 
 bot = commands.Bot(get_pre, None, "A bot created for team 3494.",
-                   True, owner_id=164342765394591744)
+                   None, owner_id=164342765394591744)
 botstart = time.time()
 
 
@@ -64,6 +64,12 @@ async def on_message(message: discord.Message):
     if not (message.author == bot.user):
         if (bot.user.mentioned_in(message) and not message.mention_everyone):
             await message.add_reaction(bot.get_emoji(406171759365062656))
+
+
+@bot.event
+async def on_command_completion(ctx: commands.Context):
+    if (ctx.command.name == 'help'):
+        await ctx.message.add_reaction('\N{OPEN MAILBOX WITH RAISED FLAG}')
 
 
 @bot.command()
