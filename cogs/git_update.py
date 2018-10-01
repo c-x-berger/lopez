@@ -17,10 +17,13 @@ class git_updater():
         '''Update the bot.'''
         start_time = time.time()
         subprocess.run(["git", "pull"])
-        subprocess.run(["git", "submodule", "update", "--remote", "wcm"])
         logging.warning("Bot is preparing for restart. Pulling bad code may cause a fail to restart!")
         await ctx.send("I finished pulling code in {:.2} seconds.\nRestarting now.\n`Goodbye`.".format(time.time() - start_time))
-        os.execl(sys.executable, sys.executable, *sys.argv)
+        # To concerned parties:
+        # The below line should not be uncommented if Lopez has been installed correctly.
+        # You should only uncomment it if you're a fool who has failed to configure process management for Lopez and
+        # need a hack to fix it.
+        # os.execl(sys.executable, sys.executable, *sys.argv)
 
 
 def setup(bot: commands.Bot):
