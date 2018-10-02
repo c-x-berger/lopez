@@ -14,28 +14,29 @@ import subprocess
 import time
 from typing import Union
 
-prefixes = ['[] ', 'lopez pls ', 'lopez, please ', 'lopez, ', 'hey lopez, ', 'hey lopez ', 'hey, lopez ']
+prefixes = ['[] ', 'lopez pls ', 'lopez, please ',
+            'lopez, ', 'hey lopez, ', 'hey lopez ', 'hey, lopez ']
 
 
 def get_pre(bot: commands.Bot, message: discord.Message) -> Union[str, list]:
     lowercased = message.content.lower()
     for prefix in prefixes:
         if lowercased.startswith(prefix):
-            return message.content[:len(prefix)]
-    return prefixes
+            return commands.when_mentioned_or(message.content[:len(prefix)])(bot, message)
+    return commands.when_mentioned_or(*prefixes)(bot, message)
 
+
+bot = commands.Bot(get_pre, None, "A bot created for team 3494.",
+                   None, owner_id=164342765394591744)
 
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
 handler = logging.FileHandler(
     filename='logs/lopez_{}.log'.format(datetime.datetime.today()), encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter(
-    '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    '[%(asctime)s] %(levelname)s: %(name)s: %(message)s'))
 logger.addHandler(handler)
-
-bot = commands.Bot(get_pre, None, "A bot created for team 3494.",
-                   True, owner_id=164342765394591744)
-botstart = time.time()
+bot.log_handler = handler
 
 
 async def open_conn(b: commands.Bot):
@@ -66,6 +67,12 @@ async def on_message(message: discord.Message):
             await message.add_reaction(bot.get_emoji(406171759365062656))
 
 
+@bot.event
+async def on_command_completion(ctx: commands.Context):
+    if (ctx.command.name == 'help'):
+        await ctx.message.add_reaction('\N{OPEN MAILBOX WITH RAISED FLAG}')
+
+
 @bot.command()
 async def prefix(ctx: commands.Context):
     send = "*My prefixes are* "
@@ -76,9 +83,11 @@ async def prefix(ctx: commands.Context):
             send += "**{}**; *and* ".format(prefixes[i])
         else:
             send += "**{}**".format(prefixes[i])
-    send += "\nThese are case insensitive, so `{} ` is a valid command prefix (please don't shout at me!)".format(random.choice(prefixes[1:]).upper())
+    send += "\nThese are case insensitive, so `{} ` is a valid command prefix (please don't shout at me!)".format(
+        random.choice(prefixes[1:]).upper())
     fix = random.choice(prefixes)
-    send += "\nAlso, a prefix must be followed by a space to work (e.g. `{0}1d20` is valid while `{1}roll 1d20` is not.)".format(fix, fix.strip())
+    send += "\nAlso, a prefix must be followed by a space to work (e.g. `{0}roll 1d20` is valid while `{1}roll 1d20` is not.)".format(
+        fix, fix.strip())
     await ctx.send(send)
 
 
@@ -103,11 +112,14 @@ async def invite(ctx: commands.Context):
 bot.loop.create_task(watchdog())
 bot.loop.run_until_complete(open_conn(bot))
 
-cogs = ["git_update", "roles", "moderate", "modi_bot", "developer", "roller", "wild_speller"]
+cogs = ["git_update", "roles", "moderate",
+        "modi_bot", "developer", "roller", "wild_speller"]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
 
 token = None
 with open("creds.txt") as creds:
     token = creds.read().strip()
-bot.run(token)
+logging.info("Starting Lopez...")
+botstart = time.time()
+bot.run(token, reconnect=True)

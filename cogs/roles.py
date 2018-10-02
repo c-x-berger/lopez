@@ -84,7 +84,7 @@ class roles():
     async def competition(self, ctx: commands.Context):
         '''Gives the competition role. (3494 guild only.)'''
         if (ctx.guild.id == 286174293006745601):
-            await ctx.invoke(self.giveme, request="Competition")
+            await ctx.invoke(self.giveme, request=discord.utils.get(ctx.guild.roles, name="Competition"))
 
     @commands.command()
     async def giveme(self, ctx: commands.Context, *, request: discord.Role):

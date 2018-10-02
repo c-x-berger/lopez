@@ -3,10 +3,13 @@ import boiler
 import contextlib
 import discord
 from discord.ext import commands
+import logging
 import sys
 import textwrap
 import traceback
 import io
+import inspect
+import os
 
 
 class developer():
@@ -27,7 +30,7 @@ class developer():
     @commands.is_owner()
     async def devalue(self, ctx: commands.Context, *, source: str):
         '''Evaluates arbitrary Python 3 code blocks.'''
-        env = { # set some shortcuts up
+        env = {  # set some shortcuts up
             'bot': self.bot,
             'ctx': ctx,
             'channel': ctx.channel,
@@ -66,6 +69,27 @@ class developer():
             em.add_field(name="Return value",
                          value='```\n{}\n```'.format(ret), inline=False)
             await ctx.send(None, embed=em)
+
+    @commands.command()
+    async def source(self, ctx: commands.Context, command: str = None):
+        """Get the bot source or the source of a given command."""
+        s_url = "https://github.com/BHSSFRC/lopez/tree/master"
+        if command is None:
+            return await ctx.send(s_url)
+
+        obj = self.bot.get_command(command.replace('.', ' '))
+        if obj is None:
+            return await ctx.send('Could not find command.')
+
+        src = obj.callback.__code__
+        lines, firstline = inspect.getsourcelines(src)
+        location = ""
+        if not obj.callback.__module__.startswith('discord'):
+            location = os.path.relpath(src.co_filename).replace('\\', '/')
+        else:
+            s_url = "https://github.com/Rapptz/discord.py/tree/rewrite"
+            location = obj.callback.__module__.replace('.', '/') + '.py'
+        await ctx.send("{}/{}/#L{}-L{}".format(s_url, location, firstline, firstline + len(lines) - 1))
 
 
 def setup(bot):
