@@ -15,4 +15,4 @@ It manages a few irritating admin tasks for Discord administration automatically
 ## Installation
 [Use this link to invite Lopez into your Discord server!](https://discordapp.com/oauth2/authorize?client_id=436251140376494080&scope=bot&permissions=335899840)
 
-(instructions on starting a dev instance coming soon:tm:)
+(instructions on starting a dev instance coming <img src="https://media1.tenor.com/images/93253f6c6f029c3e056281164084c209/tenor.gif?itemid=12050318" alt="soon:tm:" width="50px">)

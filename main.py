@@ -34,7 +34,7 @@ handler.setFormatter(logging.Formatter(
 logger.addHandler(handler)
 
 bot = commands.Bot(get_pre, None, "A bot created for team 3494.",
-                   True, owner_id=164342765394591744)
+                   None, owner_id=164342765394591744)
 botstart = time.time()
 
 
@@ -66,6 +66,12 @@ async def on_message(message: discord.Message):
             await message.add_reaction(bot.get_emoji(406171759365062656))
 
 
+@bot.event
+async def on_command_completion(ctx: commands.Context):
+    if (ctx.command.name == 'help'):
+        await ctx.message.add_reaction('\N{OPEN MAILBOX WITH RAISED FLAG}')
+
+
 @bot.command()
 async def prefix(ctx: commands.Context):
     send = "*My prefixes are* "
@@ -78,7 +84,7 @@ async def prefix(ctx: commands.Context):
             send += "**{}**".format(prefixes[i])
     send += "\nThese are case insensitive, so `{} ` is a valid command prefix (please don't shout at me!)".format(random.choice(prefixes[1:]).upper())
     fix = random.choice(prefixes)
-    send += "\nAlso, a prefix must be followed by a space to work (e.g. `{0}1d20` is valid while `{1}roll 1d20` is not.)".format(fix, fix.strip())
+    send += "\nAlso, a prefix must be followed by a space to work (e.g. `{0}roll 1d20` is valid while `{1}roll 1d20` is not.)".format(fix, fix.strip())
     await ctx.send(send)
 
 
