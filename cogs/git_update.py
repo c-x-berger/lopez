@@ -24,6 +24,8 @@ class git_updater():
         # You should only uncomment it if you're a fool who has failed to configure process management for Lopez and
         # need a hack to fix it.
         # os.execl(sys.executable, sys.executable, *sys.argv)
+        logging.info("Shutting down...")
+        await self.bot.logout()
 
 
 def setup(bot: commands.Bot):
