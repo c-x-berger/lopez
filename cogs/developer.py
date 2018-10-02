@@ -3,6 +3,7 @@ import boiler
 import contextlib
 import discord
 from discord.ext import commands
+import logging
 import sys
 import textwrap
 import traceback
@@ -29,7 +30,7 @@ class developer():
     @commands.is_owner()
     async def devalue(self, ctx: commands.Context, *, source: str):
         '''Evaluates arbitrary Python 3 code blocks.'''
-        env = { # set some shortcuts up
+        env = {  # set some shortcuts up
             'bot': self.bot,
             'ctx': ctx,
             'channel': ctx.channel,
@@ -68,7 +69,7 @@ class developer():
             em.add_field(name="Return value",
                          value='```\n{}\n```'.format(ret), inline=False)
             await ctx.send(None, embed=em)
-    
+
     @commands.command()
     async def source(self, ctx: commands.Context, command: str = None):
         """Get the bot source or the source of a given command."""
@@ -89,7 +90,6 @@ class developer():
             s_url = "https://github.com/Rapptz/discord.py/tree/rewrite"
             location = obj.callback.__module__.replace('.', '/') + '.py'
         await ctx.send("{}/{}/#L{}-L{}".format(s_url, location, firstline, firstline + len(lines) - 1))
-
 
 
 def setup(bot):
