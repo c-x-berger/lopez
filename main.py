@@ -116,4 +116,4 @@ for cog in cogs:
 token = None
 with open("creds.txt") as creds:
     token = creds.read().strip()
-bot.run(token)
+bot.run(token, reconnect=True)
