@@ -1,3 +1,4 @@
 git+https://github.com/Rapptz/discord.py.git@rewrite#egg=discord.py
 asyncpg>=0.17.0
+beautifulsoup4>=4.6.3
 wild-computing-machine>=0.0.1 

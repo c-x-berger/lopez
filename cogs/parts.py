@@ -1,4 +1,5 @@
 import aiohttp
+from bs4 import BeautifulSoup
 import discord
 from discord.ext import commands
 
@@ -15,6 +16,20 @@ class parts():
     @staticmethod
     def mcmaster_part(part_num: str) -> str:
         return "https://www.mcmaster.com/{}".format(part_num.lower())
+
+    async def get_anymark_part_page(self, part_num: str) -> BeautifulSoup:
+        url = parts.andy_part(part_num)
+        async with self.aio_client.get(url) as resp:
+            if 300 > resp.status >= 200:
+                data = await resp.text()
+                return BeautifulSoup(data)
+
+    async def get_mcmaster_part_page(self, part_num: str) -> BeautifulSoup:
+        url = parts.mcmaster_part(part_num)
+        async with self.aio_client.get(url) as resp:
+            if 300 > resp.status >= 200:
+                data = await resp.text()
+                return BeautifulSoup(data)
 
     @commands.group(invoke_without_command=True)
     async def part(self, ctx: commands.Context):
