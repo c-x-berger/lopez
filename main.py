@@ -113,7 +113,7 @@ bot.loop.create_task(watchdog())
 bot.loop.run_until_complete(open_conn(bot))
 
 cogs = ["git_update", "roles", "moderate",
-        "modi_bot", "developer", "roller", "wild_speller"]
+        "modi_bot", "developer", "roller", "wild_speller", "parts"]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
 
