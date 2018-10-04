@@ -34,21 +34,27 @@ class parts():
                 data = await resp.text()
                 return BeautifulSoup(data, features="html5lib")
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, aliases=["parts"])
     async def part(self, ctx: commands.Context, *part_num):
         """
         Look up a part by part number/ID. Supports AndyMark and McMaster Carr.
         """
         if (part_num is not None):
+            await ctx.message.add_reaction(self.bot.get_emoji(393852367751086090))
             async with ctx.typing():
                 for num in part_num:
                     if (num.startswith("am-")):
                         await ctx.invoke(self.andy, num)
+            await ctx.message.remove_reaction(self.bot.get_emoji(393852367751086090), ctx.guild.me)
+            await ctx.message.add_reaction(self.bot.get_emoji(314349398811475968))
         else:
             return await ctx.invoke(self.bot.get_command('help'), "part")
 
-    @part.command(aliases=['andymark', 'am'])
+    @part.command(description="Looks up a part on AndyMark. Supports part names and 404s.", aliases=['andymark', 'am'])
     async def andy(self, ctx: commands.Context, *part_numbers):
+        """
+        Looks up a part on AndyMark.
+        """
         r = {}
         s = ""
         for p in part_numbers:
@@ -63,8 +69,11 @@ class parts():
             s += "{}: {}\n".format(key, value)
         await ctx.send(s)
 
-    @part.command(aliases=['mc', 'mmc', 'mcmastercarr'])
+    @part.command(description="Looks up a part on McMaster Carr. Doesn't support part names or 404s.", aliases=['mc', 'mmc', 'mcmastercarr'])
     async def mcmaster(self, ctx: commands.Context, *part_numbers):
+        """
+        Looks up a part on McMaster Carr.
+        """
         r = {}
         s = ""
         for p in part_numbers:
