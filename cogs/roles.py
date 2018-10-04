@@ -163,6 +163,28 @@ class roles:
                 )
             )
 
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    async def assign(
+        self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
+    ):
+        await target.add_roles(roles)
+        s_roles = ""
+        for role in roles:
+            s_roles += role.name
+        await ctx.send("Gave {} the {} role(s)".format(target.mention, s_roles))
+
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    async def remove(
+        self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
+    ):
+        await target.remove_roles(roles)
+        s_roles = ""
+        for role in roles:
+            s_roles += role.name
+        await ctx.send("Gave {} the {} role(s)".format(target.mention, s_roles))
+
     @commands.command(description="The opposite of giveme.")
     async def removeme(self, ctx: commands.Context, *, request: discord.Role):
         """Removes the requested role."""
