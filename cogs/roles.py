@@ -168,10 +168,15 @@ class roles:
     async def assign(
         self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
     ):
-        await target.add_roles(roles)
+        await target.add_roles(*roles)
         s_roles = ""
-        for role in roles:
-            s_roles += role.name
+        for i in range(len(roles)):
+            if i != len(roles) - 1 and i != len(roles) - 2:
+                s_roles += "`{}`, ".format(roles[i].name)
+            elif i == len(roles) - 2:
+                s_roles += "`{}`, and ".format(roles[i].name)
+            else:
+                s_roles += "`{}`".format(roles[i].name)
         await ctx.send("Gave {} the {} role(s)".format(target.mention, s_roles))
 
     @commands.command()
@@ -179,11 +184,16 @@ class roles:
     async def remove(
         self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
     ):
-        await target.remove_roles(roles)
+        await target.remove_roles(*roles)
         s_roles = ""
-        for role in roles:
-            s_roles += role.name
-        await ctx.send("Gave {} the {} role(s)".format(target.mention, s_roles))
+        for i in range(len(roles)):
+            if i != len(roles) - 1 and i != len(roles) - 2:
+                s_roles += "`{}`, ".format(roles[i].name)
+            elif i == len(roles) - 2:
+                s_roles += "`{}`, and ".format(roles[i].name)
+            else:
+                s_roles += "`{}`".format(roles[i].name)
+        await ctx.send("Took the {1} role(s) from {0}".format(target.mention, s_roles))
 
     @commands.command(description="The opposite of giveme.")
     async def removeme(self, ctx: commands.Context, *, request: discord.Role):
