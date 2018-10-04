@@ -2,6 +2,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 import discord
 from discord.ext import commands
+from typing import List, Optional
 
 
 class parts():
@@ -22,28 +23,42 @@ class parts():
         async with self.aio_client.get(url) as resp:
             if 300 > resp.status >= 200:
                 data = await resp.text()
-                return BeautifulSoup(data)
+                return BeautifulSoup(data, features="html5lib")
+            elif resp.status == 404:
+                raise discord.NotFound(resp, "Not found")
 
     async def get_mcmaster_part_page(self, part_num: str) -> BeautifulSoup:
         url = parts.mcmaster_part(part_num)
         async with self.aio_client.get(url) as resp:
             if 300 > resp.status >= 200:
                 data = await resp.text()
-                return BeautifulSoup(data)
+                return BeautifulSoup(data, features="html5lib")
 
     @commands.group(invoke_without_command=True)
-    async def part(self, ctx: commands.Context):
+    async def part(self, ctx: commands.Context, *part_num):
         """
         Look up a part by part number/ID. Supports AndyMark and McMaster Carr.
         """
-        return await ctx.invoke(self.bot.get_command('help'), "part")
+        if (part_num is not None):
+            async with ctx.typing():
+                for num in part_num:
+                    if (num.startswith("am-")):
+                        await ctx.invoke(self.andy, num)
+        else:
+            return await ctx.invoke(self.bot.get_command('help'), "part")
 
     @part.command(aliases=['andymark', 'am'])
     async def andy(self, ctx: commands.Context, *part_numbers):
         r = {}
         s = ""
         for p in part_numbers:
-            r[p] = parts.andy_part(p)
+            _p = await self.get_anymark_part_page(p)
+            if _p.title.contents[0].lower() == "andymark robot parts kits mecanum omni wheels":
+                # for some god-forsaken reason AM doesn't properly 404
+                # i guess it's for thier meme not found page but it's really annoying
+                r[p] = "Could not find part `{}`".format(p)
+            else:
+                r[_p.title.contents[0]] = self.andy_part(p)
         for key, value in r.items():
             s += "{}: {}\n".format(key, value)
         await ctx.send(s)
