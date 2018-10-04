@@ -1,6 +1,7 @@
 Lopez
 ---
-<img src="https://raw.githubusercontent.com/BHSSFRC/lopez/master/img/lopez.png" alt="Lopez's profile picture" align="right" width="400px">
+<img src="https://raw.githubusercontent.com/BHSSFRC/lopez/master/img/lopez.png" alt="Lopez's profile picture" align="right" width="400px">  
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 :snake::robot:
 

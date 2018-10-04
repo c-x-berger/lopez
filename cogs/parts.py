@@ -5,7 +5,7 @@ from discord.ext import commands
 from typing import List, Optional
 
 
-class parts():
+class parts:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.aio_client = aiohttp.ClientSession(loop=self.bot.loop)
@@ -39,18 +39,23 @@ class parts():
         """
         Look up a part by part number/ID. Supports AndyMark and McMaster Carr.
         """
-        if (part_num is not None):
+        if part_num is not None:
             await ctx.message.add_reaction(self.bot.get_emoji(393852367751086090))
             async with ctx.typing():
                 for num in part_num:
-                    if (num.startswith("am-")):
+                    if num.startswith("am-"):
                         await ctx.invoke(self.andy, num)
-            await ctx.message.remove_reaction(self.bot.get_emoji(393852367751086090), ctx.guild.me)
+            await ctx.message.remove_reaction(
+                self.bot.get_emoji(393852367751086090), ctx.guild.me
+            )
             await ctx.message.add_reaction(self.bot.get_emoji(314349398811475968))
         else:
-            return await ctx.invoke(self.bot.get_command('help'), "part")
+            return await ctx.invoke(self.bot.get_command("help"), "part")
 
-    @part.command(description="Looks up a part on AndyMark. Supports part names and 404s.", aliases=['andymark', 'am'])
+    @part.command(
+        description="Looks up a part on AndyMark. Supports part names and 404s.",
+        aliases=["andymark", "am"],
+    )
     async def andy(self, ctx: commands.Context, *part_numbers):
         """
         Looks up a part on AndyMark.
@@ -59,7 +64,10 @@ class parts():
         s = ""
         for p in part_numbers:
             _p = await self.get_anymark_part_page(p)
-            if _p.title.contents[0].lower() == "andymark robot parts kits mecanum omni wheels":
+            if (
+                _p.title.contents[0].lower()
+                == "andymark robot parts kits mecanum omni wheels"
+            ):
                 # for some god-forsaken reason AM doesn't properly 404
                 # i guess it's for thier meme not found page but it's really annoying
                 r[p] = "Could not find part `{}`".format(p)
@@ -69,7 +77,10 @@ class parts():
             s += "{}: {}\n".format(key, value)
         await ctx.send(s)
 
-    @part.command(description="Looks up a part on McMaster Carr. Doesn't support part names or 404s.", aliases=['mc', 'mmc', 'mcmastercarr'])
+    @part.command(
+        description="Looks up a part on McMaster Carr. Doesn't support part names or 404s.",
+        aliases=["mc", "mmc", "mcmastercarr"],
+    )
     async def mcmaster(self, ctx: commands.Context, *part_numbers):
         """
         Looks up a part on McMaster Carr.
