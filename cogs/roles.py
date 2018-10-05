@@ -179,7 +179,7 @@ class roles:
                 roles.remove(role)
         if roles == []:
             return
-        await target.add_roles(*roles)
+        await target.add_roles(*roles, reason="Requested by " + ctx.author.name)
         s_roles = ""
         for i in range(len(roles)):
             if i != len(roles) - 1 and i != len(roles) - 2:
@@ -206,7 +206,7 @@ class roles:
                 roles.remove(role)
         if roles == []:
             return
-        await target.remove_roles(*roles)
+        await target.remove_roles(*roles, reason="Requested by " + ctx.author.name)
         s_roles = ""
         for i in range(len(roles)):
             if i != len(roles) - 1 and i != len(roles) - 2:
