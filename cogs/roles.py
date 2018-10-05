@@ -163,6 +163,60 @@ class roles:
                 )
             )
 
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    async def assign(
+        self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
+    ):
+        roles = list(roles)
+        for role in roles[:]:
+            if role.position >= ctx.author.top_role.position:
+                await ctx.send(
+                    "You don't have the power to manage the `{}` role!".format(
+                        role.name
+                    )
+                )
+                roles.remove(role)
+        if roles == []:
+            return
+        await target.add_roles(*roles)
+        s_roles = ""
+        for i in range(len(roles)):
+            if i != len(roles) - 1 and i != len(roles) - 2:
+                s_roles += "`{}`, ".format(roles[i].name)
+            elif i == len(roles) - 2:
+                s_roles += "`{}`, and ".format(roles[i].name)
+            else:
+                s_roles += "`{}`".format(roles[i].name)
+        await ctx.send("Gave {} the {} role(s)".format(target.mention, s_roles))
+
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    async def remove(
+        self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
+    ):
+        roles = list(roles)
+        for role in roles[:]:
+            if role.position >= ctx.author.top_role.position:
+                await ctx.send(
+                    "You don't have the power to manage the `{}` role!".format(
+                        role.name
+                    )
+                )
+                roles.remove(role)
+        if roles == []:
+            return
+        await target.remove_roles(*roles)
+        s_roles = ""
+        for i in range(len(roles)):
+            if i != len(roles) - 1 and i != len(roles) - 2:
+                s_roles += "`{}`, ".format(roles[i].name)
+            elif i == len(roles) - 2:
+                s_roles += "`{}`, and ".format(roles[i].name)
+            else:
+                s_roles += "`{}`".format(roles[i].name)
+        await ctx.send("Took the {1} role(s) from {0}".format(target.mention, s_roles))
+
     @commands.command(description="The opposite of giveme.")
     async def removeme(self, ctx: commands.Context, *, request: discord.Role):
         """Removes the requested role."""

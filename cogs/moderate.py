@@ -10,7 +10,7 @@ class moderate:
     @commands.has_permissions(manage_messages=True)
     @commands.command(
         description="Enables a user with Manage Messages to bulk delete the last `amount` messages.",
-        aliases=["remove"],
+        aliases=["delete"],
     )
     async def purge(self, ctx: commands.Context, amount: int):
         """Bulk remove messages."""
