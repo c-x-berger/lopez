@@ -168,6 +168,17 @@ class roles:
     async def assign(
         self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
     ):
+        roles = list(roles)
+        for role in roles[:]:
+            if role.position >= ctx.author.top_role.position:
+                await ctx.send(
+                    "You don't have the power to manage the `{}` role!".format(
+                        role.name
+                    )
+                )
+                roles.remove(role)
+        if roles == []:
+            return
         await target.add_roles(*roles)
         s_roles = ""
         for i in range(len(roles)):
@@ -184,6 +195,17 @@ class roles:
     async def remove(
         self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
     ):
+        roles = list(roles)
+        for role in roles[:]:
+            if role.position >= ctx.author.top_role.position:
+                await ctx.send(
+                    "You don't have the power to manage the `{}` role!".format(
+                        role.name
+                    )
+                )
+                roles.remove(role)
+        if roles == []:
+            return
         await target.remove_roles(*roles)
         s_roles = ""
         for i in range(len(roles)):
