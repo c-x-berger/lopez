@@ -12,7 +12,8 @@ class modi:
         self.special_cogs = special_cogs
 
     @commands.group(
-        description="Base command for module tinkering.\nMust be invoked with a subcommand. Can only be invoked by the bot's creator."
+        description="Base command for module tinkering.\nMust be invoked with a subcommand. Can only be invoked by the bot's creator.",
+        case_insensitive=True,
     )
     @commands.is_owner()
     async def mod(self, ctx: commands.Context):

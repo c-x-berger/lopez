@@ -77,7 +77,7 @@ class roller:
             )
         await ctx.send(message)
 
-    @commands.group()
+    @commands.group(case_insensitive=True)
     async def character(self, ctx: commands.Context):
         """Base character creation/modification command."""
         if ctx.invoked_subcommand is None:

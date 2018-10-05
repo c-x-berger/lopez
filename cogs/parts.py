@@ -34,7 +34,9 @@ class parts:
                 data = await resp.text()
                 return BeautifulSoup(data, features="html5lib")
 
-    @commands.group(invoke_without_command=True, aliases=["parts"])
+    @commands.group(
+        invoke_without_command=True, aliases=["parts"], case_insensitive=True
+    )
     async def part(self, ctx: commands.Context, *part_num):
         """
         Look up a part by part number/ID. Supports AndyMark and McMaster Carr.
