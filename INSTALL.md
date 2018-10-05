@@ -1,5 +1,4 @@
-Installation
----
+# Installation
 This document aims to be a step-by-step guide to installing Lopez.  
 It ~~probably~~ fails in this.
 
