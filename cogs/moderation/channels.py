@@ -6,6 +6,19 @@ import json
 from typing import Dict
 
 
+set_description = """Sets the default permissions for creating channels with Lopez. `permissions` should be a JSON code block similar to the below.
+{
+  "Role": {
+    "manage_messages": true
+  },
+  "Another Role": {
+    "add_reactions": false
+  }
+}
+Note that prettifying your JSON is not required. Lopez will tell you if it cannot find a role in the block passed.
+"""
+
+
 class channels:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -39,8 +52,11 @@ class channels:
             r[key] = discord.PermissionOverwrite(**frozen[key])
         return r
 
-    @commands.command()
+    @commands.command(description=set_description)
     async def set_chancreate_defaults(self, ctx: commands.Context, *, permissions: str):
+        """
+        Sets the default permissions for channels created with Lopez.
+        """
         perms_namekeys = json.loads(boiler.cleanup_code(permissions))
         perms_idkeys = {}
         for key, value in perms_namekeys.items():
@@ -72,6 +88,9 @@ class channels:
 
     @commands.command()
     async def get_chancreate_defaults(self, ctx: commands.Context):
+        """
+        Posts the current default permissions for channels created with Lopez.
+        """
         g_row = await self.get_guild_data(ctx.guild.id)
         current = (
             json.loads(g_row["default_permission"])
@@ -100,6 +119,9 @@ class channels:
     async def create_channel(
         self, ctx: commands.Context, name: str, nsfw_: bool = False
     ):
+        """
+        Create a new text channel, using the stored default permissions.
+        """
         g_row = await self.get_guild_data(ctx.guild.id)
         default_perms = (
             json.loads(g_row["default_permission"])
