@@ -52,6 +52,21 @@ class channels:
             r[key] = discord.PermissionOverwrite(**frozen[key])
         return r
 
+    async def get_default_permission(
+        self, ctx: commands.Context
+    ) -> Dict[discord.Role, discord.PermissionOverwrite]:
+        g_row = await self.get_guild_data(ctx.guild.id)
+        perms = (
+            g_row["default_permission"]
+            if g_row["default_permission"] is not None
+            else {}
+        )
+        r = {}
+        for role_id, overwrite in channels.thaw_permissions(perms).items():
+            role = await self.role_converter.convert(ctx, role_id)
+            r[role] = overwrite
+        return r
+
     @commands.command(description=set_description)
     @commands.has_permissions(manage_channels=True)
     async def set_chancreate_defaults(self, ctx: commands.Context, *, permissions: str):
@@ -71,8 +86,8 @@ class channels:
                 perms_idkeys[newkey] = value
         g_row = await self.get_guild_data(ctx.guild.id)
         current = (
-            json.loads(g_row["default_permission"])
-            if json.loads(g_row["default_permission"]) is not None
+            g_row["default_permission"]
+            if g_row["default_permission"] is not None
             else {}
         )
         current.update(perms_idkeys)
@@ -94,8 +109,8 @@ class channels:
         """
         g_row = await self.get_guild_data(ctx.guild.id)
         current = (
-            json.loads(g_row["default_permission"])
-            if json.loads(g_row["default_permission"]) is not None
+            g_row["default_permission"]
+            if g_row["default_permission"] is not None
             else {}
         )
         if current != {}:
@@ -124,21 +139,43 @@ class channels:
         """
         Create a new text channel, using the stored default permissions.
         """
-        g_row = await self.get_guild_data(ctx.guild.id)
-        default_perms = (
-            json.loads(g_row["default_permission"])
-            if json.loads(g_row["default_permission"]) is not None
-            else {}
-        )
-        f_overwrites = {}
-        for role_id, overwrite in channels.thaw_permissions(default_perms).items():
-            role = await self.role_converter.convert(ctx, role_id)
-            f_overwrites[role] = overwrite
+        f_overwrites = await self.get_default_permission(ctx)
         chan = await ctx.guild.create_text_channel(
             name, overwrites=f_overwrites, reason="Requested by " + ctx.author.name
         )
         await chan.edit(nsfw=nsfw_)
         await ctx.send("Done! Please enjoy your new " + chan.mention)
+
+    @commands.command(
+        description="Move channels into a category. Will create non-existent categories (using Lopez's default permissions for new channels), and if instructed, will sync permissions to the moved channels",
+        aliases=["m2c", "2cat", "twocat"],
+    )
+    @commands.has_permissions(manage_channels=True)
+    async def move_chans_to_cat(
+        self,
+        ctx: commands.Context,
+        category: str,
+        channels: commands.Greedy[discord.TextChannel],
+        sync: bool = False,
+    ):
+        """
+        Moves channels into a category.
+        """
+        cat = discord.utils.get(ctx.guild.channels, name=category)
+        if isinstance(cat, discord.CategoryChannel):
+            # move channels
+            for channel in channels:
+                await channel.edit(category=cat)
+                await channel.edit(sync_permissions=sync)
+        else:
+            o = await self.get_default_permission(ctx)
+            cat = await ctx.guild.create_category_channel(category, overwrites=o)
+            for channel in channels:
+                await channel.edit(category=cat)
+                await channel.edit(sync_permissions=sync)
+        await ctx.send(
+            "I moved {} channels to the category {}".format(len(channels), cat.name)
+        )
 
 
 def setup(bot: commands.Bot):
