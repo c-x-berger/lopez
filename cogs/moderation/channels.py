@@ -53,6 +53,7 @@ class channels:
         return r
 
     @commands.command(description=set_description)
+    @commands.has_permissions(manage_channels=True)
     async def set_chancreate_defaults(self, ctx: commands.Context, *, permissions: str):
         """
         Sets the default permissions for channels created with Lopez.
@@ -116,6 +117,7 @@ class channels:
             )
 
     @commands.command()
+    @commands.has_permissions(manage_channels=True)
     async def create_channel(
         self, ctx: commands.Context, name: str, nsfw_: bool = False
     ):
