@@ -145,6 +145,7 @@ cogs = [
     "roller",
     "wild_speller",
     "parts",
+    "moderation.channels",
 ]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
