@@ -127,9 +127,18 @@ async def uptime(ctx: commands.Context):
 @bot.command()
 async def invite(ctx: commands.Context):
     """Gets a link to invite Lopez."""
+    perms = discord.Permissions.none()
+    perms.view_audit_log = True
+    perms.manage_roles = True
+    perms.manage_channels = True
+    perms.create_instant_invite = True
+    perms.send_messages = True
+    perms.manage_messages = True
+    perms.embed_links, perms.attach_files, perms.read_message_history = True, True, True
+    perms.external_emojis, perms.add_reactions = True, True
     await ctx.send(
         "Use this link to invite Lopez into your Discord server!\n"
-        + discord.utils.oauth_url("436251140376494080", discord.Permissions(335899840))
+        + discord.utils.oauth_url("436251140376494080", perms)
     )
 
 
@@ -145,6 +154,7 @@ cogs = [
     "roller",
     "wild_speller",
     "parts",
+    "moderation.channels",
 ]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
