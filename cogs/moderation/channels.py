@@ -33,10 +33,10 @@ class channels:
     @staticmethod
     def thaw_permissions(
         frozen: Dict[str, Dict[str, bool]]
-    ) -> Dict[int, discord.PermissionOverwrite]:
+    ) -> Dict[str, discord.PermissionOverwrite]:
         r = {}
-        for key, value in frozen:
-            r[int(key)] = discord.PermissionOverwrite(**frozen[key])
+        for key, value in frozen.items():
+            r[key] = discord.PermissionOverwrite(**frozen[key])
         return r
 
     @commands.command()
@@ -69,6 +69,52 @@ class channels:
                 ctx.guild.id,
             )
         await ctx.send("```json\n" + str(current) + "\n```")
+
+    @commands.command()
+    async def get_chancreate_defaults(self, ctx: commands.Context):
+        g_row = await self.get_guild_data(ctx.guild.id)
+        current = (
+            json.loads(g_row["default_permission"])
+            if json.loads(g_row["default_permission"]) is not None
+            else {}
+        )
+        if current != {}:
+            readable = {}
+            em = boiler.embed_template(
+                "Default permissions for new channels", ctx.guild.me.color
+            )
+            for key, value in current.items():
+                role = await self.role_converter.convert(ctx, key)
+                permissions = "```\n"
+                for permission, state in value.items():
+                    permissions += "{}: {}\n".format(permission, state)
+                permissions += "```"
+                em.add_field(name=role.name, value=permissions, inline=True)
+            await ctx.send(None, embed=em)
+        else:
+            await ctx.send(
+                "Default permissions for new channels haven't been configured!"
+            )
+
+    @commands.command()
+    async def create_channel(
+        self, ctx: commands.Context, name: str, nsfw_: bool = False
+    ):
+        g_row = await self.get_guild_data(ctx.guild.id)
+        default_perms = (
+            json.loads(g_row["default_permission"])
+            if json.loads(g_row["default_permission"]) is not None
+            else {}
+        )
+        f_overwrites = {}
+        for role_id, overwrite in channels.thaw_permissions(default_perms).items():
+            role = await self.role_converter.convert(ctx, role_id)
+            f_overwrites[role] = overwrite
+        chan = await ctx.guild.create_text_channel(
+            name, overwrites=f_overwrites, reason="Requested by " + ctx.author.name
+        )
+        await chan.edit(nsfw=nsfw_)
+        await ctx.send("Done! Please enjoy your new " + chan.mention)
 
 
 def setup(bot: commands.Bot):
