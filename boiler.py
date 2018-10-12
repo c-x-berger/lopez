@@ -18,7 +18,7 @@ def embed_template(
     em = discord.Embed(title=title).set_footer(
         text=random.choice(quotes), icon_url="https://i.imgur.com/2VepakW.png"
     )
-    em.colour = discord.Colour.gold()
+    em.colour = color
     return em
 
 
