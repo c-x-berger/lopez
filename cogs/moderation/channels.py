@@ -29,14 +29,17 @@ class channels:
 
     async def get_guild_data(self, guild_id: int) -> asyncpg.Record:
         async with self.bot.connect_pool.acquire() as conn:
+            await conn.set_type_codec(
+                "jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog"
+            )
             g_row = await conn.fetchrow(
                 """SELECT * FROM channels_table WHERE guild_id = $1""", guild_id
             )
             if g_row is None:
                 await conn.execute(
-                    """INSERT INTO channels_table(guild_id, default_permission) VALUES($1, $2)""",
+                    """INSERT INTO channels_table(guild_id, default_permission) VALUES($1, $2::jsonb)""",
                     guild_id,
-                    "{}",
+                    {},
                 )
                 g_row = await conn.fetchrow(
                     """SELECT * FROM channels_table WHERE guild_id = $1""", guild_id
