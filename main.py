@@ -16,6 +16,7 @@ from typing import Union
 
 prefixes = [
     "[] ",
+    "[]",
     "lopez pls ",
     "lopez, please ",
     "lopez, ",
