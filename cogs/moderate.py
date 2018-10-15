@@ -16,7 +16,9 @@ class moderate:
         """Bulk remove messages."""
         async with ctx.typing():
             deleted = await ctx.channel.purge(limit=amount + 1)
-        em = boiler.embed_template("Purged {} messages".format(len(deleted)))
+        em = boiler.embed_template(
+            "Purged {} messages".format(len(deleted)), ctx.guild.me.color
+        )
         em.set_footer(
             text="Requested by {}".format(ctx.author.display_name),
             icon_url="https://i.imgur.com/2VepakW.png",

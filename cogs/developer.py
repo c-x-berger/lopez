@@ -68,7 +68,7 @@ class developer:
         else:
             # all went well, send result
             self._last_result = ret
-            em = boiler.embed_template("Result")
+            em = boiler.embed_template("Result", ctx.guild.me.color)
             em.description = "Python 3 code evaluation"
             if output.getvalue() != "":
                 em.add_field(

@@ -246,7 +246,7 @@ class roles:
     async def listme(self, ctx: commands.Context):
         """Lists all roles available with giveme."""
         guilddict = await self.get_guild_dict(ctx.guild.id)
-        em = boiler.embed_template("List of Roles")
+        em = boiler.embed_template("List of Roles", ctx.guild.me.color)
         em.description = "May not be all-encompassing. Only includes roles a guild moderator has set the status of."
         send = ""
         for role_id in guilddict["available"]:
@@ -270,7 +270,9 @@ class roles:
     @commands.command(aliases=["lusers", "rollcall"])
     async def listusers(self, ctx: commands.Context, *, role: discord.Role):
         """Get a list of users with the role `role`."""
-        em = boiler.embed_template("Users with role {}".format(role.name))
+        em = boiler.embed_template(
+            "Users with role {}".format(role.name), ctx.guild.me.color
+        )
         em.description = ""
         for m in role.members:
             em.description += m.mention + "\n"
