@@ -110,7 +110,7 @@ class roller:
                 conn, player if player is not None else ctx.author
             )
         if char is not None:
-            em = boiler.embed_template(char["name"], ctx.guild.me.color)
+            em = boiler.embed_template(char["name"], ctx.me.color)
             em.description = ""
             for i in range(len(char["classes"])):
                 em.description += "Level {} {}\n".format(
@@ -153,7 +153,7 @@ class roller:
         # HACK: For some reason character_classes occasionally becomes a string. If it's a string we make it a list instead.
         if type(character_classes) is str:
             character_classes = [character_classes]
-        em = boiler.embed_template(name, ctx.guild.me.color)
+        em = boiler.embed_template(name, ctx.me.color)
         if len(class_levels) != len(character_classes):
             await ctx.send(
                 "Error in class / level list! {} classes and {} levels given".format(

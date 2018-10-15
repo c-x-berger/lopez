@@ -17,7 +17,7 @@ class moderate:
         async with ctx.typing():
             deleted = await ctx.channel.purge(limit=amount + 1)
         em = boiler.embed_template(
-            "Purged {} messages".format(len(deleted)), ctx.guild.me.color
+            "Purged {} messages".format(len(deleted)), ctx.me.color
         )
         em.set_footer(
             text="Requested by {}".format(ctx.author.display_name),
