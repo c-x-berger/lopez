@@ -33,16 +33,16 @@ class channels:
                 "jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog"
             )
             g_row = await conn.fetchrow(
-                """SELECT * FROM channels_table WHERE guild_id = $1""", guild_id
+                """SELECT * FROM guild_table WHERE guild_id = $1""", guild_id
             )
             if g_row is None:
                 await conn.execute(
-                    """INSERT INTO channels_table(guild_id, default_permission) VALUES($1, $2::jsonb)""",
+                    """INSERT INTO guild_table(guild_id, default_permission) VALUES($1, $2::jsonb)""",
                     guild_id,
                     {},
                 )
                 g_row = await conn.fetchrow(
-                    """SELECT * FROM channels_table WHERE guild_id = $1""", guild_id
+                    """SELECT * FROM guild_table WHERE guild_id = $1""", guild_id
                 )
             return g_row
 
@@ -99,7 +99,7 @@ class channels:
                 "jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog"
             )
             await conn.execute(
-                """UPDATE channels_table SET default_permission = $1::jsonb WHERE guild_id = $2""",
+                """UPDATE guild_table SET default_permission = $1::jsonb WHERE guild_id = $2""",
                 current,
                 ctx.guild.id,
             )
