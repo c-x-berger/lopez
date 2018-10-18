@@ -156,6 +156,7 @@ cogs = [
     "wild_speller",
     "parts",
     "moderation.channels",
+    "moderation.guild",
 ]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
