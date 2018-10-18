@@ -1,10 +1,10 @@
 import asyncio
 import asyncpg
-import boiler
 import config
 import datetime
 import discord
 from discord.ext import commands
+import footers
 import json
 import logging
 import math
@@ -115,7 +115,7 @@ async def prefix(ctx: commands.Context):
 @bot.command()
 async def quote(ctx: commands.Context):
     """Quotes are fun!"""
-    await ctx.send(random.choice(boiler.quotes))
+    await ctx.send(random.choice(footers.quotes_e10))
 
 
 @bot.command()
@@ -156,6 +156,7 @@ cogs = [
     "wild_speller",
     "parts",
     "moderation.channels",
+    "moderation.guild",
 ]
 for cog in cogs:
     bot.load_extension("cogs." + cog)

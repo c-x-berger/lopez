@@ -3,20 +3,18 @@ Util functions. Cuts down on boilerplate code, ideally.
 """
 
 import discord
+import footers
 import json
 import random
 from typing import Dict
-
-quotes = []
-with open("footers.json", encoding="utf-8") as f:
-    quotes = json.load(f)
 
 
 def embed_template(
     title: str = "Someone messed up!", color: discord.Color = discord.Color.gold
 ) -> discord.Embed:
     em = discord.Embed(title=title).set_footer(
-        text=random.choice(quotes), icon_url="https://i.imgur.com/2VepakW.png"
+        text=random.choice(footers.quotes_e10),
+        icon_url="https://i.imgur.com/2VepakW.png",
     )
     em.colour = color
     return em
