@@ -10,7 +10,7 @@ It ~~probably~~ fails in this.
 4. Create `creds.txt`. It should contain only the Discord bot token you want to use to log in on a single line.
 
 Now that you've done basic setup, you need to decide if you want to develop or run Lopez.
-Remember: running your own instance of Lopez is discouraged, and a [public instance is available.](https://discordapp.com/oauth2/authorize?client_id=436251140376494080&scope=bot&permissions=335899840)
+Remember: running your own instance of Lopez is discouraged, and a [public instance is available.](https://discordapp.com/oauth2/authorize?client_id=436251140376494080&scope=bot&permissions=268822737)
 
 ## Developing
 1. `git checkout develop`
@@ -20,7 +20,7 @@ Remember: running your own instance of Lopez is discouraged, and a [public insta
 4. Be sure to check [the most recent revision of this file](https://github.com/BHSSFRC/lopez/blob/develop/INSTALL.md) in the unlikely event that the requirements change. 
 
 ## Running
-[Last chance to use the stable, well serviced public instance instead!](https://discordapp.com/oauth2/authorize?client_id=436251140376494080&scope=bot&permissions=335899840)
+[Last chance to use the stable, well serviced public instance instead!](https://discordapp.com/oauth2/authorize?client_id=436251140376494080&scope=bot&permissions=268822737)
 
 1. Set up systemd unit (technically optional)
-   1. See [the DO tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units) for now. You will likely need to create a launcher script to `cd` into your copy of Lopez to properly load `footers.json` and other files.
+   1. See [the DO tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units) for now. You will likely need to create a launcher script to `cd` into your copy of Lopez to properly load all modules.
