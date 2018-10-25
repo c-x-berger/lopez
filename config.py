@@ -6,4 +6,6 @@ sql_host = "localhost"
 sql_port = 5432
 # changing the below line will void the non-existent warranty Lopez came with
 # so please don't
-postgresql = "postgresql://{0}:{1}@{2}:{3}/{4}".format(sql_user, sql_pass, sql_host, sql_port, sql_db)
+postgresql = "postgresql://{0}:{1}@{2}:{3}/{4}".format(
+    sql_user, sql_pass, sql_host, sql_port, sql_db
+)
