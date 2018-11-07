@@ -6,6 +6,11 @@ import time
 from typing import Dict
 
 
+CLOCK_DESC = "Clock in or out. Note that if you're clocked in, running this without a subcommand will result in you being clocked out. In that event, simply clock back in and you won't miss any notable amount of time."
+BADGE_DESC = "Get the QR code you use to clock in/out. To prevent someone else from clocking you out, the message will autodelete after five (5) seconds."
+STATUS_DESC = "Show your current clock state. Includes total hours, if you're clocked in or out, and how many hours you've recorded in this session."
+
+
 class timeclock:
     """
     Timeclock commands. Note that your recorded hours and clock state are GLOBAL, i.e. not per guild.
@@ -53,10 +58,7 @@ class timeclock:
             )
         )
 
-    @commands.command(
-        description="Get the QR code you use to clock in/out. To prevent someone else from clocking you out, the message will autodelete after five (5) seconds.",
-        aliases=["badge"],
-    )
+    @commands.command(description=BADGE_DESC, aliases=["badge"])
     async def get_badge(self, ctx: commands.Context):
         """Get the QR code you use to clock in/out."""
         em = boiler.embed_template("", ctx.me.color)
@@ -71,47 +73,43 @@ class timeclock:
         )
         await ctx.send(None, embed=em, delete_after=5)
 
-    @commands.group(
-        description="Clock in or out. Pretty much does what it says on the tin.",
-        aliases=["in", "out"],
-    )
+    @commands.group(description=CLOCK_DESC, aliases=["in", "out"])
     async def clock(self, ctx: commands.Context):
         """Clock in/out."""
         if ctx.invoked_subcommand is not None:
             return
-        u = ctx.author.id
-        clock_state = await self.get_clock_state()
-        if u in clock_state.keys():
-            # clock out
-            total = timedelta(seconds=time.time() - clock_state[u])
-            del clock_state[u]
-            async with self.bot.connect_pool.acquire() as conn:
-                await conn.execute(
-                    """
-                    INSERT INTO timetable (member, seconds)
-                    VALUES ($1, $2)
-                    ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
-                    """,
-                    u,
-                    total.total_seconds(),
+        elif ctx.subcommand_passed is None:
+            u = ctx.author.id
+            clock_state = await self.get_clock_state()
+            if u in clock_state.keys():
+                # clock out
+                total = timedelta(seconds=time.time() - clock_state[u])
+                del clock_state[u]
+                async with self.bot.connect_pool.acquire() as conn:
+                    await conn.execute(
+                        """
+                        INSERT INTO timetable (member, seconds)
+                        VALUES ($1, $2)
+                        ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
+                        """,
+                        u,
+                        total.total_seconds(),
+                    )
+                await self.save_clock_state(clock_state)
+                await ctx.send(
+                    "I have recorded {:.2} hours. You are now clocked out.".format(
+                        total.total_seconds() / 3600.0
+                    )
                 )
-            await self.save_clock_state(clock_state)
-            await ctx.send(
-                "I have recorded {:.2} hours. You are now clocked out.".format(
-                    total.total_seconds() / 3600.0
-                )
-            )
+            else:
+                # clock in
+                clock_state[u] = time.time()
+                await self.save_clock_state(clock_state)
+                await ctx.send("You are now clocked in.")
         else:
-            # clock in
-            clock_state[u] = time.time()
-            await self.save_clock_state(clock_state)
-            await ctx.send("You are now clocked in.")
-        pass
+            await ctx.invoke(self.bot.get_command("help"), "clock")
 
-    @clock.command(
-        aliases=["status"],
-        description="Show your current clock state. Includes total hours, if you're clocked in or out, and how many hours you've recorded in this session.",
-    )
+    @clock.command(aliases=["status"], description=STATUS_DESC)
     async def state(self, ctx: commands.Context):
         """Show your current clock state."""
         session_start = None
@@ -128,6 +126,8 @@ class timeclock:
             send += "\nYou are clocked in. In this session, you have recorded {:.2} hours so far.".format(
                 (time.time() - session_start) / 3600
             )
+        else:
+            send += "\nYou are currently clocked out."
         await ctx.send(send)
 
 

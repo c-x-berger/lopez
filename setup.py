@@ -4,6 +4,15 @@ import config
 import json
 
 
+async def safe_table_create(connection, table_exec: str):
+    try:
+        print(await connection.execute(table_exec))
+    except asyncpg.DuplicateTableError:
+        print(
+            "That table already exists! If you're upgrading you can safely ignore this, if not, please drop that table and run this script again."
+        )
+
+
 async def main():
     print(
         "I will now attempt to connect to database {} on host {} as user {}".format(
@@ -23,49 +32,36 @@ async def main():
     else:
         print("Connected!")
         print("Creating table dnd_chars...")
-        try:
-            print(
-                await conn.execute(
-                    """
-                    CREATE TABLE dnd_chars (\
-                            character_id serial PRIMARY KEY,\
-                            name varchar NOT NULL,\
-                            strength smallint NOT NULL,\
-                            dexterity smallint NOT NULL,\
-                            constitution smallint NOT NULL,\
-                            intelligence smallint NOT NULL,\
-                            wisdom smallint NOT NULL,\
-                            charisma smallint NOT NULL,\
-                            race varchar NOT NULL,\
-                            discord_id varchar NOT NULL,\
-                            levels integer[],\
-                            classes varchar[]
-                    )
-                    """
-                )
-            )
-        except asyncpg.DuplicateTableError:
-            print(
-                "That table already exists! If you're upgrading you can safely ignore this, if not, please drop that table and run this script again."
-            )
+        await safe_table_create(
+            conn,
+            """
+        CREATE TABLE dnd_chars (\
+            character_id serial PRIMARY KEY,\
+            name varchar NOT NULL,\
+            strength smallint NOT NULL,\
+            dexterity smallint NOT NULL,\
+            constitution smallint NOT NULL,\
+            intelligence smallint NOT NULL,\
+            wisdom smallint NOT NULL,\
+            charisma smallint NOT NULL,\
+            race varchar NOT NULL,\
+            discord_id varchar NOT NULL,\
+            levels integer[],\
+            classes varchar[])
+        """,
+        )
         print("Creating table role_table...")
-        try:
-            print(
-                await conn.execute(
-                    """
-                    CREATE TABLE role_table(
-                        internal serial PRIMARY KEY,
-                        server_id bigint NOT NULL,
-                        available bigint[] NOT NULL,
-                        special bigint[] NOT NULL
-                    )
-                    """
-                )
+        await safe_table_create(
+            conn,
+            """
+            CREATE TABLE role_table(
+                internal serial PRIMARY KEY,
+                server_id bigint NOT NULL,
+                available bigint[] NOT NULL,
+                special bigint[] NOT NULL
             )
-        except asyncpg.DuplicateTableError:
-            print(
-                "That table already exists! If you're upgrading you can safely ignore this, if not, please drop that table and run this script again."
-            )
+            """,
+        )
         print("Attempting to import old role.json")
         try:
             with open("role.json", "r") as role:
@@ -82,23 +78,37 @@ async def main():
         else:
             print("Imported role.json.")
         print("Creating table guild_table...")
-        try:
-            print(
-                await conn.execute(
-                    """
-                    CREATE TABLE guild_table(
-                        internal serial PRIMARY KEY,
-                        guild_id bigint NOT NULL,
-                        default_permission jsonb,
-                        esrb varchar(5)
-                    )
-                    """
-                )
+        await safe_table_create(
+            conn,
+            """
+            CREATE TABLE guild_table(
+                internal serial PRIMARY KEY,
+                guild_id bigint NOT NULL,
+                default_permission jsonb,
+                esrb varchar(5)
             )
-        except asyncpg.DuplicateTableError:
-            print(
-                "That table already exists! If you're upgrading you can safely ignore this, if not, please drop that table and run this script again."
+            """,
+        )
+        print("Creating table timetable...")
+        await safe_table_create(
+            conn,
+            """
+            CREATE TABLE timetable(
+                member bigint PRIMARY KEY,
+                seconds numeric NOT NULL DEFAULT 0
             )
+            """,
+        )
+        print("Creating table timekeeper...")
+        await safe_table_create(
+            conn,
+            """
+            CREATE TABLE timekeeper(
+                member bigint PRIMARY KEY,
+                time_in decimal
+            )
+            """,
+        )
         print("Setting unique constraints and defaults...")
         # dnd table
         await conn.execute("""ALTER TABLE dnd_chars ADD UNIQUE (discord_id)""")
