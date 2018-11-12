@@ -12,7 +12,7 @@ class parts:
 
     @staticmethod
     def andy_part(part_num: str) -> str:
-        return "https://www.andymark.com/product-p/{}.htm".format(part_num)
+        return "https://andymark.com/{}".format(part_num)
 
     @staticmethod
     def mcmaster_part(part_num: str) -> str:
@@ -66,12 +66,8 @@ class parts:
         s = ""
         for p in part_numbers:
             _p = await self.get_anymark_part_page(p)
-            if (
-                _p.title.contents[0].lower()
-                == "andymark robot parts kits mecanum omni wheels"
-            ):
+            if _p.title.contents[0].lower() == "not found - andymark inc.":
                 # for some god-forsaken reason AM doesn't properly 404
-                # i guess it's for thier meme not found page but it's really annoying
                 r[p] = "Could not find part `{}`".format(p)
             else:
                 r[_p.title.contents[0]] = self.andy_part(p)
