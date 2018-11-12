@@ -106,9 +106,7 @@ class parts:
         for p in part_numbers:
             _p = None
             try:
-                print("trying to scrape page")
                 _p = await self.get_anymark_part_page(p)
-                print(_p)
             except (NotFound, InternalServerError):
                 r[p] = "Could not find part `{}`".format(p)
             else:
@@ -132,7 +130,13 @@ class parts:
         r = {}
         s = ""
         for p in part_numbers:
-            r[p] = parts.mcmaster_part(p)
+            _p = None
+            try:
+                _p = await self.get_mcmaster_part_page(p)
+            except (NotFound, InternalServerError):
+                r[p] = "Could not find part `{}`".format(p)
+            else:
+                r[_p.title.contents[0]] = self.mcmaster_part(p)
         for key, value in r.items():
             s += "{}: {}\n".format(key, value)
         await ctx.send(s)
