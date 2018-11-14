@@ -5,6 +5,39 @@ from discord.ext import commands
 from typing import List, Optional
 
 
+class HTTPError(Exception):
+    def __init__(self, response, message):
+        self.response = response
+        self.status = response.status
+        if isinstance(message, dict):
+            self.code = message.get("code", 0)
+            base = message.get("message", "")
+            errors = message.get("errors")
+            if errors:
+                errors = flatten_error_dict(errors)
+                helpful = "\n".join("In %s: %s" % t for t in errors.items())
+                self.text = base + "\n" + helpful
+            else:
+                self.text = base
+        else:
+            self.text = message
+            self.code = 0
+
+        fmt = "{0.reason} (status code: {0.status})"
+        if len(self.text):
+            fmt = fmt + ": {1}"
+
+        super().__init__(fmt.format(self.response, self.text))
+
+
+class NotFound(HTTPError):
+    pass
+
+
+class InternalServerError(HTTPError):
+    pass
+
+
 class parts:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -12,7 +45,7 @@ class parts:
 
     @staticmethod
     def andy_part(part_num: str) -> str:
-        return "https://www.andymark.com/product-p/{}.htm".format(part_num)
+        return "https://andymark.com/{}".format(part_num)
 
     @staticmethod
     def mcmaster_part(part_num: str) -> str:
@@ -25,7 +58,9 @@ class parts:
                 data = await resp.text()
                 return BeautifulSoup(data, features="html5lib")
             elif resp.status == 404:
-                raise discord.NotFound(resp, "Not found")
+                raise NotFound(resp, "Not found")
+            else:
+                raise InternalServerError(resp, "AndyMark is bad")
 
     async def get_mcmaster_part_page(self, part_num: str) -> BeautifulSoup:
         url = parts.mcmaster_part(part_num)
@@ -33,6 +68,10 @@ class parts:
             if 300 > resp.status >= 200:
                 data = await resp.text()
                 return BeautifulSoup(data, features="html5lib")
+            elif resp.status == 404:
+                raise NotFound(resp, "Not found")
+            else:
+                raise InternalServerError(resp, "Something went wrong at McMaster Carr")
 
     @commands.group(
         invoke_without_command=True, aliases=["parts"], case_insensitive=True
@@ -65,16 +104,17 @@ class parts:
         r = {}
         s = ""
         for p in part_numbers:
-            _p = await self.get_anymark_part_page(p)
-            if (
-                _p.title.contents[0].lower()
-                == "andymark robot parts kits mecanum omni wheels"
-            ):
-                # for some god-forsaken reason AM doesn't properly 404
-                # i guess it's for thier meme not found page but it's really annoying
+            _p = None
+            try:
+                _p = await self.get_anymark_part_page(p)
+            except (NotFound, InternalServerError):
                 r[p] = "Could not find part `{}`".format(p)
             else:
-                r[_p.title.contents[0]] = self.andy_part(p)
+                if _p.title.contents[0].lower() == "not found - andymark inc.":
+                    # for some god-forsaken reason AM doesn't properly 404
+                    r[p] = "Could not find part `{}`".format(p)
+                else:
+                    r[_p.title.contents[0]] = self.andy_part(p)
         for key, value in r.items():
             s += "{}: {}\n".format(key, value)
         await ctx.send(s)
@@ -90,7 +130,13 @@ class parts:
         r = {}
         s = ""
         for p in part_numbers:
-            r[p] = parts.mcmaster_part(p)
+            _p = None
+            try:
+                _p = await self.get_mcmaster_part_page(p)
+            except (NotFound, InternalServerError):
+                r[p] = "Could not find part `{}`".format(p)
+            else:
+                r[_p.title.contents[0]] = self.mcmaster_part(p)
         for key, value in r.items():
             s += "{}: {}\n".format(key, value)
         await ctx.send(s)
