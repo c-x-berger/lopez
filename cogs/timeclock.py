@@ -30,7 +30,6 @@ class timeclock:
 
     async def save_clock_state(self, clock: dict):
         async with self.bot.connect_pool.acquire() as conn:
-            await conn.execute("""TRUNCATE timekeeper""")
             for key, value in clock.items():
                 await conn.execute(
                     """
