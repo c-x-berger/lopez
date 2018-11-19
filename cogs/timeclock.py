@@ -1,6 +1,6 @@
 import asyncpg
 import boiler
-from datetime import timedelta
+import discord
 from discord.ext import commands
 import time
 from typing import Dict
@@ -19,31 +19,24 @@ class timeclock:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def get_clock_state(self) -> Dict[int, float]:
-        state = []
-        r = {}
+    async def remove_from_keeper(self, user: int):
         async with self.bot.connect_pool.acquire() as conn:
-            state = await conn.fetch("""SELECT * FROM timekeeper""")
-        for member in state:
-            r[member["member"]] = float(member["time_in"])
-        return r
+            await conn.execute("DELETE FROM timekeeper WHERE member = $1", user)
 
-    async def save_clock_state(self, clock: dict):
+    async def add_to_keeper(self, user: int, guild_id: int, t_: int = None):
+        t = time.time() if t_ is None else t_
         async with self.bot.connect_pool.acquire() as conn:
-            for key, value in clock.items():
-                await conn.execute(
-                    """
-                    INSERT INTO timekeeper (member, time_in) VALUES ($1, $2)
-                    ON CONFLICT (member) DO UPDATE SET time_in = $2
-                    """,
-                    key,
-                    value,
-                )
+            await conn.execute(
+                "INSERT INTO timekeeper(member, time_in, guild) VALUES ($1, $2, $3)",
+                user,
+                t,
+                guild_id,
+            )
 
     async def get_total_time(self, user: int) -> float:
         async with self.bot.connect_pool.acquire() as conn:
             rec = await conn.fetchrow(
-                """SELECT * FROM timetable WHERE member = $1""", user
+                """SELECT seconds FROM timetable WHERE member = $1""", user
             )
             return float(rec["seconds"]) if rec is not None else 0
 
@@ -79,11 +72,21 @@ class timeclock:
             return
         elif ctx.subcommand_passed is None:
             u = ctx.author.id
-            clock_state = await self.get_clock_state()
-            if u in clock_state.keys():
+            g = ctx.guild.id
+            is_in = False
+            async with self.bot.connect_pool.acquire() as conn:
+                mem_rows = await conn.fetch(
+                    "SELECT member FROM timekeeper WHERE member = $1", u
+                )
+                is_in = len(mem_rows) > 0
+            if is_in:
                 # clock out
-                total = timedelta(seconds=time.time() - clock_state[u])
-                del clock_state[u]
+                time_in = 0
+                async with self.bot.connect_pool.acquire() as conn:
+                    time_in = await conn.fetchval(
+                        "SELECT time_in FROM timekeeper WHERE member = $1", u
+                    )
+                total = time.time() - float(time_in)
                 async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute(
                         """
@@ -92,21 +95,75 @@ class timeclock:
                         ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
                         """,
                         u,
-                        total.total_seconds(),
+                        total,
                     )
-                await self.save_clock_state(clock_state)
+                await self.remove_from_keeper(u)
                 await ctx.send(
                     "I have recorded {:.2} hours. You are now clocked out.".format(
-                        total.total_seconds() / 3600.0
+                        total / 3600.0
                     )
                 )
             else:
                 # clock in
-                clock_state[u] = time.time()
-                await self.save_clock_state(clock_state)
+                await self.add_to_keeper(u, g, time.time())
                 await ctx.send("You are now clocked in.")
         else:
             await ctx.invoke(self.bot.get_command("help"), "clock")
+
+    @commands.group()
+    async def force(self, ctx: commands.Context):
+        if ctx.invoked_subcommand is None:
+            await ctx.invoke(self.bot.get_command("help"), "force")
+
+    @force.command(name="in")
+    @commands.has_permissions(kick_members=True)
+    async def f_in(
+        self, ctx: commands.Context, members: commands.Greedy[discord.Member]
+    ):
+        t = time.time()
+        for member in members:
+            try:
+                await self.add_to_keeper(member.id, ctx.guild.id, t)
+            except asyncpg.UniqueViolationError:
+                await ctx.send("{} is already clocked in!".format(member.mention))
+            else:
+                await ctx.send("Clocked {} in.".format(member.mention))
+
+    @force.command(name="out")
+    @commands.has_permissions(kick_members=True)
+    async def f_out(
+        self, ctx: commands.Context, members: commands.Greedy[discord.Member]
+    ):
+        t = time.time()
+        for member in members:
+            # clock out
+            time_in = 0
+            async with self.bot.connect_pool.acquire() as conn:
+                time_in = await conn.fetchrow(
+                    "SELECT time_in, guild FROM timekeeper WHERE member = $1", member.id
+                )
+            if time_in["guild"] != ctx.guild.id:
+                await ctx.send(
+                    "Member {} didn't clock in in this guild!".format(member.mention)
+                )
+                continue
+            total = time.time() - float(time_in["time_in"])
+            async with self.bot.connect_pool.acquire() as conn:
+                await conn.execute(
+                    """
+                    INSERT INTO timetable (member, seconds)
+                    VALUES ($1, $2)
+                    ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
+                    """,
+                    member.id,
+                    total,
+                )
+            await self.remove_from_keeper(member.id)
+            await ctx.send(
+                "I have recorded {:.2} hours. {} is now clocked out.".format(
+                    total / 3600.0, member.mention
+                )
+            )
 
     @clock.command(aliases=["status"], description=STATUS_DESC)
     async def state(self, ctx: commands.Context):
@@ -114,7 +171,7 @@ class timeclock:
         session_start = None
         async with self.bot.connect_pool.acquire() as conn:
             rec = await conn.fetchrow(
-                """SELECT * FROM timekeeper WHERE member = $1""", ctx.author.id
+                """SELECT time_in FROM timekeeper WHERE member = $1""", ctx.author.id
             )
             session_start = float(rec["time_in"]) if rec is not None else None
         total_time = await self.get_total_time(ctx.author.id)
