@@ -19,15 +19,6 @@ class timeclock:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def get_clock_state(self) -> Dict[int, float]:
-        state = []
-        r = {}
-        async with self.bot.connect_pool.acquire() as conn:
-            state = await conn.fetch("""SELECT * FROM timekeeper""")
-        for member in state:
-            r[member["member"]] = float(member["time_in"])
-        return r
-
     async def remove_from_keeper(self, user: int):
         async with self.bot.connect_pool.acquire() as conn:
             await conn.execute("DELETE FROM timekeeper WHERE member = $1", user)
