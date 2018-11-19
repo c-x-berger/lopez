@@ -108,7 +108,7 @@ class timeclock:
         session_start = None
         async with self.bot.connect_pool.acquire() as conn:
             rec = await conn.fetchrow(
-                """SELECT * FROM timekeeper WHERE member = $1""", ctx.author.id
+                """SELECT time_in FROM timekeeper WHERE member = $1""", ctx.author.id
             )
             session_start = float(rec["time_in"]) if rec is not None else None
         total_time = await self.get_total_time(ctx.author.id)
