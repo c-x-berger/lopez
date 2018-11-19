@@ -40,6 +40,17 @@ class timeclock:
                     value,
                 )
 
+    async def remove_from_keeper(self, user: int):
+        async with self.bot.connect_pool.acquire() as conn:
+            await conn.execute("DELETE FROM timekeeper WHERE member = $1", user)
+
+    async def add_to_keeper(self, user: int, t_: int = None):
+        t = time.time() if t_ is None else t_
+        async with self.bot.connect_pool.acquire() as conn:
+            await conn.execute(
+                "INSERT INTO timekeeper(member, time_in) VALUES ($1, $2)", user, t
+            )
+
     async def get_total_time(self, user: int) -> float:
         async with self.bot.connect_pool.acquire() as conn:
             rec = await conn.fetchrow(
@@ -79,6 +90,7 @@ class timeclock:
             return
         elif ctx.subcommand_passed is None:
             u = ctx.author.id
+            g = ctx.guild.id
             clock_state = await self.get_clock_state()
             if u in clock_state.keys():
                 # clock out
@@ -94,7 +106,7 @@ class timeclock:
                         u,
                         total.total_seconds(),
                     )
-                await self.save_clock_state(clock_state)
+                await self.remove_from_keeper(u)
                 await ctx.send(
                     "I have recorded {:.2} hours. You are now clocked out.".format(
                         total.total_seconds() / 3600.0
@@ -102,8 +114,7 @@ class timeclock:
                 )
             else:
                 # clock in
-                clock_state[u] = time.time()
-                await self.save_clock_state(clock_state)
+                await self.add_to_keeper(u, time.time())
                 await ctx.send("You are now clocked in.")
         else:
             await ctx.invoke(self.bot.get_command("help"), "clock")
