@@ -86,13 +86,12 @@ class timeclock:
                 async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute(
                         """
-                        INSERT INTO timetable (member, seconds, guild)
+                        INSERT INTO timetable (member, seconds)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
                         """,
                         u,
                         total,
-                        g,
                     )
                 await self.remove_from_keeper(u)
                 await ctx.send(
@@ -106,6 +105,17 @@ class timeclock:
                 await ctx.send("You are now clocked in.")
         else:
             await ctx.invoke(self.bot.get_command("help"), "clock")
+
+    @commands.group()
+    async def force(self, ctx: commands.Context):
+        await ctx.invoke(self.bot.get_command("help"), "force")
+
+    @force.command(name="in")
+    async def f_in(self, ctx: commands.Context, *members):
+        t = time.time()
+        for member in members:
+            await self.add_to_keeper(member.id, t)
+            await ctx.send("Clocked {} in.".format(member.mention))
 
     @clock.command(aliases=["status"], description=STATUS_DESC)
     async def state(self, ctx: commands.Context):
