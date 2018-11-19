@@ -86,12 +86,13 @@ class timeclock:
                 async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute(
                         """
-                        INSERT INTO timetable (member, seconds)
-                        VALUES ($1, $2)
+                        INSERT INTO timetable (member, seconds, guild)
+                        VALUES ($1, $2, $3)
                         ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
                         """,
                         u,
                         total,
+                        g,
                     )
                 await self.remove_from_keeper(u)
                 await ctx.send(
