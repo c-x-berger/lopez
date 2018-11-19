@@ -28,18 +28,6 @@ class timeclock:
             r[member["member"]] = float(member["time_in"])
         return r
 
-    async def save_clock_state(self, clock: dict):
-        async with self.bot.connect_pool.acquire() as conn:
-            for key, value in clock.items():
-                await conn.execute(
-                    """
-                    INSERT INTO timekeeper (member, time_in) VALUES ($1, $2)
-                    ON CONFLICT (member) DO UPDATE SET time_in = $2
-                    """,
-                    key,
-                    value,
-                )
-
     async def remove_from_keeper(self, user: int):
         async with self.bot.connect_pool.acquire() as conn:
             await conn.execute("DELETE FROM timekeeper WHERE member = $1", user)
