@@ -79,11 +79,15 @@ class timeclock:
         elif ctx.subcommand_passed is None:
             u = ctx.author.id
             g = ctx.guild.id
-            clock_state = await self.get_clock_state()
-            if u in clock_state.keys():
+            is_in = False
+            async with self.bot.connect_pool.acquire() as conn:
+                mem_rows = await conn.fetch(
+                    "SELECT member FROM timekeeper WHERE member = $1", u
+                )
+                is_in = len(mem_rows) > 0
+            if is_in:
                 # clock out
                 total = timedelta(seconds=time.time() - clock_state[u])
-                del clock_state[u]
                 async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute(
                         """
