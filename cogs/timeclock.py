@@ -1,6 +1,5 @@
 import asyncpg
 import boiler
-from datetime import timedelta
 from discord.ext import commands
 import time
 from typing import Dict
@@ -78,7 +77,12 @@ class timeclock:
                 is_in = len(mem_rows) > 0
             if is_in:
                 # clock out
-                total = timedelta(seconds=time.time() - clock_state[u])
+                time_in = 0
+                async with self.bot.connect_pool.acquire() as conn:
+                    time_in = await conn.fetchval(
+                        "SELECT time_in FROM timekeeper WHERE member = $1", u
+                    )
+                total = time.time() - float(time_in)
                 async with self.bot.connect_pool.acquire() as conn:
                     await conn.execute(
                         """
@@ -87,12 +91,12 @@ class timeclock:
                         ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
                         """,
                         u,
-                        total.total_seconds(),
+                        total,
                     )
                 await self.remove_from_keeper(u)
                 await ctx.send(
                     "I have recorded {:.2} hours. You are now clocked out.".format(
-                        total.total_seconds() / 3600.0
+                        total / 3600.0
                     )
                 )
             else:
