@@ -42,7 +42,7 @@ class timeclock:
     async def get_total_time(self, user: int) -> float:
         async with self.bot.connect_pool.acquire() as conn:
             rec = await conn.fetchrow(
-                """SELECT * FROM timetable WHERE member = $1""", user
+                """SELECT seconds FROM timetable WHERE member = $1""", user
             )
             return float(rec["seconds"]) if rec is not None else 0
 
