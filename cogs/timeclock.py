@@ -1,5 +1,6 @@
 import asyncpg
 import boiler
+import discord
 from discord.ext import commands
 import time
 from typing import Dict
@@ -22,11 +23,14 @@ class timeclock:
         async with self.bot.connect_pool.acquire() as conn:
             await conn.execute("DELETE FROM timekeeper WHERE member = $1", user)
 
-    async def add_to_keeper(self, user: int, t_: int = None):
+    async def add_to_keeper(self, user: int, guild_id: int, t_: int = None):
         t = time.time() if t_ is None else t_
         async with self.bot.connect_pool.acquire() as conn:
             await conn.execute(
-                "INSERT INTO timekeeper(member, time_in) VALUES ($1, $2)", user, t
+                "INSERT INTO timekeeper(member, time_in, guild) VALUES ($1, $2, $3)",
+                user,
+                t,
+                guild_id,
             )
 
     async def get_total_time(self, user: int) -> float:
@@ -87,7 +91,7 @@ class timeclock:
                     await conn.execute(
                         """
                         INSERT INTO timetable (member, seconds)
-                        VALUES ($1, $2, $3)
+                        VALUES ($1, $2)
                         ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
                         """,
                         u,
@@ -101,21 +105,65 @@ class timeclock:
                 )
             else:
                 # clock in
-                await self.add_to_keeper(u, time.time())
+                await self.add_to_keeper(u, g, time.time())
                 await ctx.send("You are now clocked in.")
         else:
             await ctx.invoke(self.bot.get_command("help"), "clock")
 
     @commands.group()
     async def force(self, ctx: commands.Context):
-        await ctx.invoke(self.bot.get_command("help"), "force")
+        if ctx.invoked_subcommand is None:
+            await ctx.invoke(self.bot.get_command("help"), "force")
 
     @force.command(name="in")
-    async def f_in(self, ctx: commands.Context, *members):
+    @commands.has_permissions(kick_members=True)
+    async def f_in(
+        self, ctx: commands.Context, members: commands.Greedy[discord.Member]
+    ):
         t = time.time()
         for member in members:
-            await self.add_to_keeper(member.id, t)
-            await ctx.send("Clocked {} in.".format(member.mention))
+            try:
+                await self.add_to_keeper(member.id, ctx.guild.id, t)
+            except asyncpg.UniqueViolationError:
+                await ctx.send("{} is already clocked in!".format(member.mention))
+            else:
+                await ctx.send("Clocked {} in.".format(member.mention))
+
+    @force.command(name="out")
+    @commands.has_permissions(kick_members=True)
+    async def f_out(
+        self, ctx: commands.Context, members: commands.Greedy[discord.Member]
+    ):
+        t = time.time()
+        for member in members:
+            # clock out
+            time_in = 0
+            async with self.bot.connect_pool.acquire() as conn:
+                time_in = await conn.fetchrow(
+                    "SELECT time_in, guild FROM timekeeper WHERE member = $1", member.id
+                )
+            if time_in["guild"] != ctx.guild.id:
+                await ctx.send(
+                    "Member {} didn't clock in in this guild!".format(member.mention)
+                )
+                continue
+            total = time.time() - float(time_in["time_in"])
+            async with self.bot.connect_pool.acquire() as conn:
+                await conn.execute(
+                    """
+                    INSERT INTO timetable (member, seconds)
+                    VALUES ($1, $2)
+                    ON CONFLICT (member) DO UPDATE SET seconds = timetable.seconds + $2
+                    """,
+                    member.id,
+                    total,
+                )
+            await self.remove_from_keeper(member.id)
+            await ctx.send(
+                "I have recorded {:.2} hours. {} is now clocked out.".format(
+                    total / 3600.0, member.mention
+                )
+            )
 
     @clock.command(aliases=["status"], description=STATUS_DESC)
     async def state(self, ctx: commands.Context):
