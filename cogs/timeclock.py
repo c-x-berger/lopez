@@ -120,6 +120,7 @@ class timeclock:
     async def f_in(
         self, ctx: commands.Context, members: commands.Greedy[discord.Member]
     ):
+        """Forcibly clock guild members in."""
         t = time.time()
         for member in members:
             try:
@@ -134,6 +135,7 @@ class timeclock:
     async def f_out(
         self, ctx: commands.Context, members: commands.Greedy[discord.Member]
     ):
+        """Forcibly clock users out. They must have clocked in in this guild."""
         t = time.time()
         for member in members:
             # clock out
