@@ -14,7 +14,7 @@ STATUS_DESC = "Show your current clock state. Includes total hours, if you're cl
 
 class timeclock:
     """
-    Timeclock commands. Note that your recorded hours and clock state are GLOBAL, i.e. not per guild.
+    Timeclock commands. Hours and in/out state are recorded per guild.
     """
 
     def __init__(self, bot: commands.Bot):
