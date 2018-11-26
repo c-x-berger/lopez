@@ -193,6 +193,7 @@ class timeclock:
     async def add_hours(
         self, ctx: commands.Context, hours: int, member: Optional[discord.Member] = None
     ):
+        """Add hours to members (or yourself, if no member is specified.)"""
         if member is not None:
             # changing someone else
             # check if they clocked in here
@@ -201,15 +202,15 @@ class timeclock:
                 in_loc = await conn.fetchval(
                     "SELECT guild FROM timekeeper WHERE member = $1", member.id
                 )
-            if in_loc == ctx.guild.id and ctx.author.guild_permissions.kick_members:
-                await self.add_time_to_table(member, ctx.guild.id, hours * 3600.0)
+            if ctx.author.guild_permissions.kick_members:
+                await self.add_time_to_table(member.id, ctx.guild.id, hours * 3600.0)
                 await ctx.send(
                     "Added {} hours to the log for {}. Whether they have clocked in or not has **not** been changed.".format(
                         hours, member.mention
                     )
                 )
-            elif ctx.author.guild_permissions.kick_members:
-                await ctx.send("That member didn't clock in from this guild!")
+            else:
+                await ctx.send("You don't have the power (Kick Members) to do that!")
         else:
             # changing self
             if hours > 0:
