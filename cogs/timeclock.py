@@ -147,24 +147,26 @@ class timeclock:
         t = time.time()
         for member in members:
             # clock out
-            time_in = 0
+            time_in = None
             async with self.bot.connect_pool.acquire() as conn:
-                time_in = await conn.fetchrow(
-                    "SELECT time_in, guild FROM timekeeper WHERE member = $1", member.id
+                time_in = await conn.fetchval(
+                    "SELECT time_in FROM timekeeper WHERE member = $1 AND guild = $1",
+                    member.id,
+                    ctx.guild.id,
                 )
-            if time_in["guild"] != ctx.guild.id:
+            if time_in is None:
                 await ctx.send(
-                    "Member {} didn't clock in in this guild!".format(member.mention)
+                    "Member {} isn't clocked in for this guild!".format(member.mention)
                 )
-                continue
-            total = time.time() - float(time_in["time_in"])
-            await self.add_time_to_table(member.id, ctx.guild.id, total)
-            await self.remove_from_keeper(member.id, ctx.guild.id)
-            await ctx.send(
-                "I have recorded {} hours. {} is now clocked out.".format(
-                    round(total / 3600.0, 2), member.mention
+            else:
+                total = time.time() - float(time_in)
+                await self.add_time_to_table(member.id, ctx.guild.id, total)
+                await self.remove_from_keeper(member.id, ctx.guild.id)
+                await ctx.send(
+                    "I have recorded {} hours. {} is now clocked out.".format(
+                        round(total / 3600.0, 2), member.mention
+                    )
                 )
-            )
 
     @clock.command(aliases=["status"], description=STATUS_DESC)
     async def state(self, ctx: commands.Context):
