@@ -105,17 +105,7 @@ class timeclock:
                         g,
                     )
                 total = time.time() - float(time_in)
-                async with self.bot.connect_pool.acquire() as conn:
-                    await conn.execute(
-                        """
-                        INSERT INTO timetable (member, seconds, guild)
-                        VALUES ($1, $2, $3)
-                        ON CONFLICT (member, guild) DO UPDATE SET seconds = timetable.seconds + $2
-                        """,
-                        u,
-                        total,
-                        g,
-                    )
+                await self.add_time_to_table(u, g, total)
                 await self.remove_from_keeper(u, g)
                 await ctx.send(
                     "I have recorded {:.2} hours. You are now clocked out.".format(
@@ -169,17 +159,7 @@ class timeclock:
                 )
                 continue
             total = time.time() - float(time_in["time_in"])
-            async with self.bot.connect_pool.acquire() as conn:
-                await conn.execute(
-                    """
-                    INSERT INTO timetable (member, seconds, guild)
-                    VALUES ($1, $2, $3)
-                    ON CONFLICT (member, guild) DO UPDATE SET seconds = timetable.seconds + $2
-                    """,
-                    member.id,
-                    total,
-                    ctx.guild.id,
-                )
+            await self.add_time_to_table(member.id, ctx.guild.id, total)
             await self.remove_from_keeper(member.id, ctx.guild.id)
             await ctx.send(
                 "I have recorded {:.2} hours. {} is now clocked out.".format(
@@ -223,13 +203,7 @@ class timeclock:
                     "SELECT guild FROM timekeeper WHERE member = $1", member.id
                 )
             if in_loc == ctx.guild.id and ctx.author.guild_permissions.kick_members:
-                async with self.bot.connect_pool.acquire() as conn:
-                    await conn.execute(
-                        "INSERT INTO timetable (member, seconds, guild) VALUES ($1, $2, $3) ON CONFLICT (member, guild) DO UPDATE SET seconds = timetable.seconds + $2",
-                        member.id,
-                        hours * 3600.0,
-                        ctx.guild.id,
-                    )
+                await self.add_time_to_table(member, ctx.guild.id, hours * 3600.0)
                 await ctx.send(
                     "Added {} hours to the log for {}. Whether they have clocked in or not has **not** been changed.".format(
                         hours, member.mention
@@ -264,13 +238,9 @@ class timeclock:
                             str(hours)
                         )
                     )
-                    async with self.bot.connect_pool.acquire() as conn:
-                        await conn.execute(
-                            "INSERT INTO timetable (member, seconds, guild) VALUES ($1, $2, $3) ON CONFLICT (member, guild) DO UPDATE SET seconds = timetable.seconds + $2",
-                            ctx.author.id,
-                            hours * 3600.0,
-                            ctx.guild.id,
-                        )
+                    await self.add_time_to_table(
+                        ctx.author.id, ctx.guild.id, hours * 3600.0
+                    )
 
 
 def setup(bot: commands.Bot):
