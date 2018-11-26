@@ -27,12 +27,11 @@ class timeclock:
             )
 
     async def add_to_keeper(self, user: int, guild_id: int, t_: int = None):
-        t = time.time() if t_ is None else t_
         async with self.bot.connect_pool.acquire() as conn:
             await conn.execute(
                 "INSERT INTO timekeeper(member, time_in, guild) VALUES ($1, $2, $3)",
                 user,
-                t,
+                t_ if t_ is not None else time.time(),
                 guild_id,
             )
 
