@@ -79,7 +79,7 @@ class timeclock:
         )
         await ctx.send(None, embed=em, delete_after=5)
 
-    @commands.group(description=CLOCK_DESC, aliases=["in", "out"])
+    @commands.group(description=CLOCK_DESC)
     async def clock(self, ctx: commands.Context):
         """Clock in/out."""
         if ctx.invoked_subcommand is not None:
