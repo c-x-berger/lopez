@@ -58,8 +58,8 @@ class timeclock:
         """Display the number of hours you've reccorded."""
         seconds = await self.get_total_time(ctx.author.id, ctx.guild.id)
         await ctx.send(
-            "You have {:.2} hours on record, {}.".format(
-                seconds / 3600.0, ctx.author.mention
+            "You have {} hours on record, {}.".format(
+                round(seconds / 3600.0, 2), ctx.author.mention
             )
         )
 
@@ -107,8 +107,8 @@ class timeclock:
                 await self.add_time_to_table(u, g, total)
                 await self.remove_from_keeper(u, g)
                 await ctx.send(
-                    "I have recorded {:.2} hours. You are now clocked out.".format(
-                        total / 3600.0
+                    "I have recorded {} hours. You are now clocked out.".format(
+                        round(total / 3600.0, 2)
                     )
                 )
             else:
@@ -161,8 +161,8 @@ class timeclock:
             await self.add_time_to_table(member.id, ctx.guild.id, total)
             await self.remove_from_keeper(member.id, ctx.guild.id)
             await ctx.send(
-                "I have recorded {:.2} hours. {} is now clocked out.".format(
-                    total / 3600.0, member.mention
+                "I have recorded {} hours. {} is now clocked out.".format(
+                    round(total / 3600.0, 2), member.mention
                 )
             )
 
@@ -178,12 +178,12 @@ class timeclock:
             )
             session_start = float(rec["time_in"]) if rec is not None else None
         total_time = await self.get_total_time(ctx.author.id, ctx.guild.id)
-        send = "You have {:.2} hours on record, {}.".format(
-            total_time / 3600.0, ctx.author.mention
+        send = "You have {} hours on record, {}.".format(
+            round(total_time / 3600.0, 2), ctx.author.mention
         )
         if session_start is not None:
-            send += "\nYou are clocked in. In this session, you have recorded {:.2} hours so far.".format(
-                (time.time() - session_start) / 3600
+            send += "\nYou are clocked in. In this session, you have recorded {} hours so far.".format(
+                round((time.time() - session_start) / 3600.0, 2)
             )
         else:
             send += "\nYou are currently clocked out."
