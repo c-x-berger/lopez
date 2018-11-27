@@ -34,104 +34,90 @@ class roles:
     @commands.command(
         description='Adds a role to giveme. Any user will be able to give themselves the role with giveme <role>. Caller must have "Manage Roles".'
     )
+    @commands.has_permissions(manage_roles=True)
     async def add_giveme(self, ctx: commands.Context, *, role: discord.Role):
         """Adds a role to giveme"""
-        if ctx.channel.permissions_for(ctx.author).manage_roles:
-            async with self.bot.connect_pool.acquire() as conn:
-                await conn.execute(
-                    """UPDATE role_table SET available = available || $1 WHERE server_id = $2""",
-                    [role.id],
-                    ctx.guild.id,
-                )
-                await conn.execute(
-                    """UPDATE role_table SET special = array_remove(special, $1) WHERE server_id = $2""",
-                    role.id,
-                    ctx.guild.id,
-                )
-            if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
-                await ctx.send(
-                    "Added {} to {}'s giveme roles.".format(role, ctx.guild.name)
-                )
-            else:
-                await ctx.send(
-                    "Added {} to {}' giveme roles.".format(role, ctx.guild.name)
-                )
+        async with self.bot.connect_pool.acquire() as conn:
+            await conn.execute(
+                """UPDATE role_table SET available = available || $1 WHERE server_id = $2""",
+                [role.id],
+                ctx.guild.id,
+            )
+            await conn.execute(
+                """UPDATE role_table SET special = array_remove(special, $1) WHERE server_id = $2""",
+                role.id,
+                ctx.guild.id,
+            )
+        if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
+            await ctx.send(
+                "Added {} to {}'s giveme roles.".format(role, ctx.guild.name)
+            )
         else:
-            await ctx.send("You're not allowed to do that!")
+            await ctx.send("Added {} to {}' giveme roles.".format(role, ctx.guild.name))
 
     @commands.command(
         description='Removes a role from giveme. The role will show as not configured to users. Caller must have "Manage Roles".'
     )
+    @commands.has_permissions(manage_roles=True)
     async def remove_giveme(self, ctx: commands.Context, *, role: discord.Role):
         """Removes a role from giveme without marking it as blocked."""
-        if ctx.channel.permissions_for(ctx.author).manage_roles:
-            guilddict = await self.get_guild_dict(ctx.guild.id)
-            if not role.id in guilddict["available"]:
-                await ctx.send("That role wasn't in giveme to begin with!")
-                return
-            else:
-                # do stuff
-                async with self.bot.connect_pool.acquire() as conn:
-                    await conn.execute(
-                        """UPDATE role_table SET available = array_remove(available, $1) WHERE server_id = $2""",
-                        role.id,
-                        ctx.guild.id,
-                    )
-                await ctx.send("Removed {} from giveme roles.".format(role.name))
+        guilddict = await self.get_guild_dict(ctx.guild.id)
+        if not role.id in guilddict["available"]:
+            await ctx.send("That role wasn't in giveme to begin with!")
+            return
         else:
-            await ctx.send("You're not allowed to do that!")
-
-    @commands.command(
-        description='Blocks a role from giveme. The role will show as "special", and users will not be able to give them to or remove them from themselves. Caller must have "Manage Roles".'
-    )
-    async def add_special(self, ctx: commands.Context, *, role: discord.Role):
-        """Blocks a role from giveme."""
-        if ctx.channel.permissions_for(ctx.author).manage_roles:
+            # do stuff
             async with self.bot.connect_pool.acquire() as conn:
                 await conn.execute(
                     """UPDATE role_table SET available = array_remove(available, $1) WHERE server_id = $2""",
                     role.id,
                     ctx.guild.id,
                 )
-                await conn.execute(
-                    """UPDATE role_table SET special = special || $1 WHERE server_id = $2""",
-                    [role.id],
-                    ctx.guild.id,
-                )
-            if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
-                await ctx.send(
-                    "Blocked {} from {}'s giveme roles.".format(
-                        role.name, ctx.guild.name
-                    )
-                )
-            else:
-                await ctx.send(
-                    "Blocked {} from {}' giveme roles.".format(
-                        role.name, ctx.guild.name
-                    )
-                )
+            await ctx.send("Removed {} from giveme roles.".format(role.name))
+
+    @commands.command(
+        description='Blocks a role from giveme. The role will show as "special", and users will not be able to give them to or remove them from themselves. Caller must have "Manage Roles".'
+    )
+    @commands.has_permissions(manage_roles=True)
+    async def add_special(self, ctx: commands.Context, *, role: discord.Role):
+        """Blocks a role from giveme."""
+        async with self.bot.connect_pool.acquire() as conn:
+            await conn.execute(
+                """UPDATE role_table SET available = array_remove(available, $1) WHERE server_id = $2""",
+                role.id,
+                ctx.guild.id,
+            )
+            await conn.execute(
+                """UPDATE role_table SET special = special || $1 WHERE server_id = $2""",
+                [role.id],
+                ctx.guild.id,
+            )
+        if not (ctx.guild.name.endswith("s") or ctx.guild.name.endswith("S")):
+            await ctx.send(
+                "Blocked {} from {}'s giveme roles.".format(role.name, ctx.guild.name)
+            )
         else:
-            await ctx.send("You're not allowed to do that!")
+            await ctx.send(
+                "Blocked {} from {}' giveme roles.".format(role.name, ctx.guild.name)
+            )
 
     @commands.command(
         description='Unblocks a role from giveme. The role will show as not configured to users. Caller must have "Manage Roles".'
     )
+    @commands.has_permissions(manage_roles=True)
     async def remove_special(self, ctx: commands.Context, *, role: discord.Role):
         """Unblocks a role from giveme."""
-        if ctx.channel.permissions_for(ctx.author).manage_roles:
-            guilddict = await self.get_guild_dict(ctx.guild.id)
-            if not role.id in guilddict["special"]:
-                await ctx.send("That role wasn't blocked to begin with!")
-            else:
-                async with self.bot.connect_pool.acquire() as conn:
-                    await conn.execute(
-                        """UPDATE role_table SET special = array_remove(special, $1) WHERE server_id = $2""",
-                        role.id,
-                        ctx.guild.id,
-                    )
-                await ctx.send("Unblocked {} from giveme roles.".format(role.name))
+        guilddict = await self.get_guild_dict(ctx.guild.id)
+        if not role.id in guilddict["special"]:
+            await ctx.send("That role wasn't blocked to begin with!")
         else:
-            await ctx.send("You're not allowed to do that!")
+            async with self.bot.connect_pool.acquire() as conn:
+                await conn.execute(
+                    """UPDATE role_table SET special = array_remove(special, $1) WHERE server_id = $2""",
+                    role.id,
+                    ctx.guild.id,
+                )
+            await ctx.send("Unblocked {} from giveme roles.".format(role.name))
 
     @commands.command()
     async def competition(self, ctx: commands.Context):
@@ -143,6 +129,7 @@ class roles:
             )
 
     @commands.command()
+    @commands.bot_has_permissions(manage_roles=True)
     async def giveme(self, ctx: commands.Context, *, request: discord.Role):
         """Gives the requested role."""
         g_dict = await self.get_guild_dict(ctx.guild.id)
@@ -164,7 +151,7 @@ class roles:
             )
 
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @boiler.bot_and_invoke_hasperms(manage_roles=True)
     async def assign(
         self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
     ):
@@ -191,7 +178,7 @@ class roles:
         await ctx.send("Gave {} the {} role(s)".format(target.mention, s_roles))
 
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @boiler.bot_and_invoke_hasperms(manage_roles=True)
     async def remove(
         self, ctx: commands.Context, target: discord.Member, *roles: discord.Role
     ):
@@ -218,6 +205,7 @@ class roles:
         await ctx.send("Took the {1} role(s) from {0}".format(target.mention, s_roles))
 
     @commands.command(description="The opposite of giveme.")
+    @commands.bot_has_permissions(manage_roles=True)
     async def removeme(self, ctx: commands.Context, *, request: discord.Role):
         """Removes the requested role."""
         g_dict = await self.get_guild_dict(ctx.guild.id)
