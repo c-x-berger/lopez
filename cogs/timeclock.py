@@ -198,12 +198,6 @@ class timeclock:
         """Add hours to members (or yourself, if no member is specified.)"""
         if member is not None:
             # changing someone else
-            # check if they clocked in here
-            in_loc = 0
-            async with self.bot.connect_pool.acquire() as conn:
-                in_loc = await conn.fetchval(
-                    "SELECT guild FROM timekeeper WHERE member = $1", member.id
-                )
             if ctx.author.guild_permissions.kick_members:
                 await self.add_time_to_table(member.id, ctx.guild.id, hours * 3600.0)
                 await ctx.send(
