@@ -150,7 +150,7 @@ class timeclock:
             time_in = None
             async with self.bot.connect_pool.acquire() as conn:
                 time_in = await conn.fetchval(
-                    "SELECT time_in FROM timekeeper WHERE member = $1 AND guild = $1",
+                    "SELECT time_in FROM timekeeper WHERE member = $1 AND guild = $2",
                     member.id,
                     ctx.guild.id,
                 )
