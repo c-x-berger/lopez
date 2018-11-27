@@ -37,6 +37,25 @@ def cleanup_code(content: str) -> str:
     return content.strip("` \n")
 
 
+def bot_and_invoke_hasperms(**perms):
+    def predicate(ctx):
+        msg = ctx.message
+        ch = msg.channel
+        permissions_invoker = ch.permissions_for(msg.author)
+        permissions_bot = ch.permissions_for(ctx.me)
+        bot_has = all(
+            getattr(permissions_bot, perm, None) == value
+            for perm, value in perms.items()
+        )
+        invoke_has = all(
+            getattr(permissions_invoker, perm, None) == value
+            for perm, value in perms.items()
+        )
+        return bot_has and invoke_has
+
+    return discord.ext.commands.check(predicate)
+
+
 def perms_todict(perms: discord.PermissionOverwrite) -> Dict[str, bool]:
     r = {}
     for key, value in iter(perms):
