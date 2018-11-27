@@ -91,4 +91,10 @@ quotes_e10 = [
     '"Is the pipeline literally running from your laptop?" "Don\'t be silly, my laptop disconnects far too often to host a service we rely on. It\'s running on my phone."',
     '"In most organizations HTTP traffic crosses firewalls fairly easily. Modern coffee pots do not use fire." ~ RFC 2324',
     "this problem requires a professional",
+    "Like it was working then it wasn't",
+    "Home movie makers were the original vloggers",
+    "the guy next to me was playing despacito on a Bluetooth speaker",
+    "we're having a slight mis-problem here",
+    "it's not on fire or clowing red yet we're fine",
+    '"the targeted ads figured out i was dead so now i only get ads for things dead people might like" ~ bill wurtz',
 ]
