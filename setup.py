@@ -94,8 +94,10 @@ async def main():
             conn,
             """
             CREATE TABLE timetable(
-                member bigint PRIMARY KEY,
-                seconds numeric NOT NULL DEFAULT 0
+                member bigint NOT NULL,
+                guild bigint NOT NULl,
+                seconds numeric NOT NULL DEFAULT 0,
+                PRIMARY KEY(member, guild)
             )
             """,
         )
@@ -104,8 +106,10 @@ async def main():
             conn,
             """
             CREATE TABLE timekeeper(
-                member bigint PRIMARY KEY,
-                time_in decimal
+                member bigint NOT NULL,
+                guild bigint NOT NULL,
+                time_in decimal,
+                PRIMARY KEY(member, guild)
             )
             """,
         )

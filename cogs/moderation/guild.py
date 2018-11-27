@@ -27,7 +27,7 @@ class guild:
             return g_row
 
     @commands.command()
-    @commands.has_permissions(manage_server=True)
+    @commands.has_permissions(manage_guild=True)
     async def set_rating(self, ctx: commands.Context, esrb_rating: str):
         """Set your server's "ESRB" rating for quotes."""
         if esrb_rating.lower() not in ["e", "e10", "t", "m", "ao"]:
