@@ -1,4 +1,4 @@
-sql_user = "lopez"
+sql_user = "edwan"
 # for obvious reasons this should be changed
 sql_pass = "johny johny telling lies"
 sql_db = "lopez"
