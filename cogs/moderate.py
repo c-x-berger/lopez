@@ -7,7 +7,7 @@ class moderate:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.has_permissions(manage_messages=True)
+    @boiler.bot_and_invoke_hasperms(manage_messages=True)
     @commands.command(
         description="Enables a user with Manage Messages to bulk delete the last `amount` messages.",
         aliases=["delete"],
