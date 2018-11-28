@@ -135,7 +135,7 @@ class channels:
             )
 
     @commands.command()
-    @commands.has_permissions(manage_channels=True)
+    @boiler.bot_and_invoke_hasperms(manage_channels=True)
     async def create_channel(
         self, ctx: commands.Context, name: str, nsfw_: bool = False
     ):
@@ -153,7 +153,7 @@ class channels:
         description="Move channels into a category. Will create non-existent categories (using Lopez's default permissions for new channels), and if instructed, will sync permissions to the moved channels",
         aliases=["m2c", "2cat", "twocat"],
     )
-    @commands.has_permissions(manage_channels=True)
+    @boiler.bot_and_invoke_hasperms(manage_channels=True)
     async def move_chans_to_cat(
         self,
         ctx: commands.Context,
