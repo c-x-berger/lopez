@@ -3,6 +3,7 @@ Util functions. Cuts down on boilerplate code, ideally.
 """
 
 import discord
+from discord.ext import commands
 import footers
 import json
 import random
@@ -43,15 +44,22 @@ def bot_and_invoke_hasperms(**perms):
         ch = msg.channel
         permissions_invoker = ch.permissions_for(msg.author)
         permissions_bot = ch.permissions_for(ctx.me)
-        bot_has = all(
-            getattr(permissions_bot, perm, None) == value
+        bot_missing = [
+            perm
             for perm, value in perms.items()
-        )
-        invoke_has = all(
-            getattr(permissions_invoker, perm, None) == value
+            if getattr(permissions_bot, perm, None) != value
+        ]
+        invoke_missing = [
+            perm
             for perm, value in perms.items()
-        )
-        return bot_has and invoke_has
+            if getattr(permissions_invoker, perm, None) != value
+        ]
+        if not bot_missing and not invoke_missing:
+            return True
+        elif not bot_missing and invoke_has:
+            raise commands.MissingPermissions(invoke_missing)
+        elif invoke_missing and not bot_missing:
+            raise commands.BotMissingPermissions(bot_missing)
 
     return discord.ext.commands.check(predicate)
 
