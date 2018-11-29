@@ -196,7 +196,8 @@ class timeclock:
         self,
         ctx: commands.Context,
         hours: float,
-        member: Optional[discord.Member] = None,
+        *,
+        member: Optional[discord.Member] = None
     ):
         """Add hours to members (or yourself, if no member is specified.)"""
         if member is not None:
