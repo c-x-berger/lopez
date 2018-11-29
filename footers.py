@@ -97,4 +97,12 @@ quotes_e10 = [
     "we're having a slight mis-problem here",
     "it's not on fire or clowing red yet we're fine",
     '"the targeted ads figured out i was dead so now i only get ads for things dead people might like" ~ bill wurtz',
+    "Add some quotes",
+    "This gearbox has a 1024 million to one ratio and takes 47 days to complete a rotation.",
+    "The easter bunny told me that Christmas isn't real",
+    "You're all adults, you should know how HTTP status codes work.",
+    "There are, like, three decent Christmas movies, and two of them are Die Hard.",
+    "The devils [sic] beep beep lettuce",
+    "Mr. Cruz, are you or have you ever been a fan of White Castle?",
+    "one, a million, same thing",
 ]
