@@ -25,7 +25,7 @@ class channels:
         self.role_converter = commands.RoleConverter()
 
     async def __local_check(self, ctx: commands.Context) -> bool:
-        return isinstance(ctx.channel, discord.TextChannel)
+        return boiler.guild_only_localcheck(ctx)
 
     async def get_guild_data(self, guild_id: int) -> asyncpg.Record:
         async with self.bot.connect_pool.acquire() as conn:

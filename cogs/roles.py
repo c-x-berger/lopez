@@ -29,7 +29,7 @@ class roles:
             return g_row
 
     async def __local_check(self, ctx: commands.Context) -> bool:
-        return isinstance(ctx.channel, discord.TextChannel)
+        return boiler.guild_only_localcheck(ctx)
 
     @commands.command(
         description='Adds a role to giveme. Any user will be able to give themselves the role with giveme <role>. Caller must have "Manage Roles".'

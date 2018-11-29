@@ -1,4 +1,5 @@
 import asyncpg
+import boiler
 import discord
 from discord.ext import commands
 
@@ -8,7 +9,7 @@ class guild:
         self.bot = bot
 
     async def __local_check(self, ctx: commands.Context) -> bool:
-        return ctx.guild is not None
+        return boiler.guild_only_localcheck(ctx)
 
     async def get_guild_data(self, guild_id: int) -> asyncpg.Record:
         async with self.bot.connect_pool.acquire() as conn:

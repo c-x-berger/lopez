@@ -64,6 +64,14 @@ def bot_and_invoke_hasperms(**perms):
     return discord.ext.commands.check(predicate)
 
 
+def guild_only_localcheck(ctx: commands.Context) -> bool:
+    if ctx.guild is None:
+        raise commands.NoPrivateMessage(
+            "This command cannot be used in private messages."
+        )
+    return True
+
+
 def perms_todict(perms: discord.PermissionOverwrite) -> Dict[str, bool]:
     r = {}
     for key, value in iter(perms):
