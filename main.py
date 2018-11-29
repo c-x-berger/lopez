@@ -11,7 +11,9 @@ import math
 import os
 import random
 import subprocess
+import sys
 import time
+import traceback
 from typing import Union
 
 prefixes = [
@@ -74,7 +76,7 @@ async def watchdog():
 
 @bot.event
 async def on_ready():
-    logging.info("\n".join(["Logged in as", bot.user.name, str(bot.user.id), "------"]))
+    logger.info("\n".join(["Logged in as", bot.user.name, str(bot.user.id), "------"]))
     subprocess.call(["/bin/systemd-notify", "--pid=" + str(os.getpid()), "--ready"])
 
 
@@ -90,6 +92,35 @@ async def on_message(message: discord.Message):
 async def on_command_completion(ctx: commands.Context):
     if ctx.command.name == "help":
         await ctx.message.add_reaction("\N{OPEN MAILBOX WITH RAISED FLAG}")
+
+
+@bot.event
+async def on_command_error(ctx: commands.Context, error: Exception):
+    """Stock error handler (https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612)"""
+    if hasattr(ctx.command, "on_error"):
+        return
+
+    ignore = (commands.CommandNotFound, commands.UserInputError)
+    # get original error from things like ctx.invoke
+    error = getattr(error, "original", error)
+    if isinstance(error, ignore):
+        return
+    elif isinstance(error, commands.DisabledCommand):
+        return await ctx.send("{} has been disabled.".format(ctx.command))
+    elif isinstance(error, commands.MissingPermissions):
+        return await ctx.send(error.args[0])
+    elif isinstance(error, commands.BotMissingPermissions):
+        return await ctx.send(
+            "I don't have the power to do that!\n{}".format(error.args[0])
+        )
+    elif isinstance(error, commands.NoPrivateMessage):
+        try:
+            return await ctx.send("{} can't be used in DMs.".format(ctx.command))
+        except:
+            # dms off
+            pass
+    logger.error("Ignoring exception in command {}:".format(ctx.command))
+    traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 @bot.command()
@@ -157,6 +188,7 @@ cogs = [
     "parts",
     "moderation.channels",
     "moderation.guild",
+    "timeclock",
 ]
 for cog in cogs:
     bot.load_extension("cogs." + cog)

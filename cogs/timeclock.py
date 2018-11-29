@@ -193,7 +193,11 @@ class timeclock:
 
     @clock.command()
     async def add_hours(
-        self, ctx: commands.Context, hours: int, member: Optional[discord.Member] = None
+        self,
+        ctx: commands.Context,
+        hours: float,
+        *,
+        member: Optional[discord.Member] = None
     ):
         """Add hours to members (or yourself, if no member is specified.)"""
         if member is not None:
@@ -209,34 +213,32 @@ class timeclock:
                 await ctx.send("You don't have the power (Kick Members) to do that!")
         else:
             # changing self
-            if hours > 0:
-                m = await ctx.send(
-                    "I CANNOT READ MINDS. I ASSUME YOU ARE BEING HONEST. Since you're adding to your own hours, you must react to this message with \N{ALARM CLOCK} in the next five (5) seconds as acknowledgement that you're not cheating."
+            m = await ctx.send(
+                "I CANNOT READ MINDS. I ASSUME YOU ARE BEING HONEST. Since you're adding to your own hours, you must react to this message with \N{ALARM CLOCK} in the next five (5) seconds as acknowledgement that you're not cheating."
+            )
+            await m.add_reaction("\N{ALARM CLOCK}")
+            try:
+
+                def c(reaction, user):
+                    return (
+                        user == ctx.author and str(reaction.emoji) == "\N{ALARM CLOCK}"
+                    )
+
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", timeout=5.0, check=c
                 )
-                await m.add_reaction("\N{ALARM CLOCK}")
-                try:
-
-                    def c(reaction, user):
-                        return (
-                            user == ctx.author
-                            and str(reaction.emoji) == "\N{ALARM CLOCK}"
-                        )
-
-                    reaction, user = await self.bot.wait_for(
-                        "reaction_add", timeout=5.0, check=c
+            except asyncio.TimeoutError:
+                return await ctx.send("Too slow!")
+            else:
+                # proceed with adding hours
+                await ctx.send(
+                    "I'm now adding {} hours to your log. Better not be lying to me!".format(
+                        str(hours)
                     )
-                except asyncio.TimeoutError:
-                    return await ctx.send("Too slow!")
-                else:
-                    # proceed with adding hours
-                    await ctx.send(
-                        "I'm now adding {} hours to your log. Better not be lying to me!".format(
-                            str(hours)
-                        )
-                    )
-                    await self.add_time_to_table(
-                        ctx.author.id, ctx.guild.id, hours * 3600.0
-                    )
+                )
+                await self.add_time_to_table(
+                    ctx.author.id, ctx.guild.id, hours * 3600.0
+                )
 
 
 def setup(bot: commands.Bot):
