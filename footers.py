@@ -105,4 +105,5 @@ quotes_e10 = [
     "The devils [sic] beep beep lettuce",
     "Mr. Cruz, are you or have you ever been a fan of White Castle?",
     "one, a million, same thing",
+    "It's nice and lukewarm, and by lukewarm I mean hot",
 ]
