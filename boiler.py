@@ -3,6 +3,7 @@ Util functions. Cuts down on boilerplate code, ideally.
 """
 
 import discord
+from discord.ext import commands
 import footers
 import json
 import random
@@ -35,6 +36,40 @@ def cleanup_code(content: str) -> str:
 
     # remove `foo`
     return content.strip("` \n")
+
+
+def bot_and_invoke_hasperms(**perms):
+    def predicate(ctx):
+        msg = ctx.message
+        ch = msg.channel
+        permissions_invoker = ch.permissions_for(msg.author)
+        permissions_bot = ch.permissions_for(ctx.me)
+        bot_missing = [
+            perm
+            for perm, value in perms.items()
+            if getattr(permissions_bot, perm, None) != value
+        ]
+        invoke_missing = [
+            perm
+            for perm, value in perms.items()
+            if getattr(permissions_invoker, perm, None) != value
+        ]
+        if not bot_missing and not invoke_missing:
+            return True
+        elif not bot_missing and invoke_has:
+            raise commands.MissingPermissions(invoke_missing)
+        elif invoke_missing and not bot_missing:
+            raise commands.BotMissingPermissions(bot_missing)
+
+    return discord.ext.commands.check(predicate)
+
+
+def guild_only_localcheck(ctx: commands.Context) -> bool:
+    if ctx.guild is None:
+        raise commands.NoPrivateMessage(
+            "This command cannot be used in private messages."
+        )
+    return True
 
 
 def perms_todict(perms: discord.PermissionOverwrite) -> Dict[str, bool]:
