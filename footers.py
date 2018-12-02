@@ -106,4 +106,5 @@ quotes_e10 = [
     "Mr. Cruz, are you or have you ever been a fan of White Castle?",
     "one, a million, same thing",
     "It's nice and lukewarm, and by lukewarm I mean hot",
+    "You are bad, in this case anyway",
 ]
