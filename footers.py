@@ -112,4 +112,8 @@ quotes_e10 = [
     '"failure comes in a pill. talk to your doctor about the failure pill. side effects may include success" ~ bill wurtz',
     '"if you are a pirate with no treasure, check the mirror, you might be the treasure" ~ bill wurtz',
     '"when watching comedy, always check what brow it is" ~ bill wurtz',
+    "per my last email",
+    "NO DEPLOY FRIDAYS",
+    "I'm taking away your battery until you demonstrate that you’re being safe",
+    "ｉｔ'ｓ ａｌｌ ｉｎ ｙｏｕｒ ｈｅａｄ",
 ]
