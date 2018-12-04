@@ -4,7 +4,7 @@ import boiler
 import discord
 from discord.ext import commands
 import time
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 
 CLOCK_DESC = "Clock in or out. Note that if you're clocked in, running this without a subcommand will result in you being clocked out. In that event, simply clock back in and you won't miss any notable amount of time."
@@ -119,12 +119,12 @@ class timeclock:
             await ctx.invoke(self.bot.get_command("help"), "clock")
 
     @commands.group()
+    @commands.has_permissions(kick_members=True)
     async def force(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
             await ctx.invoke(self.bot.get_command("help"), "force")
 
     @force.command(name="in")
-    @commands.has_permissions(kick_members=True)
     async def f_in(
         self, ctx: commands.Context, members: commands.Greedy[discord.Member]
     ):
@@ -138,13 +138,14 @@ class timeclock:
             else:
                 await ctx.send("Clocked {} in.".format(member.mention))
 
-    @force.command(name="out")
-    @commands.has_permissions(kick_members=True)
+    @force.group(name="out", invoke_without_command=True)
     async def f_out(
         self, ctx: commands.Context, members: commands.Greedy[discord.Member]
     ):
         """Forcibly clock users out. They must have clocked in in this guild."""
         t = time.time()
+        if isinstance(members, str):
+            return await ctx.send(members)
         for member in members:
             # clock out
             time_in = None
@@ -167,6 +168,19 @@ class timeclock:
                         round(total / 3600.0, 2), member.mention
                     )
                 )
+
+    @f_out.command(name="all")
+    async def f_out_all(self, ctx: commands.Context):
+        """Force clock all members out."""
+        members_in = []
+        async with self.bot.connect_pool.acquire() as conn:
+            rows = await conn.fetch(
+                "SELECT member FROM timekeeper WHERE guild = $1", ctx.guild.id
+            )
+            # strip all Record object nonsense, we're just here for IDs
+            members_in = [m["member"] for m in rows]
+        members_in = [ctx.guild.get_member(i) for i in members_in]
+        await ctx.invoke(self.bot.get_command("force out"), members_in)
 
     @clock.command(aliases=["status"], description=STATUS_DESC)
     async def state(self, ctx: commands.Context):
