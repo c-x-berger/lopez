@@ -206,6 +206,26 @@ class timeclock:
         await ctx.send(send)
 
     @clock.command()
+    async def get_hours(self, ctx: commands.Context, member: discord.Member):
+        session_start = None
+        async with self.bot.connect_pool.acquire() as conn:
+            rec = await conn.fetchrow(
+                "SELECT time_in FROM timekeeper WHERE member = $1 AND guild = $2",
+                member.id,
+                ctx.guild.id,
+            )
+            session_start = float(rec["time_in"]) if rec is not None else None
+        total_time = await self.get_total_time(member.id, ctx.guild.id)
+        send = "{} has {} hours on record.".format(
+            member.mention, round(total_time / 3600.0, 2)
+        )
+        if session_start is not None:
+            send += "\nThey are clocked in, and have recorded {} hours this session.".format(
+                round((time.time() - session_start) / 3600.0, 2)
+            )
+        await ctx.send(send)
+
+    @clock.command()
     async def add_hours(
         self,
         ctx: commands.Context,
