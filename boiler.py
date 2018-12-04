@@ -56,9 +56,9 @@ def bot_and_invoke_hasperms(**perms):
         ]
         if not bot_missing and not invoke_missing:
             return True
-        elif not bot_missing and invoke_has:
+        elif invoke_missing:
             raise commands.MissingPermissions(invoke_missing)
-        elif invoke_missing and not bot_missing:
+        elif bot_missing:
             raise commands.BotMissingPermissions(bot_missing)
 
     return discord.ext.commands.check(predicate)
