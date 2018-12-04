@@ -107,4 +107,9 @@ quotes_e10 = [
     "one, a million, same thing",
     "It's nice and lukewarm, and by lukewarm I mean hot",
     "You are bad, in this case anyway",
+    "Sure, we can machine that. *shakes head no*",
+    "That's a code of conduct violation you know",
+    '"failure comes in a pill. talk to your doctor about the failure pill. side effects may include success" ~ bill wurtz',
+    '"if you are a pirate with no treasure, check the mirror, you might be the treasure" ~ bill wurtz',
+    '"when watching comedy, always check what brow it is" ~ bill wurtz',
 ]
