@@ -1,3 +1,5 @@
+quotes = {}
+
 quotes_e10 = [
     '"It just kind of goes fwoomp" ~ Katherine',
     '"Where are your fingers?"',
@@ -117,3 +119,10 @@ quotes_e10 = [
     "I'm taking away your battery until you demonstrate that you’re being safe",
     "ｉｔ'ｓ ａｌｌ ｉｎ ｙｏｕｒ ｈｅａｄ",
 ]
+# since this code is still the team's work i'm not going past this
+# yet
+quotes_t = []
+
+
+quotes["e10"] = quotes_e10
+quotes["t"] = quotes_e10 + quotes_t
