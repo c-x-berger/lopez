@@ -148,6 +148,12 @@ async def quote(ctx: commands.Context):
     """Quotes are fun!"""
     await ctx.send(random.choice(footers.quotes_e10))
 
+    
+@bot.command()
+async def quote_unsafe(ctx: commands.Context):
+    """Quotes but like maybe unsafe"""
+    await ctx.send(random.choice(footers.quotes_unsafe))
+    
 
 @bot.command()
 async def uptime(ctx: commands.Context):
