@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 import logging
 import sys
+from tabulate import tabulate
 import textwrap
 import traceback
 import io
@@ -80,6 +81,20 @@ class developer:
                 name="Return value", value="```\n{}\n```".format(ret), inline=False
             )
             await ctx.send(None, embed=em)
+
+    @commands.command()
+    @commands.is_owner()
+    async def sql(self, ctx: commands.Context, *, query: str):
+        async with self.bot.connect_pool.acquire() as conn:
+            ret = await conn.fetch(self.cleanup_code(query))
+            if ret is not None and ret != []:
+                await ctx.send(
+                    "```\n"
+                    + tabulate(ret, headers=ret[0].keys() if len(ret) >= 1 else None)
+                    + "\n```"
+                )
+            else:
+                await ctx.send("No values returned")
 
     @commands.command()
     async def source(self, ctx: commands.Context, command: str = None):
