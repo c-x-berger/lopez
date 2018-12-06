@@ -117,3 +117,7 @@ quotes_e10 = [
     "I'm taking away your battery until you demonstrate that you’re being safe",
     "ｉｔ'ｓ ａｌｌ ｉｎ ｙｏｕｒ ｈｅａｄ",
 ]
+
+quotes_unsafe = [
+    "U N S A F E",
+]
