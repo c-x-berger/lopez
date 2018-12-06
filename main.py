@@ -153,7 +153,7 @@ async def prefix(ctx: commands.Context):
 async def quote(ctx: commands.Context):
     """Quotes are fun!"""
     g_rating = "e10"
-    async with b.connect_pool.acquire() as conn:
+    async with bot.connect_pool.acquire() as conn:
         val = await conn.fetchval(
             "SELECT esrb FROM guild_table WHERE guild_id = $1", ctx.guild.id
         )
