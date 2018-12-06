@@ -65,6 +65,15 @@ async def open_conn(b: commands.Bot):
     b.connect_pool = await asyncpg.create_pool(config.postgresql)
 
 
+bot.loop.run_until_complete(open_conn(bot))
+
+
+@bot.event
+async def on_ready():
+    logger.info("\n".join(["Logged in as", bot.user.name, str(bot.user.id), "------"]))
+    subprocess.call(["/bin/systemd-notify", "--pid=" + str(os.getpid()), "--ready"])
+
+
 async def watchdog():
     await bot.wait_until_ready()
     while True:
@@ -74,10 +83,7 @@ async def watchdog():
         await asyncio.sleep(15)
 
 
-@bot.event
-async def on_ready():
-    logger.info("\n".join(["Logged in as", bot.user.name, str(bot.user.id), "------"]))
-    subprocess.call(["/bin/systemd-notify", "--pid=" + str(os.getpid()), "--ready"])
+bot.loop.create_task(watchdog())
 
 
 @bot.event
@@ -146,7 +152,13 @@ async def prefix(ctx: commands.Context):
 @bot.command()
 async def quote(ctx: commands.Context):
     """Quotes are fun!"""
-    await ctx.send(random.choice(footers.quotes_e10))
+    g_rating = "e10"
+    async with bot.connect_pool.acquire() as conn:
+        val = await conn.fetchval(
+            "SELECT esrb FROM guild_table WHERE guild_id = $1", ctx.guild.id
+        )
+        g_rating = g_rating if val is None else val
+    await ctx.send(random.choice(footers.quotes[g_rating]))
 
 
 @bot.command()
@@ -173,9 +185,6 @@ async def invite(ctx: commands.Context):
         + discord.utils.oauth_url("436251140376494080", perms)
     )
 
-
-bot.loop.create_task(watchdog())
-bot.loop.run_until_complete(open_conn(bot))
 
 cogs = [
     "git_update",
