@@ -118,6 +118,11 @@ quotes_e10 = [
     "NO DEPLOY FRIDAYS",
     "I'm taking away your battery until you demonstrate that you’re being safe",
     "ｉｔ'ｓ ａｌｌ ｉｎ ｙｏｕｒ ｈｅａｄ",
+    "DM me noises",
+    "I'm going to defeat you with the power of friendship and this gun I just found",
+    "Frisbee the frisbee until it's not time to frisbee",
+    '"Using my distorted face is hazing" ~ Alex',
+    "`git log --graph`",
 ]
 # since this code is still the team's work i'm not going past this
 # yet
