@@ -123,6 +123,14 @@ quotes_e10 = [
     "Frisbee the frisbee until it's not time to frisbee",
     '"Using my distorted face is hazing" ~ Alex',
     "`git log --graph`",
+    "Nothing says Facebook like a xenophobic minions meme",
+    "How hard is it to tap something without a tap",
+    "nifty",
+    "Rainbow roads\nLet's a go\nIt's a me\nMario\nMushroom Kingdom",
+    "@team254 Hey, I did that two years ago!",
+    "And number eight, from Japan, it is... A Man on a Horse. Just a normal horse that- That there's nothing wrong with.",
+    '"i would like to cut the grass but it\'s against the lawn" ~ bill wurtz',
+    '"i am subscribed to the climate, so i get notified when it changes" ~ bill wurtz',
 ]
 # since this code is still the team's work i'm not going past this
 # yet
