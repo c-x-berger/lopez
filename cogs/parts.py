@@ -87,7 +87,7 @@ class parts:
                 else:
                     r[_p.title.contents[0]] = parts.part_url(p)
             for key, value in r.items():
-                s += "{}: {}\n".format(key, value)
+                await ctx.send("{}: {}\n".format(key, value))
         await ctx.message.remove_reaction(
             self.bot.get_emoji(393852367751086090), ctx.guild.me
         )
