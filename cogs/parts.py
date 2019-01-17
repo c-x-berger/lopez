@@ -44,15 +44,22 @@ class parts:
         self.aio_client = aiohttp.ClientSession(loop=self.bot.loop)
 
     @staticmethod
-    def andy_part(part_num: str) -> str:
-        return "https://andymark.com/{}".format(part_num)
+    def is_vexpro(num: str) -> bool:
+        s = num.split("-")
+        return (len(s) == 2) and (len(s[0]) == 3) and (len(s[1]) == 4)
 
     @staticmethod
     def mcmaster_part(part_num: str) -> str:
         return "https://www.mcmaster.com/{}".format(part_num.lower())
 
-    async def get_anymark_part_page(self, part_num: str) -> BeautifulSoup:
-        url = parts.andy_part(part_num)
+    @staticmethod
+    def part_url(part_num: str) -> str:
+        if parts.is_vexpro(part_num):
+            return "https://www.vexrobotics.com/{}.html".format(part_num)
+        elif part_num.startswith("am-"):
+            return "https://andymark.com/{}".format(part_num)
+
+    async def get_part_page(self, url: str) -> BeautifulSoup:
         async with self.aio_client.get(url) as resp:
             if 300 > resp.status >= 200:
                 data = await resp.text()
@@ -60,66 +67,32 @@ class parts:
             elif resp.status == 404:
                 raise NotFound(resp, "Not found")
             else:
-                raise InternalServerError(resp, "AndyMark is bad")
+                raise InternalServerError(resp, "Server error at {}".format(url))
 
-    async def get_mcmaster_part_page(self, part_num: str) -> BeautifulSoup:
-        url = parts.mcmaster_part(part_num)
-        async with self.aio_client.get(url) as resp:
-            if 300 > resp.status >= 200:
-                data = await resp.text()
-                return BeautifulSoup(data, features="html5lib")
-            elif resp.status == 404:
-                raise NotFound(resp, "Not found")
-            else:
-                raise InternalServerError(resp, "Something went wrong at McMaster Carr")
-
-    @commands.group(
-        invoke_without_command=True, aliases=["parts"], case_insensitive=True
-    )
-    async def part(self, ctx: commands.Context, *part_num):
+    @commands.command(aliases=["parts"])
+    async def part(self, ctx: commands.Context, *part_numbers):
         """
-        Look up a part by part number/ID. Supports AndyMark and McMaster Carr.
+        Look up a part by number/ID. Supports AndyMark and VexPro.
         """
-        if part_num is not None:
-            await ctx.message.add_reaction(self.bot.get_emoji(393852367751086090))
-            async with ctx.typing():
-                for num in part_num:
-                    if num.startswith("am-"):
-                        await ctx.invoke(self.andy, num)
-            await ctx.message.remove_reaction(
-                self.bot.get_emoji(393852367751086090), ctx.guild.me
-            )
-            await ctx.message.add_reaction(self.bot.get_emoji(314349398811475968))
-        else:
-            return await ctx.invoke(self.bot.get_command("help"), "part")
-
-    @part.command(
-        description="Looks up a part on AndyMark. Supports part names and 404s.",
-        aliases=["andymark", "am"],
-    )
-    async def andy(self, ctx: commands.Context, *part_numbers):
-        """
-        Looks up a part on AndyMark.
-        """
-        r = {}
-        s = ""
-        for p in part_numbers:
-            _p = None
-            try:
-                _p = await self.get_anymark_part_page(p)
-            except (NotFound, InternalServerError):
-                r[p] = "Could not find part `{}`".format(p)
-            else:
-                if _p.title.contents[0].lower() == "not found - andymark inc.":
-                    # for some god-forsaken reason AM doesn't properly 404
+        await ctx.message.add_reaction(self.bot.get_emoji(393852367751086090))
+        async with ctx.typing():
+            r = {}
+            for p in part_numbers:
+                _p = None
+                try:
+                    _p = await self.get_part_page(parts.part_url(p))
+                except (NotFound, InternalServerError):
                     r[p] = "Could not find part `{}`".format(p)
                 else:
-                    r[_p.title.contents[0]] = self.andy_part(p)
-        for key, value in r.items():
-            s += "{}: {}\n".format(key, value)
-        await ctx.send(s)
+                    r[_p.title.contents[0]] = parts.part_url(p)
+            for key, value in r.items():
+                await ctx.send("{}: {}\n".format(key, value))
+        await ctx.message.remove_reaction(
+            self.bot.get_emoji(393852367751086090), ctx.guild.me
+        )
+        await ctx.message.add_reaction(self.bot.get_emoji(314349398811475968))
 
-    @part.command(
+    @commands.command(
         description="Looks up a part on McMaster Carr. Doesn't support part names or 404s.",
         aliases=["mc", "mmc", "mcmastercarr"],
     )
