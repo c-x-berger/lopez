@@ -74,10 +74,9 @@ class parts:
         """
         Look up a part by number/ID. Supports AndyMark and VexPro.
         """
-        r = {}
-        s = ""
         await ctx.message.add_reaction(self.bot.get_emoji(393852367751086090))
         async with ctx.typing():
+            r = {}
             for p in part_numbers:
                 _p = None
                 try:
@@ -92,7 +91,6 @@ class parts:
             self.bot.get_emoji(393852367751086090), ctx.guild.me
         )
         await ctx.message.add_reaction(self.bot.get_emoji(314349398811475968))
-        await ctx.send(s)
 
     @commands.command(
         description="Looks up a part on McMaster Carr. Doesn't support part names or 404s.",
