@@ -51,9 +51,14 @@ class guild:
     @commands.command()
     async def get_rating(self, ctx: commands.Context):
         row = await self.get_guild_data(ctx.guild.id)
-        await ctx.send(
-            "This guild has its rating set at `{}`.".format(row["esrb"].upper())
-        )
+        if row["esrb"] is not None:
+            await ctx.send(
+                "This guild has its rating set at `{}`.".format(row["esrb"].upper())
+            )
+        else:
+            await ctx.send(
+                "This guild has no rating set, so I'm behaving as if it was `E10`."
+            )
 
 
 def setup(bot):
