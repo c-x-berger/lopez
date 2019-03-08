@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 
-class roles:
+class roles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -28,7 +28,7 @@ class roles:
                 )
             return g_row
 
-    async def __local_check(self, ctx: commands.Context) -> bool:
+    async def cog_check(self, ctx: commands.Context) -> bool:
         return boiler.guild_only_localcheck(ctx)
 
     @commands.command(

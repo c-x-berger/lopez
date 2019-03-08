@@ -12,7 +12,7 @@ BADGE_DESC = "Get the QR code you use to clock in/out. To prevent someone else f
 STATUS_DESC = "Show your current clock state. Includes total hours, if you're clocked in or out, and how many hours you've recorded in this session."
 
 
-class timeclock:
+class timeclock(commands.Cog):
     """
     Timeclock commands. Hours and in/out state are recorded per guild.
     """
