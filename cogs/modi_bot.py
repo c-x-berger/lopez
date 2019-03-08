@@ -3,7 +3,7 @@ from discord.ext import commands
 import logging
 
 
-class modi:
+class modi(commands.Cog):
     def __init__(self, bot: commands.Bot, special_cogs: list):
         self.bot = bot
         self.logger = logging.getLogger("cogs.modi_bot")

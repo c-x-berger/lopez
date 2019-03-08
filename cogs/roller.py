@@ -17,7 +17,7 @@ def ndn(amount: str) -> list:
     return [num_roll, die_size]
 
 
-class roller:
+class roller(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 

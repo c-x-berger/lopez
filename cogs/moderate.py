@@ -3,7 +3,7 @@ import boiler
 from discord.ext import commands
 
 
-class moderate:
+class moderate(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
