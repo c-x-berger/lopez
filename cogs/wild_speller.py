@@ -3,7 +3,7 @@ import random
 from wild_computing_machine import wild_comp
 
 
-class wild_speller:
+class wild_speller(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 

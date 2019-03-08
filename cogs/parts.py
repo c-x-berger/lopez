@@ -38,7 +38,7 @@ class InternalServerError(HTTPError):
     pass
 
 
-class parts:
+class parts(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.aio_client = aiohttp.ClientSession(loop=self.bot.loop)
