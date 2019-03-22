@@ -131,6 +131,9 @@ quotes_e10 = [
     "And number eight, from Japan, it is... A Man on a Horse. Just a normal horse that- That there's nothing wrong with.",
     '"i would like to cut the grass but it\'s against the lawn" ~ bill wurtz',
     '"i am subscribed to the climate, so i get notified when it changes" ~ bill wurtz',
+    '"Stop fat shaming robots" ~ Maggie',
+    '"It has a drag coefficient of -2. The faster it goes, the faster it goes." ~ Bryce',
+    '"ew mormons" ~ Seth',
 ]
 # since this code is still the team's work i'm not going past this
 # yet
