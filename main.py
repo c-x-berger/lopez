@@ -40,9 +40,7 @@ def get_pre(bot: commands.Bot, message: discord.Message) -> Union[str, list]:
 
 bot = commands.Bot(
     get_pre,
-    None,
-    "A bot created for everybody.",
-    None,
+    description="A bot created for everybody",
     owner_id=164342765394591744,
     case_insensitive=True,
 )
