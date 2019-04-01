@@ -3,7 +3,7 @@ from discord.ext import commands
 import logging
 
 
-class modi:
+class modi(commands.Cog):
     def __init__(self, bot: commands.Bot, special_cogs: list):
         self.bot = bot
         self.logger = logging.getLogger("cogs.modi_bot")
@@ -41,13 +41,13 @@ class modi:
             self.logger.info("Unloaded " + module)
             await ctx.send("Unloaded `{}`".format(module))
 
-    @mod.command(
-        description="Reload a module. Technically, just calls the unload and load commands."
-    )
+    @mod.command(description="Reload a module.")
     async def reload(self, ctx: commands.Context, module: str):
         """Reload a module."""
-        await ctx.invoke(self.unload, module)
-        await ctx.invoke(self.load, module)
+        try:
+            self.bot.reload_extension(module)
+        except commands.ExtensionError as e:
+            await ctx.send("Could not reload `{}`: {}".format(module, str(e)))
 
 
 def setup(bot: commands.Bot):

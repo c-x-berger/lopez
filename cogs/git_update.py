@@ -7,7 +7,7 @@ import sys
 import time
 
 
-class git_updater:
+class git_updater(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.logger = logging.getLogger("cogs.git_update")

@@ -19,12 +19,12 @@ Note that prettifying your JSON is not required. Lopez will tell you if it canno
 """
 
 
-class channels:
+class channels(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.role_converter = commands.RoleConverter()
 
-    async def __local_check(self, ctx: commands.Context) -> bool:
+    async def cog_check(self, ctx: commands.Context) -> bool:
         return boiler.guild_only_localcheck(ctx)
 
     async def get_guild_data(self, guild_id: int) -> asyncpg.Record:

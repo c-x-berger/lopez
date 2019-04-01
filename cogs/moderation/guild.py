@@ -4,11 +4,11 @@ import discord
 from discord.ext import commands
 
 
-class guild:
+class guild(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def __local_check(self, ctx: commands.Context) -> bool:
+    async def cog_check(self, ctx: commands.Context) -> bool:
         return boiler.guild_only_localcheck(ctx)
 
     async def get_guild_data(self, guild_id: int) -> asyncpg.Record:

@@ -13,7 +13,7 @@ import inspect
 import os
 
 
-class developer:
+class developer(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self._last_result = None
