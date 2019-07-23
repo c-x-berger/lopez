@@ -159,7 +159,7 @@ quotes_t = [
     "nothing like sexualizing 15 year old girls",
     "> Does that qualify as a furry quote though\nit does if Drason is a furry",
     "...it's small, OK? Maybe 100-200mm",
-    "You know what the team needs for better \"team culture\"?\nWeed and or alcohol,
+    'You know what the team needs for better "team culture"?\nWeed and or alcohol',
 ]
 
 
