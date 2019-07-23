@@ -151,7 +151,16 @@ quotes_e10 = [
 ]
 # since this code is still the team's work i'm not going past this
 # yet
-quotes_t = []
+quotes_t = [
+    "We know what tha fuck we is yo, but know not what tha fuck we may be. -The homie Shakespeare",
+    "One bust a nut on of nature make tha whole ghetto kin. I aint talkin' bout chicken n' gravy biatch. - Shakespeare",
+    "I FUCK WITH MY CLOTHES ON\nMore like \nI hold hands with my clothes on\nMore like both TBH\nWeird flex but ok",
+    "He protec, he attac, but his girlfriend is illegal snacc",
+    "nothing like sexualizing 15 year old girls",
+    "> Does that qualify as a furry quote though\nit does if Drason is a furry",
+    "...it's small, OK? Maybe 100-200mm",
+    "You know what the team needs for better \"team culture\"?\nWeed and or alcohol,
+]
 
 
 quotes["e10"] = quotes_e10
