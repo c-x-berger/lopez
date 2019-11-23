@@ -60,7 +60,7 @@ class roles(commands.Cog):
     async def remove_giveme(self, ctx: commands.Context, *, role: discord.Role):
         """Removes a role from giveme without marking it as blocked."""
         guilddict = await self.get_guild_dict(ctx.guild.id)
-        if not role.id in guilddict["available"]:
+        if role.id not in guilddict["available"]:
             await ctx.send("That role wasn't in giveme to begin with!")
             return
         else:
@@ -106,7 +106,7 @@ class roles(commands.Cog):
     async def remove_special(self, ctx: commands.Context, *, role: discord.Role):
         """Unblocks a role from giveme."""
         guilddict = await self.get_guild_dict(ctx.guild.id)
-        if not role.id in guilddict["special"]:
+        if role.id not in guilddict["special"]:
             await ctx.send("That role wasn't blocked to begin with!")
         else:
             async with self.bot.connect_pool.acquire() as conn:
@@ -162,7 +162,7 @@ class roles(commands.Cog):
                     )
                 )
                 roles.remove(role)
-        if roles == []:
+        if not roles:
             return
         await target.add_roles(*roles, reason="Requested by " + ctx.author.name)
         s_roles = ""
@@ -189,7 +189,7 @@ class roles(commands.Cog):
                     )
                 )
                 roles.remove(role)
-        if roles == []:
+        if not roles:
             return
         await target.remove_roles(*roles, reason="Requested by " + ctx.author.name)
         s_roles = ""
@@ -239,17 +239,17 @@ class roles(commands.Cog):
             role = discord.utils.get(ctx.guild.roles, id=role_id)
             if role is not None:
                 send += "* {}\n".format(role.name)
-        if send is not "":
+        if send != "":
             em.add_field(name="Available roles", value=send, inline=True)
         send = ""
         for role_id in guilddict["special"]:
             role = discord.utils.get(ctx.guild.roles, id=role_id)
             if role is not None:
                 send += "* {}\n".format(role.name)
-        if send is not "":
+        if send != "":
             em.add_field(name="Roles blocked from giveme", value=send, inline=True)
         if len(em.fields) > 0:
-            await ctx.send(None, embed=em)
+            await ctx.send(embed=em)
         else:
             await ctx.send("No roles configured!")
 
@@ -260,7 +260,7 @@ class roles(commands.Cog):
         em.description = ""
         for m in role.members:
             em.description += m.mention + "\n"
-        await ctx.send(None, embed=em)
+        await ctx.send(embed=em)
 
 
 def setup(bot):
