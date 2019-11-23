@@ -104,7 +104,7 @@ class parts(commands.Cog):
         for p in part_numbers:
             _p = None
             try:
-                _p = await self.get_mcmaster_part_page(p)
+                _p = await self.get_part_page(parts.mcmaster_part(p))
             except (NotFound, InternalServerError):
                 r[p] = "Could not find part `{}`".format(p)
             else:
