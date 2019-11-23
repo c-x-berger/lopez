@@ -196,6 +196,7 @@ cogs = [
     "moderation.channels",
     "moderation.guild",
     "timeclock",
+    "utility.reddit",
 ]
 for cog in cogs:
     bot.load_extension("cogs." + cog)
