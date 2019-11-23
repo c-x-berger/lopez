@@ -150,8 +150,7 @@ quotes_e10 = [
     "GAME!"
     "there is no such thing as software that does not suck",
 ]
-# since this code is still the team's work i'm not going past this
-# yet
+
 quotes_t = []
 
 quotes["e10"] = quotes_e10
