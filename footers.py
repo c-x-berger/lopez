@@ -147,7 +147,8 @@ quotes_e10 = [
     "PTIJ: Which Dr. Seuss books should one obtain?",
     '"i don\'t feel afraid of funk engine, but i am intimidated by what it could do" ~ space',
     "This Code Will Work (and Other Hilarious Jokes You Can Tell Yourself) (Volume II)",
-    "GAME!",
+    "GAME!"
+    "there is no such thing as software that does not suck",
 ]
 # since this code is still the team's work i'm not going past this
 # yet
