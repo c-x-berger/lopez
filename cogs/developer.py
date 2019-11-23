@@ -111,7 +111,7 @@ class developer(commands.Cog):
         if not obj.callback.__module__.startswith("discord"):
             location = os.path.relpath(src.co_filename).replace("\\", "/")
         else:
-            s_url = "https://github.com/Rapptz/discord.py/tree/rewrite"
+            s_url = "https://github.com/Rapptz/discord.py/tree/master"
             location = obj.callback.__module__.replace(".", "/") + ".py"
         await ctx.send(
             "{}/{}/#L{}-L{}".format(
