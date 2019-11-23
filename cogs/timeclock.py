@@ -27,7 +27,7 @@ class timeclock(commands.Cog):
                 "DELETE FROM timekeeper WHERE member = $1 AND guild = $2", user, guild
             )
 
-    async def add_to_keeper(self, user: int, guild_id: int, t_: int = None):
+    async def add_to_keeper(self, user: int, guild_id: int, t_: float = None):
         async with self.bot.connect_pool.acquire() as conn:
             await conn.execute(
                 "INSERT INTO timekeeper(member, time_in, guild) VALUES ($1, $2, $3)",
@@ -39,7 +39,7 @@ class timeclock(commands.Cog):
     async def get_total_time(self, user: int, guild: int) -> float:
         async with self.bot.connect_pool.acquire() as conn:
             rec = await conn.fetchrow(
-                """SELECT seconds FROM timetable WHERE member = $1 AND guild = $2""",
+                "SELECT seconds FROM timetable WHERE member = $1 AND guild = $2",
                 user,
                 guild,
             )
@@ -77,7 +77,7 @@ class timeclock(commands.Cog):
             + str(ctx.author.id)
             + "&format=svg",
         )
-        await ctx.send(None, embed=em, delete_after=5)
+        await ctx.send(embed=em, delete_after=5)
 
     @commands.group(description=CLOCK_DESC)
     async def clock(self, ctx: commands.Context):
@@ -186,7 +186,6 @@ class timeclock(commands.Cog):
     @clock.command(aliases=["status"], description=STATUS_DESC)
     async def state(self, ctx: commands.Context):
         """Show your current clock state."""
-        session_start = None
         async with self.bot.connect_pool.acquire() as conn:
             rec = await conn.fetchrow(
                 """SELECT time_in FROM timekeeper WHERE member = $1 AND guild = $2""",
@@ -259,9 +258,7 @@ class timeclock(commands.Cog):
                         user == ctx.author and str(reaction.emoji) == "\N{ALARM CLOCK}"
                     )
 
-                reaction, user = await self.bot.wait_for(
-                    "reaction_add", timeout=5.0, check=c
-                )
+                await self.bot.wait_for("reaction_add", timeout=5.0, check=c)
             except asyncio.TimeoutError:
                 return await ctx.send("Too slow!")
             else:
