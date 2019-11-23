@@ -153,7 +153,6 @@ quotes_e10 = [
 # yet
 quotes_t = []
 
-
 quotes["e10"] = quotes_e10
 quotes["t"] = quotes["e10"] + quotes_t
 # when these are supported in the future, we'd have addition on these

@@ -1,11 +1,12 @@
 import asyncio
+import time
+from typing import Optional
+
 import asyncpg
-import boiler
 import discord
 from discord.ext import commands
-import time
-from typing import Dict, Optional, Union
 
+import boiler
 
 CLOCK_DESC = "Clock in or out. Note that if you're clocked in, running this without a subcommand will result in you being clocked out. In that event, simply clock back in and you won't miss any notable amount of time."
 BADGE_DESC = "Get the QR code you use to clock in/out. To prevent someone else from clocking you out, the message will autodelete after five (5) seconds."

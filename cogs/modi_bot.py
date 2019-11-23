@@ -1,6 +1,6 @@
-import discord
-from discord.ext import commands
 import logging
+
+from discord.ext import commands
 
 
 class modi(commands.Cog):

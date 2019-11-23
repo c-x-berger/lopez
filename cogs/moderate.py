@@ -1,6 +1,6 @@
-import discord
-import boiler
 from discord.ext import commands
+
+import boiler
 
 
 class moderate(commands.Cog):

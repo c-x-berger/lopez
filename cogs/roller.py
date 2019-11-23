@@ -1,10 +1,11 @@
-import asyncpg
-import boiler
-import config
-import discord
-from discord.ext import commands
 import math
 import random
+
+import asyncpg
+import discord
+from discord.ext import commands
+
+import boiler
 
 scores = ["STR", "DEX", "CON", "INT", "WIS", "CHR"]
 

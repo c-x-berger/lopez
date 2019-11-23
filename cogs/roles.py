@@ -1,10 +1,8 @@
 import asyncpg
-import boiler
-import config
-import json
-import random
 import discord
 from discord.ext import commands
+
+import boiler
 
 
 class roles(commands.Cog):

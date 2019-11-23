@@ -1,7 +1,9 @@
 import asyncio
-import asyncpg
-import config
 import json
+
+import asyncpg
+
+import config
 
 
 async def safe_table_create(connection, table_exec: str):

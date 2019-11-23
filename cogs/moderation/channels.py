@@ -1,10 +1,11 @@
-import asyncpg
-import boiler
-import discord
-from discord.ext import commands
 import json
 from typing import Dict
 
+import asyncpg
+import discord
+from discord.ext import commands
+
+import boiler
 
 set_description = """Sets the default permissions for creating channels with Lopez. `permissions` should be a JSON code block similar to the below.
 {

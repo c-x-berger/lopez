@@ -1,5 +1,6 @@
-from discord.ext import commands
 import random
+
+from discord.ext import commands
 from wild_computing_machine import wild_comp
 
 

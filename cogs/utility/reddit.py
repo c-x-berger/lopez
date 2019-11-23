@@ -1,6 +1,7 @@
 import aiohttp
-import boiler
 from discord.ext import commands
+
+import boiler
 
 
 class reddit(commands.Cog):

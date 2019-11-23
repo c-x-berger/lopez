@@ -1,8 +1,7 @@
 import aiohttp
 from bs4 import BeautifulSoup
-import discord
+from discord import flatten_error_dict
 from discord.ext import commands
-from typing import List, Optional
 
 
 class HTTPError(Exception):
