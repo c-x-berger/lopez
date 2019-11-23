@@ -131,6 +131,23 @@ quotes_e10 = [
     "And number eight, from Japan, it is... A Man on a Horse. Just a normal horse that- That there's nothing wrong with.",
     '"i would like to cut the grass but it\'s against the lawn" ~ bill wurtz',
     '"i am subscribed to the climate, so i get notified when it changes" ~ bill wurtz',
+    '"Stop fat shaming robots" ~ Maggie',
+    '"It has a drag coefficient of -2. The faster it goes, the faster it goes." ~ Bryce',
+    '"ew mormons" ~ Seth',
+    "Virgin Programming vs Chad Mechanical",
+    "Virgin Mechanical vs Chad Programming",
+    '"Bus driver is wearing a cowboy hat. Never seen the guy in my life. Welcome to my bus" ~ Brock',
+    '"@skittle random question are you an axe murderer by chance" "wat" "which part of the question is unclear"',
+    "the person above is above",
+    '"there is no god only :cornthonk:" ~ aryn',
+    '"good old Q&Q" ~ Lander',
+    "o m a n i a m n o t g o o d w i t h c o m p u t e r z p l z t o h e l p",
+    "THIS PYTHON SCRIPT CONTAINS PINGAS",
+    "the mailman is here for your soul",
+    "PTIJ: Which Dr. Seuss books should one obtain?",
+    '"i don\'t feel afraid of funk engine, but i am intimidated by what it could do" ~ space',
+    "This Code Will Work (and Other Hilarious Jokes You Can Tell Yourself) (Volume II)",
+    "GAME!",
 ]
 # since this code is still the team's work i'm not going past this
 # yet
