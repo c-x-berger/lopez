@@ -78,7 +78,7 @@ class developer(commands.Cog):
             em.add_field(
                 name="Return value", value="```\n{}\n```".format(ret), inline=False
             )
-            await ctx.send(None, embed=em)
+            await ctx.send(embed=em)
 
     @commands.command()
     @commands.is_owner()

@@ -23,7 +23,7 @@ class moderate(commands.Cog):
             text="Requested by {}".format(ctx.author.display_name),
             icon_url="https://i.imgur.com/2VepakW.png",
         )
-        await ctx.send(None, embed=em, delete_after=5 if len(deleted) <= 5 else None)
+        await ctx.send(embed=em, delete_after=5 if len(deleted) <= 5 else None)
 
 
 def setup(bot):

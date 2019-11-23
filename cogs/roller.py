@@ -134,7 +134,7 @@ class roller(commands.Cog):
                 )
                 char_scores += "**{0}:** {1!s} ({2})\n".format(stat, score, modstring)
             em.add_field(name="Stats", value=char_scores)
-            await ctx.send(None, embed=em)
+            await ctx.send(embed=em)
         else:
             await roller.no_character(ctx, player)
 
@@ -207,7 +207,7 @@ class roller(commands.Cog):
                         "You already have a character saved, and this command won't overwrite it!\n(All that construction work for nothing...)"
                     )
                     return
-        await ctx.send(None, embed=em)
+        await ctx.send(embed=em)
 
     @character.command(
         description="Creates a character with all stats set to zero.\nYou can use the edit command to fix the default values supplied.\nUnder the hood, this just calls create_onecall with defaults supplied.",
