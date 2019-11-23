@@ -48,6 +48,8 @@ class modi(commands.Cog):
             self.bot.reload_extension(module)
         except commands.ExtensionError as e:
             await ctx.send("Could not reload `{}`: {}".format(module, str(e)))
+        else:
+            await ctx.send("Reloaded `{}`".format(module))
 
 
 def setup(bot: commands.Bot):
