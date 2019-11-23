@@ -1,13 +1,6 @@
 import asyncio
-import asyncpg
-import config
 import datetime
-import discord
-from discord.ext import commands
-import footers
-import json
 import logging
-import math
 import os
 import random
 import subprocess
@@ -15,6 +8,13 @@ import sys
 import time
 import traceback
 from typing import Union
+
+import asyncpg
+import discord
+from discord.ext import commands
+
+import config
+import footers
 
 prefixes = [
     "[] ",
@@ -196,6 +196,7 @@ cogs = [
     "moderation.channels",
     "moderation.guild",
     "timeclock",
+    "utility.reddit",
 ]
 for cog in cogs:
     bot.load_extension("cogs." + cog)

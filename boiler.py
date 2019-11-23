@@ -2,12 +2,14 @@
 Util functions. Cuts down on boilerplate code, ideally.
 """
 
-import discord
-from discord.ext import commands
-import footers
 import json
 import random
 from typing import Dict
+
+import discord
+from discord.ext import commands
+
+import footers
 
 
 def embed_template(
