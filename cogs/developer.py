@@ -1,16 +1,14 @@
-import asyncio
-import boiler
 import contextlib
-import discord
-from discord.ext import commands
-import logging
-import sys
-from tabulate import tabulate
+import inspect
+import io
+import os
 import textwrap
 import traceback
-import io
-import inspect
-import os
+
+from discord.ext import commands
+from tabulate import tabulate
+
+import boiler
 
 
 class developer(commands.Cog):
@@ -80,7 +78,7 @@ class developer(commands.Cog):
             em.add_field(
                 name="Return value", value="```\n{}\n```".format(ret), inline=False
             )
-            await ctx.send(None, embed=em)
+            await ctx.send(embed=em)
 
     @commands.command()
     @commands.is_owner()
@@ -113,7 +111,7 @@ class developer(commands.Cog):
         if not obj.callback.__module__.startswith("discord"):
             location = os.path.relpath(src.co_filename).replace("\\", "/")
         else:
-            s_url = "https://github.com/Rapptz/discord.py/tree/rewrite"
+            s_url = "https://github.com/Rapptz/discord.py/tree/master"
             location = obj.callback.__module__.replace(".", "/") + ".py"
         await ctx.send(
             "{}/{}/#L{}-L{}".format(

@@ -1,10 +1,8 @@
-import discord
-from discord.ext import commands
 import logging
 import subprocess
-import os
-import sys
 import time
+
+from discord.ext import commands
 
 
 class git_updater(commands.Cog):

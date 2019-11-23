@@ -1,10 +1,11 @@
-import asyncpg
-import boiler
-import config
-import discord
-from discord.ext import commands
 import math
 import random
+
+import asyncpg
+import discord
+from discord.ext import commands
+
+import boiler
 
 scores = ["STR", "DEX", "CON", "INT", "WIS", "CHR"]
 
@@ -133,7 +134,7 @@ class roller(commands.Cog):
                 )
                 char_scores += "**{0}:** {1!s} ({2})\n".format(stat, score, modstring)
             em.add_field(name="Stats", value=char_scores)
-            await ctx.send(None, embed=em)
+            await ctx.send(embed=em)
         else:
             await roller.no_character(ctx, player)
 
@@ -188,7 +189,7 @@ class roller(commands.Cog):
                 try:
                     # TODO: optimize with prepared statements somehow?
                     await conn.execute(
-                        """INSERT INTO dnd_chars(name, strength, dexterity, constitution, intelligence, wisdom, charisma, race, discord_id, levels, classes) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)""",
+                        "INSERT INTO dnd_chars(name, strength, dexterity, constitution, intelligence, wisdom, charisma, race, discord_id, levels, classes) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
                         name,
                         s["STR"],
                         s["DEX"],
@@ -206,7 +207,7 @@ class roller(commands.Cog):
                         "You already have a character saved, and this command won't overwrite it!\n(All that construction work for nothing...)"
                     )
                     return
-        await ctx.send(None, embed=em)
+        await ctx.send(embed=em)
 
     @character.command(
         description="Creates a character with all stats set to zero.\nYou can use the edit command to fix the default values supplied.\nUnder the hood, this just calls create_onecall with defaults supplied.",
@@ -247,7 +248,7 @@ class roller(commands.Cog):
                 ]:
                     # modify stat
                     await conn.execute(
-                        """UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2""".format(
+                        "UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2".format(
                             prop.lower()
                         ),
                         roller.to_int(value),
@@ -258,7 +259,7 @@ class roller(commands.Cog):
                     )
                 elif prop.lower() in ["race", "name"]:
                     await conn.execute(
-                        """UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2""".format(
+                        "UPDATE dnd_chars SET {} = $1 WHERE discord_id = $2".format(
                             prop.lower()
                         ),
                         value,
@@ -282,13 +283,14 @@ class roller(commands.Cog):
                 classlevel_index = None
                 try:
                     # Python has correct (0-based) indexing, Postgres does not
-                    # this line is also a "sign of database misdesign" according to the Postgres people, but multiclassing in the first place is dumb
+                    # this line is also a "sign of database misdesign" according to the Postgres people,
+                    # but multiclassing in the first place is dumb
                     classlevel_index = char["classes"].index(character_class) + 1
                 except ValueError:
                     classlevel_index = len(char["classes"]) + 1
                     # since we didn't already have this class, we need to add it to the list
                     await conn.execute(
-                        """UPDATE dnd_chars SET classes[{}] = $1 WHERE discord_id = $2""".format(
+                        "UPDATE dnd_chars SET classes[{}] = $1 WHERE discord_id = $2".format(
                             classlevel_index
                         ),
                         character_class,
@@ -296,19 +298,19 @@ class roller(commands.Cog):
                     )
                 finally:
                     await conn.execute(
-                        """UPDATE dnd_chars SET levels[{}] = $1 WHERE discord_id = $2""".format(
+                        "UPDATE dnd_chars SET levels[{}] = $1 WHERE discord_id = $2".format(
                             classlevel_index
                         ),
-                        roller.to_int(level),
+                        level,
                         str(ctx.author.id),
                     )
                     await ctx.send(
-                        "Set character {} to a level {} {} (in addition to thier other classes and levels.)".format(
+                        "Set character {} to a level {} {} (in addition to their other classes and levels.)".format(
                             char["name"], level, character_class
                         )
                     )
             else:
-                roller.no_character(ctx)
+                await roller.no_character(ctx)
 
     @character.command()
     async def remove_class(self, ctx: commands.Context, character_class: str):
@@ -322,12 +324,12 @@ class roller(commands.Cog):
                 del classes[classlevel_index]
                 del levels[classlevel_index]
                 await conn.execute(
-                    """UPDATE dnd_chars SET classes = $1 WHERE discord_id = $2""",
+                    "UPDATE dnd_chars SET classes = $1 WHERE discord_id = $2",
                     classes,
                     str(ctx.author.id),
                 )
                 await conn.execute(
-                    """UPDATE dnd_chars SET levels = $1 WHERE discord_id = $2""",
+                    "UPDATE dnd_chars SET levels = $1 WHERE discord_id = $2",
                     levels,
                     str(ctx.author.id),
                 )

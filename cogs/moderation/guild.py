@@ -1,7 +1,7 @@
 import asyncpg
-import boiler
-import discord
 from discord.ext import commands
+
+import boiler
 
 
 class guild(commands.Cog):

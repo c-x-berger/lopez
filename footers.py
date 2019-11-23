@@ -148,11 +148,25 @@ quotes_e10 = [
     '"i don\'t feel afraid of funk engine, but i am intimidated by what it could do" ~ space',
     "This Code Will Work (and Other Hilarious Jokes You Can Tell Yourself) (Volume II)",
     "GAME!",
+    "there is no such thing as software that does not suck",
+    'I call this piece "setting Inventor\'s stress analysis to 5x deflection"',
 ]
-# since this code is still the team's work i'm not going past this
-# yet
-quotes_t = []
 
+quotes_t = [
+    "why do you get to be the dumbass that's not fair",
+    "S T U G G L E",
+    "Elephants - A Review: Hell yeah",
+    "Here I will make my case for the Criminality of Jellyfish, who, in my humble opinion, and in the eyes of God, are all Cowards.",
+    "Moths are Wretched Animals the bring no on any joy. They are like butterflies that Piss everybody off.",
+    'Charles Darwin once write that Ducks, "Are the Dumb Asses, of Birds."',
+    "This is the classic bobbing-and-weaving that Dirt Apologists do to evade responsibility for their Insufferable and Lazy Philosphy.",
+    "enjoy your fragile fucking bones while I, a loyal milk drinker, am literally ably to rip a tree in half",
+    "faffish women",
+    "MUDA " * 64,
+    "i,m gonna..\nsay the gamer word",
+    "\"Mike pence tells Americans to 'spend more time on your knees than on the internet'\" ~ newsweek.com",
+    "conke and bepis torture (now with sprote)",
+]
 
 quotes["e10"] = quotes_e10
 quotes["t"] = quotes["e10"] + quotes_t

@@ -1,6 +1,7 @@
 import aiohttp
-import boiler
 from discord.ext import commands
+
+import boiler
 
 
 class reddit(commands.Cog):
@@ -34,7 +35,7 @@ class reddit(commands.Cog):
         em.set_thumbnail(url=redditor["icon_img"])
         em.add_field(name="Post Karma", value=redditor["link_karma"], inline=True)
         em.add_field(name="Comment Karma", value=redditor["comment_karma"], inline=True)
-        await ctx.send(None, embed=em)
+        await ctx.send(embed=em)
 
 
 def setup(bot: commands.Bot):
